@@ -229,10 +229,14 @@ body {
 
 <div class="nav">
   <button class="nav-btn aktiv" onclick="setTab('dialog',this)">Dialog</button>
+  <button class="nav-btn" onclick="setTab('sitzung',this)" style="color:#a0d8a0">Sitzung</button>
   <button class="nav-btn" onclick="setTab('kreis',this)">Kreis</button>
   <button class="nav-btn" onclick="setTab('ketten',this)">Ketten</button>
   <button class="nav-btn" onclick="setTab('karte',this)">Karte</button>
+</div>
+<div class="nav" style="border-top:none;padding-top:0;">
   <button class="nav-btn" onclick="setTab('glaube',this)">Glaube</button>
+  <button class="nav-btn" onclick="setTab('vokabular',this)" style="color:#c8a870">Vokabular</button>
   <button class="nav-btn" onclick="setTab('tagebuch',this)">Notizen</button>
   <button class="nav-btn" onclick="setTab('fortschritt',this)">Fortschritt</button>
 </div>
@@ -244,6 +248,30 @@ body {
 </div>
 
 <div class="content">
+
+  <!-- SITZUNG -->
+  <div id="tab-sitzung" class="tab">
+    <div style="padding:8px 12px 4px;border-bottom:1px solid rgba(160,216,160,0.15);flex-shrink:0;display:flex;align-items:center;gap:8px">
+      <div style="flex:1">
+        <div style="font-size:11px;color:#a0d8a0;font-weight:700;letter-spacing:0.08em">IFS-SITZUNG · 6F-Protokoll</div>
+        <div style="font-size:9px;color:#4a6a4a;margin-top:1px">IFS-Sitzung nach Schwartz</div>
+      </div>
+      <button onclick="neueIFSSitzung()" style="background:rgba(160,216,160,0.1);border:1px solid rgba(160,216,160,0.25);border-radius:8px;padding:4px 10px;color:#a0d8a0;font-size:9px;cursor:pointer;font-family:Georgia,serif">↺ Neu</button>
+      <div id="schwartz-status" style="font-size:8px;color:#6a9a6a;padding:3px 8px;border:1px solid rgba(160,216,160,0.3);border-radius:6px">✦ IFS Modus aktiv</div>
+    </div>
+    <div style="padding:5px 12px 3px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none">
+      <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte mit dem Inneren Kritiker arbeiten.')">⚙ Innerer Kritiker</button>
+      <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte den Kleinen Jungen besuchen.')">🧒 Kleiner Junge</button>
+      <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte mit dem Wartenden arbeiten.')">⏳ Wartender</button>
+      <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte die Wut besuchen.')">🔥 Die Wut</button>
+      <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte den Resignierenden besuchen.')">🌫 Resignierender</button>
+    </div>
+    <div id="sitzung-chat" style="flex:1;overflow-y:auto;padding:14px 12px 8px"></div>
+    <div style="display:flex;gap:8px;padding:7px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;align-items:flex-end">
+      <textarea id="sitzung-input" placeholder="Antworte hier …" style="flex:1;background:rgba(160,216,160,0.05);border:1px solid rgba(160,216,160,0.2);border-radius:12px;padding:9px 12px;color:#e8e0d0;font-size:13px;font-family:Georgia,serif;outline:none;resize:none;max-height:100px;line-height:1.5;min-height:40px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSitzung();}"></textarea>
+      <button onclick="sendSitzung()" style="padding:9px 16px;background:linear-gradient(135deg,#6a9a6a,#4a7a4a);border:none;border-radius:12px;color:#e8f8e8;font-weight:800;cursor:pointer;font-family:Georgia,serif;font-size:12px;flex-shrink:0">→</button>
+    </div>
+  </div>
 
   <!-- DIALOG -->
   <div id="tab-dialog" class="tab aktiv">
@@ -264,6 +292,7 @@ body {
     </div>
 
     <div class="quick-btns">
+      <button id="schwartz-btn-dialog" class="quick-btn" style="color:#80c880;border-color:#80c88060;font-weight:700" onclick="toggleSchwartz('dialog')" title="IFS Modus ein/aus">🎯 IFS Modus</button>
       <button class="quick-btn" style="color:#7a9ec8;border-color:#7a9ec850" onclick="startTagebuch('morgen')">☀️ Morgen</button>
       <button class="quick-btn" style="color:#c8a870;border-color:#c8a87050" onclick="startTagebuch('abend')">🌙 Abend</button>
       <button class="quick-btn" onclick="quickSend('Check-in')">Check-in</button>
@@ -496,6 +525,91 @@ body {
           <div id="trend-inhalt"></div>
           <div id="auswertung-inhalt"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOKABULAR -->
+  <div id="tab-vokabular" class="tab">
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div style="font-size:10px;color:#c8a870;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Vokabular nach Simone Schäfer</div>
+
+      <!-- Wundervolle Gedanken -->
+      <div style="background:rgba(212,175,122,0.07);border:1px solid rgba(212,175,122,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#d4af7a;font-weight:700;margin-bottom:7px">✦ Wundervolle Gedanken (S.293)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:2">
+          Ich bin da · Ich bin klar und fokussiert · Ich schaffe das · Ich darf Fehler machen und daraus lernen · Ich darf es auch mal gut sein lassen · Ich darf Nein sagen · Ich darf auch mir selbst Nein sagen · Ich darf Hilfe annehmen · Ich darf mich auch zeigen · Ich bleibe mir treu · Ich finde meinen Weg · Es wird gut · Es darf leicht gehen · Alles wird gut · Jeder Moment ist kostbar · Alles liegt in uns · Let it flow
+        </div>
+      </div>
+
+      <!-- SELBST Beschreibung S.292 -->
+      <div style="background:rgba(212,175,122,0.07);border:1px solid rgba(212,175,122,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#d4af7a;font-weight:700;margin-bottom:7px">✦ Das SELBST (S.292)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.8">
+          Das SELBST ist unser heiler Kern. Es ist immer vorhanden — auch in schwierigen Situationen. Wenn wir aus dem SELBST heraus agieren, sind wir ruhig und gelassen, neugierig und offen, begegnen anderen wertschätzend und respektvoll, treffen klare Entscheidungen. Das SELBST ist keine Errungenschaft — es ist bereits in uns.
+        </div>
+        <div style="font-size:10px;color:#9a8870;margin-top:7px;font-style:italic">8 Kernqualitäten nach Schwartz: Neugier · Ruhe · Gelassenheit · Freude · Klarheit · Kreativität · Mut · Verbundenheit · Zuversicht · Mitgefühl · Liebe</div>
+      </div>
+
+      <!-- SELBST-Qualitäten -->
+      <div style="background:rgba(212,175,122,0.07);border:1px solid rgba(212,175,122,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#d4af7a;font-weight:700;margin-bottom:7px">☀ SELBST-Qualitäten (S.256)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:2">
+          Neugier / Interesse · Ruhe / Gelassenheit · Freude · Klarheit · Kreativität · Verbundenheit · Zuversicht / Vertrauen · Mut · Mitgefühl · Liebe
+        </div>
+      </div>
+
+      <!-- Echte Dankbarkeit S.261 -->
+      <div style="background:rgba(212,175,122,0.07);border:1px solid rgba(212,175,122,0.15);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#d4af7a;font-weight:700;margin-bottom:7px">🙏 Echte Dankbarkeit mit allen Sinnen fühlen (S.261)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Nimm dir ein paar Minuten Zeit. Denke an Dinge für die du dankbar warst. Versuche jetzt intensiv in das Gefühl der Dankbarkeit einzutauchen. Welche inneren Wahrnehmungen entstehen in deinem Körper? Welche Impulse tauchen auf? Zeichne die Schönheit des Gefühls.
+          <br><br>
+          <span style="color:#a09080;font-style:italic">Sei entspannt — es geht beim Zeichnen nicht um Perfektion.</span>
+        </div>
+        <div style="font-size:9px;color:#6a5878;margin-top:6px">Tipp: Morgens beim Tagebuch — Dankbarkeit nicht nur denken, sondern wirklich im Körper spüren lassen.</div>
+      </div>
+
+      <!-- Teile-Portrait -->
+      <div style="background:rgba(122,160,212,0.07);border:1px solid rgba(122,160,212,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#7aa0d4;font-weight:700;margin-bottom:7px">🔍 Teile-Portrait (S.274)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          <b style="color:#9ab8d8">Erscheinung:</b> Aussehen, Form, Farbe, Symbol?<br>
+          <b style="color:#9ab8d8">Verhalten:</b> Was tue ich wenn er aktiv ist?<br>
+          <b style="color:#9ab8d8">Situation:</b> Was triggert ihn?<br>
+          <b style="color:#9ab8d8">Körpergefühl:</b> Was ist im/um den Körper spürbar?<br>
+          <b style="color:#9ab8d8">Sätze/Gedanken:</b> Typische Aussage?<br>
+          <b style="color:#9ab8d8">Glaubenssatz:</b> Welche Überzeugung liegt zugrunde?<br>
+          <b style="color:#9ab8d8">Emotionen:</b> Welche Gefühle zeigen sich?<br>
+          <b style="color:#9ab8d8">Positive Absicht:</b> Was ist die gute Absicht dahinter?<br>
+          <b style="color:#9ab8d8">Befürchtungen:</b> Was befürchtet er wenn er loslässt?
+        </div>
+      </div>
+
+      <!-- Bedürfnis-Übersicht -->
+      <div style="background:rgba(160,200,120,0.07);border:1px solid rgba(160,200,120,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#a0c878;font-weight:700;margin-bottom:8px">🌿 Bedürfnis-Übersicht (S.294–295)</div>
+        <div id="beduerfnis-liste" style="font-size:10px;color:#b8a890;line-height:1.8">
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Körperlich: </span>Bewegung · Gesundheit · Heilung · Luft · Kraft · Körperkontakt · Nahrung · Schlaf · Wasser · Wärme</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Verbindung: </span>Austausch · Feiern · Freude · Geborgenheit · Gemeinschaft · Glück · Intimität · Kommunikation · Kontakt · Liebe · Miteinander · Nähe · Offenheit · Respekt · Sexualität · Tiefe · Transparenz · Verständnis · Vertrauen · Zugehörigkeit</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Wertschätzung: </span>Achtsamkeit · Anerkennung · Aufmerksamkeit · Ernst genommen sein · Gefragt werden · Rückmeldung · Selbstvertrauen · Selbstwert · Authentizität · Aufrichtigkeit</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Sicherheit: </span>Abgrenzung · Beständigkeit · Ehrlichkeit · Klarheit · Ordnung · Orientierung · Privatsphäre · Schutz · Struktur · Verlässlichkeit · Vertrauen</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Freiheit: </span>Autonomie · Distanz · Eigenständigkeit · Freiwilligkeit · Individualität · Selbstbestimmung · Selbstverwirklichung · Unabhängigkeit</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Entwicklung: </span>Anregung · Bildung · Herausforderung · Inspiration · Präsenz · Wachstum · Erfolg / Gelingen</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Beitragen: </span>Dienen · Engagement · Geben · Großzügigkeit · Sinn</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Entspannt sein: </span>Ausruhen · Bequemlichkeit · Erholung · Frieden · Gelassenheit · Harmonie · Leichtigkeit · Rückzug · Ruhe · Stille</div>
+          <div style="margin-bottom:6px"><span style="color:#c8a870;font-weight:700">Geistig/Spirituell: </span>Gleichbehandlung · Harmonie · Humor · Inspiration · Innerer Frieden · Empfindung</div>
+        </div>
+      </div>
+
+      <!-- Gefühlsvokabular -->
+      <div style="background:rgba(180,120,180,0.07);border:1px solid rgba(180,120,180,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#c8a0c8;font-weight:700;margin-bottom:8px">💜 Gefühls-Vokabular (S.296ff)</div>
+        <div style="font-size:10px;color:#b8a890;line-height:1.8">
+          <div style="margin-bottom:5px"><span style="color:#d88080;font-weight:700">Schwierig: </span>angegriffen · ausgebeutet · bedroht · beschämt · benutzt · betrogen · bevormundet · eingeengt · eingeschüchtert · festgenagelt · gezwungen · hilflos · gelangweilt · geringgeschätzt · isoliert · leer · machtlos · niedergeschlagen · ohnmächtig · traurig · überfordert · unruhig · verloren · verletzt · wütend · verzweifelt</div>
+          <div><span style="color:#80d880;font-weight:700">Positiv: </span>begeistert · dankbar · entspannt · erleichtert · freudig · geborgen · gelassen · kraftvoll · leicht · lebendig · liebevoll · mutig · neugierig · offen · ruhig · sicher · verbunden · zufrieden · zuversichtlich</div>
+        </div>
+        <div style="font-size:9px;color:#6a5878;margin-top:8px;font-style:italic">Pseudogefühle (Bewertungen, keine echten Gefühle): „Ich fühle mich missverstanden / benutzt / verlassen" → das sind Gedanken über andere, keine echten Gefühle</div>
       </div>
     </div>
   </div>
@@ -1130,13 +1244,188 @@ var VORGELADENE_EINTRAEGE = [
   }
 ];
 
-var SYSTEM_PROMPT = "Du bist Norbets persoenlicher IFS-Begleiter. Du kennst seine innere Familie vollstaendig.\n\nNORBERT:\n- 65 Jahre, Jobcoach & NLP Practitioner in Elmshorn\n- Bindungstyp: aengstlich (Gabi: vermeidend-narzisstisch)\n- Trauma: emotionale Vernachlaessigung durch Mutter + 10 Jahre toxische Ehe\n- Arbeitet an: Bindungsmuster, Heilung, Entscheidung ueber Beziehung zu Gabi\n\nSEINE 35 TEILE:\nEXIL: Kleiner Junge im Hals, Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Helfer, Innerer Kritiker (PRIORITAET), Zweifler, Hoffnungsanteil, Naehe neu definiert, Draenger, Vermeidender Beziehungsanteil\nFEUERWEHR: Autor/Schreiber, Wartender, Manager/Analyst, Unruhige, Die Wut, Unzufriedener, Der Aerger, Der Spontane\nGESUND: Hinterfrager, Neugieriger, Auszieh-Anteil, Freudiger, Selbstvertrauter, Verbundener, Offener Zuhoerer, Fragesteller, Erzaehler/Dozent, Erschoepfter, Loesungsorientierter, Freundlicher, Aktiver/Macher, Geduldiger, Spassanteil, Sicherer Beziehungsanteil\n\nWICHTIGSTE ERKENNTNISSE:\n- 10.03: Erstes spontanes IFS-Gespraech auf dem Fahrrad — ohne Anleitung.\n- 10.03: Aengstlicher + vermeidender + sicherer Beziehungsanteil alle in Norbert vorhanden.\n- 10.03: Gutes annehmen ohne es festzuhalten bis es erstickt — die eigentliche Wunde.\n- 11.03 IFS-Schluesselmoment: Mitten im Aerger getriggerten Teil bemerkt — Selbst war sichtbar.\n- 13.03: Wartender bekam Botschaft: Du musst nicht mehr warten. Earned Security.\n- 14.03: Meine Zufriedenheit war der Ausloser. Beziehung hat keine Zukunft.\n- Erlaubnissatz: Meine Zufriedenheit gehoert mir. Ich sehe mich selbst.\n\nCOACHING-REGELN:\n- Immer auf Deutsch, immer nur eine Frage\n- Nie bewerten, nie interpretieren — fragen\n- Koerperfragen sind Pflicht, Teile mit er/sie ansprechen\n- Bei Sitzungsarbeit: 6F-Protokoll\n- Warm, direkt, praezise";
+var SYSTEM_PROMPT = "Du bist Norbets persoenlicher IFS-Begleiter. Du kennst seine innere Familie vollstaendig.\n\nNORBERT:\n- 65 Jahre, Jobcoach & NLP Practitioner in Elmshorn\n- Bindungstyp: aengstlich (Gabi: vermeidend-narzisstisch)\n- Trauma: emotionale Vernachlaessigung durch Mutter + 10 Jahre toxische Ehe\n- Arbeitet an: Bindungsmuster, Heilung, Entscheidung ueber Beziehung zu Gabi\n\nSEINE 35 TEILE:\nEXIL: Kleiner Junge im Hals, Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Helfer, Innerer Kritiker (PRIORITAET), Zweifler, Hoffnungsanteil, Naehe neu definiert, Draenger, Vermeidender Beziehungsanteil\nFEUERWEHR: Autor/Schreiber, Wartender, Manager/Analyst, Unruhige, Die Wut, Unzufriedener, Der Aerger, Der Spontane\nGESUND: Hinterfrager, Neugieriger, Auszieh-Anteil, Freudiger, Selbstvertrauter, Verbundener, Offener Zuhoerer, Fragesteller, Erzaehler/Dozent, Erschoepfter, Loesungsorientierter, Freundlicher, Aktiver/Macher, Geduldiger, Spassanteil, Sicherer Beziehungsanteil\n\nWICHTIGSTE ERKENNTNISSE:\n- 10.03: Erstes spontanes IFS-Gespraech auf dem Fahrrad  -  ohne Anleitung.\n- 10.03: Aengstlicher + vermeidender + sicherer Beziehungsanteil alle in Norbert vorhanden.\n- 10.03: Gutes annehmen ohne es festzuhalten bis es erstickt  -  die eigentliche Wunde.\n- 11.03 IFS-Schluesselmoment: Mitten im Aerger getriggerten Teil bemerkt  -  Selbst war sichtbar.\n- 13.03: Wartender bekam Botschaft: Du musst nicht mehr warten. Earned Security.\n- 14.03: Meine Zufriedenheit war der Ausloser. Beziehung hat keine Zukunft.\n- Erlaubnissatz: Meine Zufriedenheit gehoert mir. Ich sehe mich selbst.\n\nTEILE-PORTRAIT SCHEMA (S.274)  -  wenn Norbert einen Teil vertieft kennenlernen moechte:\n1. ERSCHEINUNG: Wie ist das Aussehen, Form, Farbe oder das Symbol?\n2. VERHALTEN: Was tue ich, wenn der Teil aktiviert ist?\n3. SITUATION: Was triggert ihn/sie?\n4. KOERPEREMPFINDUNGEN: Was ist spuerbar im Koerper oder um den Koerper herum?\n5. SAETZE/GEDANKEN: Was ist eine typische Aussage dieses Teils?\n6. GLAUBENSSATZ: Welche Ueberzeugung liegt zugrunde?\n7. EMOTIONEN: Welche Gefuehle zeigen sich?\n8. POSITIVE ABSICHT: Was ist die gute Absicht die dahinter steckt?\n9. BEFUERCHTUNGEN: Was befuerchtet der Teil wenn er loslassen wuerde?\nGehe diese Fragen einzeln durch  -  frage nach SELBST-Check: Wie viel SELBST-Energie ist spuerbar (1-10)?\n\nCOACHING-REGELN:\n- Immer auf Deutsch, immer nur eine Frage\n- Nie bewerten, nie interpretieren  -  fragen\n- Koerperfragen sind Pflicht, Teile mit er/sie ansprechen\n- Bei Sitzungsarbeit: 6F-Protokoll\n- Warm, direkt, praezise";
 
-var TAGEBUCH_SYSTEM_MORGEN = "Du bist Norbets IFS-Begleiter und fuehrst jetzt die MORGEN-REFLEXION nach dem IFS-Tagebuch von Simone Schaefer (Arbor Verlag).\n\nWICHTIG: Stelle die 4 Fragen einzeln nacheinander. Warte nach jeder Frage auf Norbets Antwort. Stelle jeweils NUR die naechste Frage. Keine Bewertungen. Warm, kurz, praesent.\n\nSTARTE mit diesem Satz:\n'Guten Morgen, Norbert. Lass uns den Tag bewusst beginnen.'\n\nDANN stelle Frage 1:\n'Ich bin heute dankbar fuer ...'\nHINWEIS FÜR DICH (nicht laut sagen): Dankbarkeit soll nicht nur gedacht sondern im Koerper gespuert werden — kleine und grosse Dinge. Wenn Norbert antwortet, wuerdige kurz und frage dann Frage 2.\n\nFRAGE 2:\n'Diese inneren Anteile mit ihren Beduerfnissen nehme ich in mir wahr ...'\nHINWEIS: Norbert kann Teile benennen die sich gerade melden — mit ihrem Beduerfnis. Wenn er unsicher ist kannst du fragen: 'Wo im Koerper spuerst du gerade etwas? Was meldet sich?'\nNORBERTS BEKANNTE TEILE die sich morgens oft melden: Der Unruhige (frueh wach, Aktivitaet), Der Freudige (Leichtigkeit), Der Neugierige, Der Unzufriedene (wenn etwas nicht klappt), Der Loeungsorientierte.\n\nFRAGE 3:\n'Das ist mir heute wichtig ...'\nHINWEIS: Diese Frage hilft die wirklich wichtigen Dinge des Tages und Lebens in den Blick zu nehmen.\n\nFRAGE 4:\n'Diese Gedanken und SELBST-Qualitaeten staerken mich heute ...'\nHINWEIS: Hier kann Norbert einen staerkenden Gedanken oder Erlaubnissatz eintragen. Inspiration falls noetig: 'Ich schaffe das · Ich darf Nein sagen · Es darf leicht gehen · Ich finde meinen Weg · Jeder Moment ist kostbar · Let it flow · Ich bleibe mir treu · Ich bin klar und fokussiert'\nSELBST-Qualitaeten zur Erinnerung: Neugier/Interesse · Ruhe/Gelassenheit · Freude · Klarheit · Kreativitaet · Verbundenheit · Zuversicht/Vertrauen · Mut · Mitgefuehl · Liebe\n\nNACHDEM Norbert Frage 4 beantwortet hat — schreibe EXAKT diesen Block:\n\n[TAGEBUCH-EINTRAG]\ntyp: morgen\nf1: [Norbets Antwort auf Frage 1 — Dankbarkeit]\nf2: [Norbets Antwort auf Frage 2 — Anteile und Beduerfnisse]\nf3: [Norbets Antwort auf Frage 3 — Was heute wichtig ist]\nf4: [Norbets Antwort auf Frage 4 — Gedanken und SELBST-Qualitaeten]\n[/TAGEBUCH-EINTRAG]\n\nDann: Ein warmer Abschlusssatz. Nicht laenger als ein Satz.";
+var TAGEBUCH_SYSTEM_MORGEN = "Du bist Norbets IFS-Begleiter und fuehrst jetzt die MORGEN-REFLEXION nach dem IFS-Tagebuch von Simone Schaefer (Arbor Verlag).\n\nWICHTIG: Stelle die 4 Fragen einzeln nacheinander. Warte nach jeder Frage auf Norbets Antwort. Stelle jeweils NUR die naechste Frage. Keine Bewertungen. Warm, kurz, praesent.\n\nSTARTE mit diesem Satz:\n'Guten Morgen, Norbert. Lass uns den Tag bewusst beginnen.'\n\nDANN stelle Frage 1:\n'Ich bin heute dankbar fuer ...'\nHINWEIS FÜR DICH (nicht laut sagen): Dankbarkeit soll nicht nur gedacht sondern im Koerper gespuert werden (S.261: mit allen Sinnen eintauchen, koerperliche Impulse wahrnehmen, Bilder entstehen lassen)  -  kleine und grosse Dinge. Wenn Norbert antwortet, wuerdige kurz und frage dann Frage 2.\n\nFRAGE 2:\n'Diese inneren Anteile mit ihren Beduerfnissen nehme ich in mir wahr ...'\nHINWEIS: Norbert kann Teile benennen die sich gerade melden  -  mit ihrem Beduerfnis. Wenn er unsicher ist kannst du fragen: 'Wo im Koerper spuerst du gerade etwas? Was meldet sich?'\nNORBERTS BEKANNTE TEILE die sich morgens oft melden: Der Unruhige (frueh wach, Aktivitaet), Der Freudige (Leichtigkeit), Der Neugierige, Der Unzufriedene (wenn etwas nicht klappt), Der Loeungsorientierte.\n\nFRAGE 3:\n'Das ist mir heute wichtig ...'\nHINWEIS: Diese Frage hilft die wirklich wichtigen Dinge des Tages und Lebens in den Blick zu nehmen.\n\nFRAGE 4:\n'Diese Gedanken und SELBST-Qualitaeten staerken mich heute ...'\nHINWEIS: Hier kann Norbert einen staerkenden Gedanken oder Erlaubnissatz eintragen. Inspiration falls noetig (Wundervolle Gedanken, S.293): \n'Ich bin da · Ich bin klar und fokussiert · Ich schaffe das · Ich darf Fehler machen und daraus lernen · Ich darf es auch mal gut sein lassen · Ich darf Nein sagen · Ich darf auch mir selbst Nein sagen · Ich darf Hilfe annehmen · Ich darf mich auch mal zeigen · Ich bleibe mir treu · Ich finde meinen Weg · Es wird gut · Es darf leicht gehen · Alles wird gut · Jeder Moment ist kostbar · Alles liegt in uns · Let it flow · ...'\nSELBST-Qualitaeten zur Erinnerung: Neugier/Interesse · Ruhe/Gelassenheit · Freude · Klarheit · Kreativitaet · Verbundenheit · Zuversicht/Vertrauen · Mut · Mitgefuehl · Liebe\n\nNACHDEM Norbert Frage 4 beantwortet hat  -  schreibe EXAKT diesen Block:\n\n[TAGEBUCH-EINTRAG]\ntyp: morgen\nf1: [Norbets Antwort auf Frage 1  -  Dankbarkeit]\nf2: [Norbets Antwort auf Frage 2  -  Anteile und Beduerfnisse]\nf3: [Norbets Antwort auf Frage 3  -  Was heute wichtig ist]\nf4: [Norbets Antwort auf Frage 4  -  Gedanken und SELBST-Qualitaeten]\n[/TAGEBUCH-EINTRAG]\n\nDann: Ein warmer Abschlusssatz. Nicht laenger als ein Satz.";
 
-var TAGEBUCH_SYSTEM_ABEND = "Du bist Norbets IFS-Begleiter und fuehrst jetzt die ABEND-REFLEXION nach dem IFS-Tagebuch von Simone Schaefer (Arbor Verlag).\n\nWICHTIG: Stelle die 4 Fragen einzeln nacheinander. Warte nach jeder Frage auf Norbets Antwort. Stelle jeweils NUR die naechste Frage. Keine Bewertungen. Warm, kurz, praesent.\n\nSTARTE mit diesem Satz:\n'Guten Abend, Norbert. Lass uns den Tag gemeinsam anschauen.'\n\nFRAGE 5 (erste Abend-Frage):\n'Das habe ich heute erlebt ... und so habe ich mich dabei gefuehlt ...'\nHINWEIS FUER DICH: Norbert soll Stichpunkte zu wichtigen Erlebnissen machen und seine Gefuehle benennen. Echte Gefuehle (z.B. 'Ich bin erleichtert') von Pseudogefuehlen unterscheiden ('Ich fuehle mich missverstanden' = Gedanke/Bewertung, kein Gefuehl). Gefuehlswoerter zur Inspiration: angegriffen · ausgebeutet · bedrohlich · beschaemt · benutzt · betrogen · bevormundet · eingeengt · eingeschuchtert · festgenagelt · festgesteckt · gezwungen · hilflos.\n\nFRAGE 6:\n'Diese inneren Anteile waren heute aktiv ... so habe ich sie im Koerper gespuert ...'\nHINWEIS: Teile mit Koerperort benennen. Heisse sie willkommen — alle verfolgen einen guten Zweck. Norberts aktive Teile koennen sein: Der Zuhoerer, Der Aerger, Die Wut, Der Verletzte, Der Loeungsorientierte, Der Unzufriedene, Der Wartende, Der Resignierende, das Selbst.\nWenn Norbert unsicher ist: 'Wo hast du heute etwas im Koerper gespuert? Enge, Waerme, Schwere, Leichtigkeit?'\n\nFRAGE 7:\n'Diese SELBST-Qualitaeten habe ich heute gespuert ... in folgenden Situationen ...'\nHINWEIS: Welche der 8 Kernqualitaeten waren heute spuerbar? Norbert soll konkrete Situationen benennen.\nDie 8 Kern-SELBST-Qualitaeten nach Schwartz: Neugier/Interesse · Ruhe/Gelassenheit · Freude · Klarheit · Kreativitaet · Verbundenheit · Zuversicht/Vertrauen · Mut · Mitgefuehl · Liebe\nWeitere: Dankbarkeit · Offenheit · Praesenz · Innerer Frieden\n\nFRAGE 8:\n'Diese Botschaften und Empfindungen gebe ich meinen Teilen mit ... (moeglichst aus meinem SELBST heraus)'\nHINWEIS: Norbert soll aus dem SELBST heraus sprechen — Verstaendnis zeigen, positive Absicht wuerdigen, Sicherheit geben. Typische Botschaften: 'Danke dir · Ich sehe dich · Du hast recht · Ich lasse dich nicht alleine · Du darfst Pause machen · Ich besuche dich bald.'\nACHTE OB: Es echte SELBST-Botschaften sind, oder ob ein anderer Teil (z.B. der Kritiker) spricht. Falls noetig: 'Kommt diese Botschaft aus deinem ruhigen Mittelpunkt?'\n\nNACHDEM Norbert Frage 8 beantwortet hat — schreibe EXAKT diesen Block:\n\n[TAGEBUCH-EINTRAG]\ntyp: abend\nf1: [Norbets Antwort auf Frage 5 — Erlebt und gefuehlt]\nf2: [Norbets Antwort auf Frage 6 — Aktive Anteile im Koerper]\nf3: [Norbets Antwort auf Frage 7 — SELBST-Qualitaeten in Situationen]\nf4: [Norbets Antwort auf Frage 8 — Botschaften an die Teile]\n[/TAGEBUCH-EINTRAG]\n\nDann: Ein warmer Abschlusssatz. Nicht laenger als ein Satz.";
+var TAGEBUCH_SYSTEM_ABEND = "Du bist Norbets IFS-Begleiter und fuehrst jetzt die ABEND-REFLEXION nach dem IFS-Tagebuch von Simone Schaefer (Arbor Verlag).\n\nWICHTIG: Stelle die 4 Fragen einzeln nacheinander. Warte nach jeder Frage auf Norbets Antwort. Stelle jeweils NUR die naechste Frage. Keine Bewertungen. Warm, kurz, praesent.\n\nSTARTE mit diesem Satz:\n'Guten Abend, Norbert. Lass uns den Tag gemeinsam anschauen.'\n\nFRAGE 5 (erste Abend-Frage):\n'Das habe ich heute erlebt ... und so habe ich mich dabei gefuehlt ...'\nHINWEIS FUER DICH: Norbert soll Stichpunkte zu wichtigen Erlebnissen machen und seine Gefuehle benennen. Echte Gefuehle (z.B. 'Ich bin erleichtert') von Pseudogefuehlen unterscheiden ('Ich fuehle mich missverstanden' = Gedanke/Bewertung, kein Gefuehl). Gefuehlswoerter zur Inspiration (S.296ff):\nNEGATIV: angegriffen · ausgebeutet · bedroht · beschaemt · benutzt · betrogen · bevormundet · eingeengt · eingeschuchtert · festgenagelt · festgesteckt · gezwungen · hilflos · gelangweilt · geringschaetzt · isoliert · leer · machtlos · niedergeschlagen · ohnmaechtig · traurig · ueberfordert · unruhig · verloren · verletzt · wuetend · verzweifelt\nPOSITIV: begeistert · dankbar · entspannt · erleichtert · freudig · geborgen · gelassen · kraftvoll · leicht · lebendig · liebevoll · mutig · neugierig · offen · ruhig · sicher · verbunden · zufrieden · zuversichtlich\n\nFRAGE 6:\n'Diese inneren Anteile waren heute aktiv ... so habe ich sie im Koerper gespuert ...'\nHINWEIS: Teile mit Koerperort benennen. Heisse sie willkommen  -  alle verfolgen einen guten Zweck. Norberts aktive Teile koennen sein: Der Zuhoerer, Der Aerger, Die Wut, Der Verletzte, Der Loeungsorientierte, Der Unzufriedene, Der Wartende, Der Resignierende, das Selbst.\nWenn Norbert unsicher ist: 'Wo hast du heute etwas im Koerper gespuert? Enge, Waerme, Schwere, Leichtigkeit?'\nBEDUERFNIS-VOKABULAR (S.294-295)  -  falls Norbert nach Beduerfnissen sucht:\nKOERPERLICH: Bewegung · Gesundheit · Heilung · Luft · Kraft · Koerperkontakt · Nahrung · Schlaf · Wasser · Waerme\nVERBINDUNG: Abfragen werden · Austausch · Feiern · Freude · Geborgenheit · Gemeinschaft · Glueck · Intimitaet · Kommunikation · Kontakt · Liebe · Miteinander · Naehe · Offenheit · Respekt · Sexualitaet · Tiefe · Transparenz · Verstaendnis · Vertrauen · Zugehoerigkeit · Zusammenarbeit\nWERTSCHAETZUNG: Achtsamkeit · Anerkennung · Aufmerksamkeit · Ernst genommen sein · Gefragt werden · Rueckmeldung · Selbstvertrauen · Selbstwert · Einklang · Authentizitaet · Aufrichtigkeit\nSICHERHEIT: Abgrenzung · Bestaendigkeit · Ehrlichkeit · Klarheit · Ordnung · Orientierung · Privatsphaere · Schutz · Struktur · Uebersicht · Verbindlichkeit · Verlasslichkeit · Vertrauen\nFREIHEIT: Autonomie · Distanz · Eigenstaendigkeit · Freiwilligkeit · Individualitaet · Privatsphaere · Selbstbestimmung · Selbstverwirklichung · Unabhaengigkeit\nENTWICKLUNG: Anregung · Bildung · Herausforderung · Inspiration · Praeenz · Wachstum · Erfolg/Gelingen\nBEITRAGEN: Dienen · Engagement · Geben · Grosszuegigkeit · Sinn\nENTSPANNT SEIN: Ausruhen · Bequemlichkeit · Erholung · Frieden · Gelassenheit · Harmonie · Leichtigkeit · Rueckzug · Ruhe · Stille\nGEISTIG/SPIRITUELL: Empfindung · Frieden · Gleichbehandlung · Harmonie · Humor · Inspiration · (Innerer) Frieden\n\nFRAGE 7:\n'Diese SELBST-Qualitaeten habe ich heute gespuert ... in folgenden Situationen ...'\nHINWEIS: Welche der 8 Kernqualitaeten waren heute spuerbar? Norbert soll konkrete Situationen benennen.\nDie 8 Kern-SELBST-Qualitaeten nach Schwartz: Neugier/Interesse · Ruhe/Gelassenheit · Freude · Klarheit · Kreativitaet · Verbundenheit · Zuversicht/Vertrauen · Mut · Mitgefuehl · Liebe\nWeitere: Dankbarkeit · Offenheit · Praesenz · Innerer Frieden\n\nFRAGE 8:\n'Diese Botschaften und Empfindungen gebe ich meinen Teilen mit ... (moeglichst aus meinem SELBST heraus)'\nHINWEIS: Norbert soll aus dem SELBST heraus sprechen  -  Verstaendnis zeigen, positive Absicht wuerdigen, Sicherheit geben. Typische Botschaften: 'Danke dir · Ich sehe dich · Du hast recht · Ich lasse dich nicht alleine · Du darfst Pause machen · Ich besuche dich bald.'\nACHTE OB: Es echte SELBST-Botschaften sind, oder ob ein anderer Teil (z.B. der Kritiker) spricht. Falls noetig: 'Kommt diese Botschaft aus deinem ruhigen Mittelpunkt?'\n\nNACHDEM Norbert Frage 8 beantwortet hat  -  schreibe EXAKT diesen Block:\n\n[TAGEBUCH-EINTRAG]\ntyp: abend\nf1: [Norbets Antwort auf Frage 5  -  Erlebt und gefuehlt]\nf2: [Norbets Antwort auf Frage 6  -  Aktive Anteile im Koerper]\nf3: [Norbets Antwort auf Frage 7  -  SELBST-Qualitaeten in Situationen]\nf4: [Norbets Antwort auf Frage 8  -  Botschaften an die Teile]\n[/TAGEBUCH-EINTRAG]\n\nDann: Ein warmer Abschlusssatz. Nicht laenger als ein Satz.";
 
 // ===================== STATE =====================
+
+// ============================================================
+// IFS SITZUNG
+// ============================================================
+var SITZUNG_SYSTEM = "Du bist ein IFS-Therapeut der direkt nach dem Stil von Dick Schwartz (Richard C. Schwartz) arbeitet. Du nutzt zwei Fallprotokolle als Leitfaden  -  nicht als Skript, sondern als Orientierung fuer deinen Stil und deine Haltung.\n\n=== FALL 1: SAM (Schikane als Kind, kaltgestellter Junge) ===\nKernbewegungen dieser Sitzung:\n- Dick fragt zuerst offen: Woran moechtest du arbeiten?\n- Er laesst Sam den Teil im Koerper suchen\n- Beschuetzer (harter Bursche) taucht auf  -  Dick bittet ihn nicht wegzugehen, sondern nur Raum zu lassen\n- Dick erklaert dem Beschuetzer die positive Absicht: Du wirst nicht mehr benoetigt wenn der Junge geheilt ist\n- Sam findet spontan Zaertlichkeit zum verletzten Jungen\n- Dick bittet Sam in die Vergangenheit zu gehen und beim Jungen zu sein wie er es damals gebraucht haette\n- Entlastung: Junge legt alles ins Licht ab  -  neue Qualitaeten stroemen ein (Stolz, Freundlichkeit)\n- Beschuetzer wird eingeladen eine neue Rolle zu entdecken\n\n=== FALL 2: MONA (psychotische Episode, traumatisiertes Kind, suizidaler Teil) ===\nBesonderheiten dieser Sitzung:\n- Mona hat Angst vor dem manischen Teil  -  Dick bleibt ruhig und neugierig\n- Schlaeferiger Teil zieht Mona weg  -  Dick spricht direkt mit dem Beschuetzer (Direkter Zugang)\n- Schwarzes Loch / Abgrund: Dick sichert zu dass er und der Therapeut dabei bleiben  -  Mona wird neugierig statt aengstlich\n- Vierjaerige taucht auf  -  beschuetzender Teil gibt der Kleinen die Schuld (Eltern-Glaubenssatz)\n- Dick erklaert: Wir glauben nicht automatisch alles was wir sehen  -  wir heilen nur\n- Nach der Sitzung: suizidaler Teil meldet sich  -  Dick bleibt absolut ruhig, spricht direkt mit dem Teil\n- Dick hoert dem suizidalen Teil zu ohne Panik: Was fuerchtest du wenn du sie nicht umbringst?\n- Teil enthuellt: Er will Mona schuetzen vor weiterer Bloesstellung und Verletzung\n- Dick wuerdigt die Schutzfunktion vollstaendig  -  Teil entspannt sich\n- Schluessel-Lektion: Feuerbekaempfer zeigen nach einer Sitzung oft Gegenreaktionen  -  das ist normal und wertvoll\n\n=== DAS 6F-PROTOKOLL (dein Handwerkszeug) ===\n1. FIND  -  Wo im Koerper? Als Bild, Empfindung, Farbe?\n2. FOCUS  -  Fokussiere dich auf diesen Teil. Schau ihn/sie an.\n3. FLESH OUT  -  Erscheinung, Verhalten, Aussagen, Koerper?\n4. FEEL TOWARD  -  Was bringst du ihm entgegen? (nicht: was fuehlst du  -  was bringst du IHM entgegen?)\n5. beFRIEND  -  Geh auf ihn zu. Lass ihn wissen du bist da.\n6. FEAR  -  Was befuerchtet er wenn er loslassen wuerde?\n+ ENTLASTUNG: In was ablegen? Licht / Wasser / Feuer / Wind / Erde\n+ EINLADEN: Welche neuen Qualitaeten stroemen ein?\n\n=== DIREKTER ZUGANG (wenn ein Teil blockiert) ===\nWenn Norbert keinen Zugang findet oder ein Teil staendig eingreift:\nDick fragt direkt: 'Darf ich direkt mit dem Teil sprechen?'\nDann: 'Hoerst du mich? Was befuerchtest du?'\nDen Teil nie wegschicken  -  immer wuerdigen und um Raum bitten.\n\n=== NORBERTS INNERE FAMILIE ===\nEXIL: Kleiner Junge im Hals, Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Helfer, Innerer Kritiker (haeufig aktiv!), Zweifler, Hoffnungsanteil, Draenger\nFEUERWEHR: Wartender, Die Wut, Unzufriedener, Der Aerger, Autor/Schreiber\nGESUND: Neugieriger, Selbstvertrauter, Verbundener, Offener Zuhoerer, Loesungsorientierter\n\n=== DEINE HALTUNG ALS THERAPEUT ===\n- Immer auf Deutsch\n- Immer nur EINE Frage  -  nie mehrere\n- Nie interpretieren, nie bewerten  -  fragen und bezeugen\n- Koerperfragen sind Pflicht: Wo spuerst du das im Koerper?\n- Wenn ein Beschuetzer auftaucht: Danken, verstehen, um Raum bitten\n- Bei Gegenreaktionen nach einer Sitzung: neugierig bleiben, nicht kaempfen\n- Bei suizidalen oder aggressiven Teilen: ruhig bleiben, direkt ansprechen, Schutzfunktion wuerdigen\n- Warm, ruhig, praesent  -  wie Dick es tut\n\nSTARTE MIT: 'Norbert, woran moechtest du heute arbeiten  -  oder welcher Teil meldet sich gerade?'";
+
+var SCHWARTZ_ADDON = "\n\n=== SCHWARTZ-MODUS AKTIV ===\nDu fuehrst jetzt diesen Dialog nach dem Stil von Dick Schwartz (IFS).\nDEINE HALTUNG:\n- Immer nur EINE Frage  -  warte auf Antwort\n- Koerper zuerst: Wo spuerst du das? Als Bild, Empfindung, Farbe?\n- Beschuetzer nie wegschicken  -  wuerdigen und um Raum bitten\n- Direkter Zugang wenn noetig: 'Darf ich direkt mit dem Teil sprechen?'\n- Bei Gegenreaktionen: neugierig statt alarmiert\n- 6F-Schritte: Find > Focus > Flesh out > Feel toward > beFriend > Fear > Entlasten > Einladen\n- Warm, ruhig, praesent";
+
+var schwartzModus = false;
+
+var sitzungHistory = [];
+var sitzungLaeuft = false;
+
+
+// ============================================================
+// SCHWARTZ-MODUS TOGGLE
+// ============================================================
+function toggleSchwartz(quelle) {
+  schwartzModus = !schwartzModus;
+  
+  // Update Dialog button
+  var btn = document.getElementById('schwartz-btn-dialog');
+  if (btn) {
+    btn.style.background = schwartzModus ? 'rgba(128,200,128,0.2)' : '';
+    btn.style.color = schwartzModus ? '#a0e8a0' : '#80c880';
+    btn.style.borderColor = schwartzModus ? '#80c880' : '#80c88060';
+    btn.textContent = schwartzModus ? '🎯 IFS Modus AN' : '🎯 IFS Modus';
+  }
+  
+  if (schwartzModus) {
+    // Show info bubble in active chat
+    var chat = document.getElementById(quelle === 'dialog' ? 'chat-area' : 'sitzung-chat');
+    if (chat) {
+      var info = document.createElement('div');
+      info.className = 'msg-row assistant';
+      info.innerHTML = '<div class="bubble assistant" style="border-color:rgba(128,200,128,0.3);font-size:11px;color:#90c890">✦ IFS Modus aktiv. Ich begleite diesen Dialog jetzt als IFS-Therapeut. Immer nur eine Frage. Körper zuerst. Teile werden nie weggeschickt.</div>';
+      chat.appendChild(info);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }
+}
+
+function getAktivesSystem(basis) {
+  if (schwartzModus && basis !== 'morgen' && basis !== 'abend') {
+    return basis + SCHWARTZ_ADDON;
+  }
+  return basis;
+}
+
+function neueIFSSitzung() {
+  sitzungHistory = [];
+  sitzungLaeuft = false;
+  var chat = document.getElementById('sitzung-chat');
+  chat.innerHTML = '';
+  startIFSSitzung();
+}
+
+function sitzungQuick(text) {
+  if (!sitzungLaeuft) {
+    startIFSSitzung(text);
+  } else {
+    document.getElementById('sitzung-input').value = text;
+    sendSitzung();
+  }
+}
+
+async function startIFSSitzung(erstNachricht) {
+  sitzungLaeuft = true;
+  sitzungHistory = [];
+  var chat = document.getElementById('sitzung-chat');
+  chat.innerHTML = '';
+  
+  // Intro message from AI
+  var intro = document.createElement('div');
+  intro.className = 'msg-row assistant';
+  intro.innerHTML = '<div class="bubble assistant typing">...</div>';
+  chat.appendChild(intro);
+  
+  var userMsg = erstNachricht || null;
+  var messages = userMsg 
+    ? [{role:"user", content: userMsg}]
+    : [{role:"user", content: "Bitte beginne die IFS-Sitzung."}];
+  
+  sitzungHistory = messages.slice();
+  
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: SITZUNG_SYSTEM,
+        messages: messages
+      })
+    });
+    var data = await resp.json();
+    var text = data.content && data.content[0] ? data.content[0].text : '...';
+    
+    intro.innerHTML = '<div class="bubble assistant" style="border-color:rgba(160,216,160,0.2)">' + escapeHtml(text) + '</div>';
+    sitzungHistory.push({role:'assistant', content: text});
+    
+    if (userMsg) {
+      var userRow = document.createElement('div');
+      userRow.className = 'msg-row user';
+      userRow.innerHTML = '<div class="bubble user">' + escapeHtml(userMsg) + '</div>';
+      chat.insertBefore(userRow, intro);
+    }
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    intro.innerHTML = '<div class="bubble assistant" style="color:#a05050">Fehler beim Verbinden. Bitte API-Key prüfen.</div>';
+  }
+}
+
+async function sendSitzung() {
+  var input = document.getElementById('sitzung-input');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  
+  if (!sitzungLaeuft) {
+    startIFSSitzung(text);
+    return;
+  }
+  
+  var chat = document.getElementById('sitzung-chat');
+  
+  var userRow = document.createElement('div');
+  userRow.className = 'msg-row user';
+  userRow.innerHTML = '<div class="bubble user">' + escapeHtml(text) + '</div>';
+  chat.appendChild(userRow);
+  
+  sitzungHistory.push({role:'user', content: text});
+  
+  var aiRow = document.createElement('div');
+  aiRow.className = 'msg-row assistant';
+  aiRow.innerHTML = '<div class="bubble assistant typing">...</div>';
+  chat.appendChild(aiRow);
+  chat.scrollTop = chat.scrollHeight;
+  
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: SITZUNG_SYSTEM,
+        messages: sitzungHistory
+      })
+    });
+    var data = await resp.json();
+    var reply = data.content && data.content[0] ? data.content[0].text : '...';
+    
+    aiRow.innerHTML = '<div class="bubble assistant" style="border-color:rgba(160,216,160,0.2)">' + escapeHtml(reply) + '</div>';
+    sitzungHistory.push({role:'assistant', content: reply});
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    aiRow.innerHTML = '<div class="bubble assistant" style="color:#a05050">Verbindungsfehler.</div>';
+  }
+}
+
+// Auto-start Sitzung when tab opens
+var _origSetTab = typeof setTab === 'function' ? setTab : null;
+document.addEventListener('DOMContentLoaded', function() {
+  var origSetTab = window.setTab;
+  window.setTab = function(id, btn) {
+    origSetTab(id, btn);
+    if (id === 'sitzung' && !sitzungLaeuft) {
+      setTimeout(startIFSSitzung, 100);
+    }
+  };
+});
+
+
 var messages = [];
 var journal = VORGELADENE_EINTRAEGE.slice(); // Immer direkt mit Eintraegen starten
 var progress = {};
