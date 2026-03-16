@@ -284,10 +284,8 @@ body {
       <button id="mic-btn" onclick="toggleMic()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 11px;color:#9a9090;font-size:18px;cursor:pointer;flex-shrink:0;transition:all 0.2s" title="Sprechen">🎤</button>
       <button id="tts-btn" onclick="toggleTTS()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 11px;color:#9a9090;font-size:16px;cursor:pointer;flex-shrink:0;transition:all 0.2s" title="Vorlesen ein/aus">🔇</button>
       <button onclick="starteFreisprechen()" style="background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.4);border-radius:12px;padding:8px 11px;color:#27ae60;font-size:16px;cursor:pointer;flex-shrink:0" title="Freisprechen — Gespräch mit Stimme">🗣</button>
-      <label style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 11px;color:#9a9090;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center" title="Datei hochladen">
-        ＋
-        <input type="file" accept="*/*" onchange="ladeDialogDatei(this)" style="display:none">
-      </label>
+      <button onclick="document.getElementById('dialog-file-input').click()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px 11px;color:#9a9090;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center" title="Datei hochladen">＋</button>
+      <input id="dialog-file-input" type="file" onchange="ladeDialogDatei(this)" style="position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;opacity:0">
       <textarea id="chat-input" placeholder="Schreib oder sprich..." rows="1"></textarea>
       <button class="send-btn" onclick="sendMsg()">→</button>
     </div>
@@ -464,9 +462,8 @@ body {
           <!-- Datei hochladen — importiert automatisch -->
           <div style="margin-bottom:10px">
             <div style="font-size:11px;color:#d4af7a;font-family:Georgia,serif;font-weight:700;text-align:center;margin-bottom:6px">📂 Datei aus Downloads wählen</div>
-            <input type="file" accept="*/*"
-              onchange="ladeUndImportiereDatei(this)"
-              style="display:block;width:100%;background:rgba(212,175,122,0.12);border:2px dashed rgba(212,175,122,0.5);border-radius:12px;padding:12px;color:#d4af7a;font-family:Georgia,serif;font-size:10px;cursor:pointer;box-sizing:border-box;text-align:center">
+            <button onclick="document.getElementById('import-file-input').click()" style="display:block;width:100%;background:rgba(212,175,122,0.12);border:2px dashed rgba(212,175,122,0.5);border-radius:12px;padding:14px;color:#d4af7a;font-family:Georgia,serif;font-size:11px;cursor:pointer;box-sizing:border-box;text-align:center">📁 Datei auswählen (.docx · .txt · .json · .html · .md)</button>
+            <input id="import-file-input" type="file" onchange="ladeUndImportiereDatei(this)" style="position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;opacity:0">
           </div>
 
           <div id="import-datei-status" style="font-size:10px;color:#d4af7a;margin-bottom:8px;display:none;text-align:center;padding:6px;background:rgba(212,175,122,0.08);border-radius:8px"></div>
@@ -1266,8 +1263,8 @@ function laden() {
     var rawKetten = localStorage.getItem("ifs-ketten");
     if(rawKetten && rawKetten.length > 2) {
       var parsedK = JSON.parse(rawKetten);
-      if(Array.isArray(parsedK) && parsedK.length > KETTEN.length) {
-        // Nur neue Ketten hinzufügen die noch nicht vorhanden sind
+      if(Array.isArray(parsedK)) {
+        // Immer mergen — neue Ketten aus localStorage hinzufügen
         parsedK.forEach(function(k){
           var duplikat = KETTEN.some(function(x){ return x.t === k.t; });
           if(!duplikat) KETTEN.push(k);
@@ -2849,7 +2846,7 @@ var KETTEN = [
    i:"10.03.2026: Aengstlicher Bindungsanteil, vermeidender Beziehungsanteil und sicherer Beziehungsanteil erschoepfen sich gegenseitig. Das Muster liegt in Norbert selbst — nicht nur in Gabi. Ziel: Der sichere Anteil waechst unabhaengig vom Gegenueber."},
   {t:"Kette 14: Spontaner und Zweifler", f:"#6030a0", ids:[34,6,34],
    i:"10.03 erstes IFS-Gespraech auf dem Fahrrad ohne Anleitung: Der Spontane handelt zu schnell → Zweifler bremst ihn → beide erschoepft. Beide wurden entlastet und bekamen Botschaft vom Selbst."},
-  {t:"Kette 17: Der Nadelstich-Zyklus", f:"#c0246a", ids:[37,20,21,11,37],
+  {t:"Der Nadelstich-Zyklus", f:"#c0246a", ids:[37,20,21,11,37],
    i:"Gabis Nadelstiche treffen den Vermeidenden Beziehungsanteil → Der Verletzte spürt die Ablehnung und zaehlt jeden Stich → Die Wut springt als Schutz auf → Der Resignierende uebernimmt: 'Es aendert sich sowieso nichts' → Der Vermeidende zieht sich weiter zurueck. Ein Zyklus der sich selbst aufrechterhaelt. 14. und 15.03: erkannt dass die Nadelstiche nicht Norbots Schuld sind — aber der Zyklus laeuft trotzdem automatisch ab.",
    int:"Zyklus unterbrechen: Den Verletzten zuerst besuchen bevor Die Wut oder Der Resignierende uebernehmen. Selbst-Fuehrung: 'Ich sehe dich, du hast recht — das ist sein Muster, nicht deins.'"}
 ];
