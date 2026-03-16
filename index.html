@@ -266,7 +266,11 @@ body {
       <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte die Wut besuchen.')">🔥 Die Wut</button>
       <button class="quick-btn" style="color:#a0d8a0;border-color:#a0d8a040;white-space:nowrap" onclick="sitzungQuick('Ich möchte den Resignierenden besuchen.')">🌫 Resignierender</button>
     </div>
-    <div id="sitzung-chat" style="flex:1;overflow-y:auto;padding:14px 12px 8px"></div>
+    <div id="sitzung-chat" style="flex:1;overflow-y:auto;padding:14px 12px 8px">
+      <div class="msg-row assistant"><div class="bubble assistant" style="border-color:rgba(160,216,160,0.2);color:#90b890">
+        Bereit für eine IFS-Sitzung.<br><br>Wähle einen Teil oben — oder tippe womit du arbeiten möchtest. Dann auf → drücken.
+      </div></div>
+    </div>
     <div style="display:flex;gap:8px;padding:7px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;align-items:flex-end">
       <textarea id="sitzung-input" placeholder="Antworte hier …" style="flex:1;background:rgba(160,216,160,0.05);border:1px solid rgba(160,216,160,0.2);border-radius:12px;padding:9px 12px;color:#e8e0d0;font-size:13px;font-family:Georgia,serif;outline:none;resize:none;max-height:100px;line-height:1.5;min-height:40px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSitzung();}"></textarea>
       <button onclick="sendSitzung()" style="padding:9px 16px;background:linear-gradient(135deg,#6a9a6a,#4a7a4a);border:none;border-radius:12px;color:#e8f8e8;font-weight:800;cursor:pointer;font-family:Georgia,serif;font-size:12px;flex-shrink:0">→</button>
@@ -1337,9 +1341,15 @@ async function startIFSSitzung(erstNachricht) {
   sitzungHistory = messages.slice();
   
   try {
+    var hdrs = typeof apiHeaders === 'function' ? apiHeaders() : {'Content-Type':'application/json'};
+    if (!hdrs['x-api-key']) {
+      intro.innerHTML = '<div class="bubble assistant" style="color:#c08050">Bitte zuerst den API-Key eintragen (Schlüssel-Button oben).</div>';
+      sitzungLaeuft = false;
+      return;
+    }
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers: hdrs,
       body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
@@ -1348,7 +1358,7 @@ async function startIFSSitzung(erstNachricht) {
       })
     });
     var data = await resp.json();
-    var text = data.content && data.content[0] ? data.content[0].text : '...';
+    var text = data.content && data.content[0] ? data.content[0].text : (data.error ? data.error.message : '...');
     
     intro.innerHTML = '<div class="bubble assistant" style="border-color:rgba(160,216,160,0.2)">' + escapeHtml(text) + '</div>';
     sitzungHistory.push({role:'assistant', content: text});
@@ -1392,9 +1402,10 @@ async function sendSitzung() {
   chat.scrollTop = chat.scrollHeight;
   
   try {
+    var hdrs = typeof apiHeaders === 'function' ? apiHeaders() : {'Content-Type':'application/json'};
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers: hdrs,
       body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
@@ -1403,7 +1414,7 @@ async function sendSitzung() {
       })
     });
     var data = await resp.json();
-    var reply = data.content && data.content[0] ? data.content[0].text : '...';
+    var reply = data.content && data.content[0] ? data.content[0].text : (data.error ? data.error.message : '...');
     
     aiRow.innerHTML = '<div class="bubble assistant" style="border-color:rgba(160,216,160,0.2)">' + escapeHtml(reply) + '</div>';
     sitzungHistory.push({role:'assistant', content: reply});
@@ -1419,9 +1430,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var origSetTab = window.setTab;
   window.setTab = function(id, btn) {
     origSetTab(id, btn);
-    if (id === 'sitzung' && !sitzungLaeuft) {
-      setTimeout(startIFSSitzung, 100);
-    }
+    // Don't auto-start — user presses Neu or quick button
   };
 });
 
