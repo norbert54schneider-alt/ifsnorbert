@@ -544,7 +544,10 @@ body {
     <div class="fort-wrap">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="section-label" style="margin-bottom:0">📋 Chronik</div>
-        <div id="chronik-validierung" style="font-size:9px;color:#5a5068"></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div id="chronik-validierung" style="font-size:9px;color:#5a5068"></div>
+          <button onclick="zeigeDatenbankPflege()" style="background:rgba(212,175,122,0.15);border:1px solid rgba(212,175,122,0.3);border-radius:8px;padding:4px 10px;color:#d4af7a;font-size:9px;font-family:Georgia,serif;cursor:pointer;font-weight:700">🗄 Pflegen</button>
+        </div>
       </div>
       <div id="chronik-inhalt"></div>
     </div>
@@ -1146,6 +1149,22 @@ function speichern() {
   try { localStorage.setItem("ifs-progress", JSON.stringify(progress)); } catch(e){}
   try { localStorage.setItem("ifs-extrateile", JSON.stringify(extraTeile)); } catch(e){}
   try { localStorage.setItem("ifs-geloescht", JSON.stringify(geloeschteTeileIds)); } catch(e){}
+  // Verbindungen die über Basis hinausgehen speichern
+  try {
+    var basisVerbIds = ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14","c15","c16","c17","c18","c19","c20","c21","c23","c24","c25","c26","c28","c29","c30","c31","c32","c33"];
+    var extraVerb = VERBINDUNGEN.filter(function(v){ return basisVerbIds.indexOf(v.id) === -1; });
+    localStorage.setItem("ifs-verbindungen-extra", JSON.stringify(extraVerb));
+  } catch(e){}
+  // Updates an Basis-Teilen speichern (Glaubenssätze etc.)
+  try {
+    var teilUpdates = {};
+    TEILE.forEach(function(t){
+      if(t.id <= 37) { // Basis-Teile
+        teilUpdates[t.id] = {gs: t.gs, job: t.job, braucht: t.braucht, st: t.st};
+      }
+    });
+    localStorage.setItem("ifs-teil-updates", JSON.stringify(teilUpdates));
+  } catch(e){}
 }
 
 function apiHeaders() {
@@ -1311,6 +1330,37 @@ function laden() {
     return true;
   });
 
+  // Extra-Verbindungen laden (via Update hinzugefügt)
+  try {
+    var rawExtraVerb = localStorage.getItem("ifs-verbindungen-extra");
+    if(rawExtraVerb) {
+      var extraVerb = JSON.parse(rawExtraVerb);
+      if(Array.isArray(extraVerb)) {
+        extraVerb.forEach(function(v){
+          var duplikat = VERBINDUNGEN.some(function(x){ return x.v===v.v && x.n===v.n; });
+          if(!duplikat) VERBINDUNGEN.push(v);
+        });
+      }
+    }
+  } catch(e){}
+
+  // Updates an Basis-Teilen laden (Glaubenssätze etc.)
+  try {
+    var rawTeilUpdates = localStorage.getItem("ifs-teil-updates");
+    if(rawTeilUpdates) {
+      var teilUpdates = JSON.parse(rawTeilUpdates);
+      TEILE.forEach(function(t){
+        if(teilUpdates[t.id]) {
+          var u = teilUpdates[t.id];
+          if(u.gs && u.gs.length > 0) t.gs = u.gs;
+          if(u.job && u.job !== "Noch zu erkunden") t.job = u.job;
+          if(u.braucht && u.braucht !== "Noch zu erkunden") t.braucht = u.braucht;
+          if(u.st) t.st = u.st;
+        }
+      });
+    }
+  } catch(e){}
+
   // SELBST-Qualitäten deduplizieren
   var qualNamen = {};
   selbstQualitaeten = selbstQualitaeten.filter(function(q){
@@ -1319,7 +1369,7 @@ function laden() {
     qualNamen[key] = true;
     return true;
   });
-  try { localStorage.setItem("ifs-selbst", JSON.stringify(selbstQualitaeten)); } catch(e){}
+  try { localStorage.setItem("ifs-selbst-quali", JSON.stringify(selbstQualitaeten)); } catch(e){}
 
   // Sortieren: neueste zuerst
   journal.sort(function(a,b){ return b.id - a.id; });
@@ -2844,7 +2894,7 @@ var KETTEN = [
    i:"10.03.2026: Aengstlicher Bindungsanteil, vermeidender Beziehungsanteil und sicherer Beziehungsanteil erschoepfen sich gegenseitig. Das Muster liegt in Norbert selbst — nicht nur in Gabi. Ziel: Der sichere Anteil waechst unabhaengig vom Gegenueber."},
   {t:"Kette 14: Spontaner und Zweifler", f:"#6030a0", ids:[34,6,34],
    i:"10.03 erstes IFS-Gespraech auf dem Fahrrad ohne Anleitung: Der Spontane handelt zu schnell → Zweifler bremst ihn → beide erschoepft. Beide wurden entlastet und bekamen Botschaft vom Selbst."},
-  {t:"Der Nadelstich-Zyklus", f:"#c0246a", ids:[37,20,21,11,37],
+  {t:"Kette 18: Der Nadelstich-Zyklus", f:"#c0246a", ids:[37,20,21,11,37],
    i:"Gabis Nadelstiche treffen den Vermeidenden Beziehungsanteil → Der Verletzte spürt die Ablehnung und zaehlt jeden Stich → Die Wut springt als Schutz auf → Der Resignierende uebernimmt: 'Es aendert sich sowieso nichts' → Der Vermeidende zieht sich weiter zurueck. Ein Zyklus der sich selbst aufrechterhaelt. 14. und 15.03: erkannt dass die Nadelstiche nicht Norbots Schuld sind — aber der Zyklus laeuft trotzdem automatisch ab.",
    int:"Zyklus unterbrechen: Den Verletzten zuerst besuchen bevor Die Wut oder Der Resignierende uebernehmen. Selbst-Fuehrung: 'Ich sehe dich, du hast recht — das ist sein Muster, nicht deins.'"}
 ];
@@ -3398,18 +3448,27 @@ function zeigeUpdateVorschau(result) {
     html += '<div style="font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:#4a8ab0;margin-bottom:6px">'+result.neue_teile.length+' Neue Teile</div>';
     result.neue_teile.forEach(function(t,i){
       var duplikat = TEILE.some(function(x){ return x.name.toLowerCase()===t.name.toLowerCase(); });
-      html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 11px;margin-bottom:7px">' +
+      // Gespeicherte Entscheidung laden
+      var pflege = {};
+      try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+      var bw = pflege["update_teil_"+t.name.toLowerCase()] || "";
+      html += '<div id="update-teil-'+i+'" style="background:rgba(255,255,255,0.04);border:1px solid '+(bw==="ignorieren"?'rgba(154,122,176,0.4)':'rgba(255,255,255,0.1)')+';border-radius:8px;padding:9px 11px;margin-bottom:7px'+(bw==="ignorieren"?';opacity:0.5':'')+'">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">' +
-        '<div>' +
-        '<span style="font-size:11px;font-weight:700;color:#e0f0ff">' + t.name + '</span>' +
-        '<span style="font-size:8px;background:rgba(74,138,176,0.2);color:#7ab8e0;border-radius:5px;padding:2px 6px;margin-left:6px">' + (t.typ||"manager").toUpperCase() + '</span>' +
-        (duplikat?'<span style="font-size:8px;color:#e0a060;margin-left:6px">⚠ ähnlicher Name schon vorhanden</span>':'') +
-        '</div>' +
-        '<input type="checkbox" id="nt_'+i+'" checked style="width:16px;height:16px;cursor:pointer;accent-color:#4a8ab0">' +
+          '<div>' +
+            '<span style="font-size:11px;font-weight:700;color:#e0f0ff">' + t.name + '</span>' +
+            '<span style="font-size:8px;background:rgba(74,138,176,0.2);color:#7ab8e0;border-radius:5px;padding:2px 6px;margin-left:6px">' + (t.typ||"manager").toUpperCase() + '</span>' +
+            (duplikat?'<span style="font-size:8px;color:#e0a060;margin-left:6px">⚠ ähnlicher Name schon vorhanden</span>':'') +
+            (bw==="ignorieren"?'<span style="font-size:8px;color:#9a7ab0;margin-left:6px">— wird nicht übernommen</span>':'') +
+          '</div>' +
+          '<input type="checkbox" id="nt_'+i+'" '+(bw==="ignorieren"?'':'checked')+' style="width:16px;height:16px;cursor:pointer;accent-color:#4a8ab0">' +
         '</div>' +
         (t.job?'<div style="font-size:10px;color:#9a9080;margin-bottom:2px">Job: '+t.job+'</div>':'') +
-        (t.glaubenssatz?'<div style="font-size:10px;color:#9a9080;font-style:italic">"'+t.glaubenssatz+'"</div>':'') +
-        '</div>';
+        (t.glaubenssatz?'<div style="font-size:10px;color:#9a9080;font-style:italic;margin-bottom:5px">"'+t.glaubenssatz+'"</div>':'') +
+        '<div style="display:flex;gap:4px;margin-top:4px">' +
+          '<button onclick="updateTeilEntscheid(\'sinnvoll\',\''+encodeURIComponent(t.name)+'\','+i+')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(39,174,96,'+(bw==='sinnvoll'?'0.6':'0.2')+');background:rgba(39,174,96,'+(bw==='sinnvoll'?'0.2':'0.05')+');color:'+(bw==='sinnvoll'?'#27ae60':'#5a7060')+'">✓ Übernehmen</button>' +
+          '<button onclick="updateTeilEntscheid(\'ignorieren\',\''+encodeURIComponent(t.name)+'\','+i+')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(154,122,176,'+(bw==='ignorieren'?'0.6':'0.2')+');background:rgba(154,122,176,'+(bw==='ignorieren'?'0.2':'0.05')+');color:'+(bw==='ignorieren'?'#9a7ab0':'#5a5068')+'">✕ Nicht mehr</button>' +
+        '</div>' +
+      '</div>';
     });
   }
 
@@ -3555,8 +3614,12 @@ function wendeUpdateAn() {
   });
 
   // Neue Verbindungen
+  var ignoriertConn = {};
+  try { ignoriertConn = JSON.parse(localStorage.getItem("ifs-verbindungen-ignoriert")||"{}"); } catch(e){}
   (result.neue_verbindungen||[]).forEach(function(v,i){
     if(!_updateSelections["nv_"+i]) return;
+    var key = v.von_id+"_"+v.zu_id;
+    if(ignoriertConn[key]) return; // Ignoriert — nicht vorschlagen
     var duplikat = VERBINDUNGEN.some(function(x){ return x.v===v.von_id&&x.n===v.zu_id; });
     if(duplikat) return;
     VERBINDUNGEN.push({
@@ -3729,14 +3792,86 @@ function zeigeDiagnose() {
   if(extraGeladen.length > 0) {
     html += '<div style="margin-bottom:10px"><div style="font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:#4a8ab0;margin-bottom:5px">Neue Teile (via Update)</div>';
     html += '<div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:8px 10px">';
-    extraGeladen.forEach(function(t){ html += '<div style="font-size:10px;color:#c0c8d8">• '+t.name+' ['+t.typ+'] ID:'+t.id+'</div>'; });
+    extraGeladen.forEach(function(t, idx){
+      var pflege = {};
+      try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+      var bw = pflege["teil_"+t.id] || "";
+      html +=
+        '<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'+
+          '<div style="font-size:10px;color:#c0c8d8;margin-bottom:5px">'+t.icon+' '+t.name+' <span style="color:#5a7090;font-size:9px">['+t.typ+']</span></div>'+
+          '<div style="display:flex;gap:4px">'+
+            '<button onclick="dbPflegeSetze(\'teil_'+t.id+'\',\'sinnvoll\');zeigeDiagnose()" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(39,174,96,'+(bw==='sinnvoll'?'0.6':'0.2')+');background:rgba(39,174,96,'+(bw==='sinnvoll'?'0.2':'0.05')+');color:'+(bw==='sinnvoll'?'#27ae60':'#5a7060')+'">✓ Sinnvoll</button>'+
+            '<button onclick="dbPflegeSetze(\'teil_'+t.id+'\',\'ignorieren\');zeigeDiagnose()" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(154,122,176,'+(bw==='ignorieren'?'0.6':'0.2')+');background:rgba(154,122,176,'+(bw==='ignorieren'?'0.2':'0.05')+');color:'+(bw==='ignorieren'?'#9a7ab0':'#5a5068')+'">✕ Nicht mehr</button>'+
+            '<button onclick="dbPflegeLoeschen(\'teil\','+t.id+');zeigeDiagnose()" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(231,76,60,0.2);background:rgba(231,76,60,0.05);color:#7a4040">🗑 Löschen</button>'+
+          '</div>'+
+        '</div>';
+    });
     html += '</div></div>';
   }
 
   html += '<button onclick="notfallReset()" style="width:100%;background:rgba(74,138,176,0.2);border:1px solid rgba(74,138,176,0.4);border-radius:9px;padding:9px;color:#90c8e8;font-size:11px;cursor:pointer;font-family:Georgia,serif;font-weight:700;margin-top:4px">🔄 Neu laden aus localStorage</button>';
 
+  // ---- VERBINDUNGS-REVIEW ----
+  html += '<div style="margin-top:14px">';
+  html += '<div style="font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:#9a7ab0;margin-bottom:6px">🔗 Verbindungs-Review ('+VERBINDUNGEN.length+')</div>';
+  html += '<div style="font-size:9px;color:#5a5068;margin-bottom:8px;line-height:1.5">Tippe ✓ wenn die Verbindung sinnvoll ist — oder 🗑 um sie zu löschen — oder ✕ damit sie beim nächsten Update nicht mehr vorgeschlagen wird.</div>';
+
+  var ignoriertConn = {};
+  try { ignoriertConn = JSON.parse(localStorage.getItem("ifs-verbindungen-ignoriert")||"{}"); } catch(e){}
+
+  VERBINDUNGEN.forEach(function(v, idx){
+    var vt = findTeil(v.v), nt = findTeil(v.n);
+    if(!vt||!nt) return;
+    var key = v.v+"_"+v.n;
+    var ignoriert = ignoriertConn[key];
+    html +=
+      '<div id="verbrev-'+idx+'" style="background:rgba(255,255,255,0.03);border-radius:8px;padding:8px 10px;margin-bottom:5px;border-left:2px solid '+(ignoriert?'#3a3048':'#9a7ab0')+'">'+
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+
+          '<span style="font-size:10px;flex-shrink:0">'+vt.icon+'</span>'+
+          '<span style="font-size:10px;color:#c0b8a8;flex:1">'+vt.name+' → '+nt.name+'</span>'+
+          (ignoriert?'<span style="font-size:8px;color:#4a3058;background:rgba(58,48,72,0.4);padding:1px 5px;border-radius:4px">ignoriert</span>':'')+
+        '</div>'+
+        '<div style="font-size:9px;color:#6a5878;margin-bottom:6px;line-height:1.4">'+(v.info||"").slice(0,80)+'</div>'+
+        '<div style="display:flex;gap:5px">'+
+          '<button onclick="verbReviewOk(\''+key+'\')" style="flex:1;background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.3);border-radius:6px;padding:4px;color:#27ae60;font-size:10px;cursor:pointer">✓ Sinnvoll</button>'+
+          '<button onclick="verbReviewIgnoriere(\''+key+'\')" style="flex:1;background:rgba(154,122,176,0.12);border:1px solid rgba(154,122,176,0.3);border-radius:6px;padding:4px;color:#9a7ab0;font-size:10px;cursor:pointer">✕ Nicht mehr vorschlagen</button>'+
+          '<button onclick="verbReviewLoeschen('+idx+')" style="flex:1;background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.3);border-radius:6px;padding:4px;color:#e74c3c;font-size:10px;cursor:pointer">🗑 Löschen</button>'+
+        '</div>'+
+      '</div>';
+  });
+  html += '</div>';
+
   document.getElementById("diagnose-inhalt").innerHTML = html;
   document.getElementById("modal-diagnose").classList.add("offen");
+}
+
+function verbReviewOk(key) {
+  // Als sinnvoll markiert — einfach Banner zeigen, nichts weiter
+  zeigeBanner("✓ Verbindung als sinnvoll markiert");
+  // Das Element optisch abhaken
+  var idx = VERBINDUNGEN.findIndex(function(v){ return v.v+"_"+v.n === key; });
+  var el = document.getElementById("verbrev-"+idx);
+  if(el) el.style.borderLeftColor = "#27ae60";
+}
+
+function verbReviewIgnoriere(key) {
+  var ignoriert = {};
+  try { ignoriert = JSON.parse(localStorage.getItem("ifs-verbindungen-ignoriert")||"{}"); } catch(e){}
+  ignoriert[key] = true;
+  try { localStorage.setItem("ifs-verbindungen-ignoriert", JSON.stringify(ignoriert)); } catch(e){}
+  zeigeBanner("✕ Wird beim nächsten Update nicht mehr vorgeschlagen");
+  zeigeDiagnose(); // Modal neu laden
+}
+
+function verbReviewLoeschen(idx) {
+  if(idx < 0 || idx >= VERBINDUNGEN.length) return;
+  var v = VERBINDUNGEN[idx];
+  var vt = findTeil(v.v), nt = findTeil(v.n);
+  VERBINDUNGEN.splice(idx, 1);
+  speichern();
+  renderAlles();
+  zeigeBanner("🗑 Verbindung gelöscht: "+(vt?vt.name:v.v)+" → "+(nt?nt.name:v.n));
+  zeigeDiagnose(); // Modal neu laden
 }
 
 function bereinigeDuplikate() {
@@ -4638,6 +4773,147 @@ function zeigeChronikDetail(typ, id, extra) {
   box.appendChild(closeBtn);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
+}
+
+function updateTeilEntscheid(wert, nameEnc, idx) {
+  var name = decodeURIComponent(nameEnc);
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+  pflege["update_teil_"+name.toLowerCase()] = wert;
+  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  // Checkbox synchron halten
+  var cb = document.getElementById("nt_"+idx);
+  if(cb) cb.checked = (wert !== "ignorieren");
+  // Vorschau neu aufbauen
+  if(_updateResult) zeigeUpdateVorschau(_updateResult);
+}
+
+function zeigeDatenbankPflege() {
+  // Gespeicherte Bewertungen laden
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+
+  function getBewertung(key) { return pflege[key] || "neu"; }
+  function setBewertung(key, wert) {
+    pflege[key] = wert;
+    try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  }
+
+  var typFarben = {exile:"#E63946", manager:"#2980b9", feuerwehr:"#e67e22", gesund:"#27ae60"};
+
+  function bewertungsButtons(key, onLoeschen) {
+    var bw = getBewertung(key);
+    return '<div style="display:flex;gap:4px;margin-top:5px">' +
+      '<button onclick="dbPflegeSetze(\''+key+'\',\'sinnvoll\')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(39,174,96,'+(bw==='sinnvoll'?'0.6':'0.2')+');background:rgba(39,174,96,'+(bw==='sinnvoll'?'0.2':'0.05')+');color:'+(bw==='sinnvoll'?'#27ae60':'#5a7060')+'">✓ Sinnvoll</button>' +
+      '<button onclick="dbPflegeSetze(\''+key+'\',\'ignorieren\')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(154,122,176,'+(bw==='ignorieren'?'0.6':'0.2')+');background:rgba(154,122,176,'+(bw==='ignorieren'?'0.2':'0.05')+');color:'+(bw==='ignorieren'?'#9a7ab0':'#5a5068')+'">✕ Nicht mehr</button>' +
+      '<button onclick="dbPflegeLoeschen(\''+key+'\','+onLoeschen+')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(231,76,60,0.2);background:rgba(231,76,60,0.05);color:#7a4040">🗑 Löschen</button>' +
+    '</div>';
+  }
+
+  var html = '<div style="font-size:9px;color:#5a5068;line-height:1.5;margin-bottom:12px">Bewerte jeden Eintrag. Gespeichert wird sofort — auch nach Neuladen erhalten.</div>';
+
+  // TEILE
+  html += '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(212,175,122,0.2)">🧩 Teile ('+TEILE.length+')</div>';
+  TEILE.forEach(function(t) {
+    var farbe = typFarben[t.typ]||"#7a7090";
+    var key = "teil_"+t.id;
+    var bw = getBewertung(key);
+    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
+      '<div style="display:flex;align-items:center;gap:7px">' +
+        '<span style="font-size:13px">'+t.icon+'</span>' +
+        '<span style="font-size:11px;font-weight:700;color:#e0d8c8;flex:1">'+t.name+'</span>' +
+        '<span style="font-size:8px;background:'+farbe+'18;color:'+farbe+';padding:1px 5px;border-radius:4px">'+t.tl+'</span>' +
+      '</div>' +
+      bewertungsButtons(key, '\'teil\','+t.id) +
+    '</div>';
+  });
+
+  // KETTEN
+  html += '<div style="font-size:8px;color:#9a7ab0;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(154,122,176,0.2)">⛓ Ketten ('+KETTEN.length+')</div>';
+  KETTEN.forEach(function(k, idx) {
+    var key = "kette_"+idx;
+    var bw = getBewertung(key);
+    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
+      '<div style="font-size:10px;font-weight:700;color:#c0a0d8">'+k.t+'</div>' +
+      '<div style="font-size:9px;color:#6a5878;margin-top:2px">'+k.i.slice(0,60)+'...</div>' +
+      bewertungsButtons(key, '\'kette\','+idx) +
+    '</div>';
+  });
+
+  // GLAUBENSSÄTZE
+  var gsListe = [];
+  TEILE.forEach(function(t){ (t.gs||[]).forEach(function(gs){ if(gs&&gs.length>5) gsListe.push({gs:gs,teil:t}); }); });
+  html += '<div style="font-size:8px;color:#c8a870;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(200,168,112,0.2)">💭 Glaubenssätze ('+gsListe.length+')</div>';
+  gsListe.forEach(function(item, idx) {
+    var key = "gs_"+item.teil.id+"_"+idx;
+    var bw = getBewertung(key);
+    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
+      '<div style="font-size:10px;color:#e0d0c0;font-style:italic">"'+item.gs+'"</div>' +
+      '<div style="font-size:8px;color:#6a5868;margin-top:2px">'+item.teil.icon+' '+item.teil.name+'</div>' +
+      bewertungsButtons(key, '\'gs\','+item.teil.id+',\''+encodeURIComponent(item.gs)+'\'') +
+    '</div>';
+  });
+
+  // SELBST-QUALITÄTEN
+  html += '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(212,175,122,0.2)">✦ SELBST-Qualitäten ('+selbstQualitaeten.length+')</div>';
+  selbstQualitaeten.forEach(function(q, idx) {
+    var key = "selbst_"+idx;
+    var bw = getBewertung(key);
+    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
+      '<div style="font-size:11px;font-weight:700;color:#d4c898">✦ '+q.name+'</div>' +
+      (q.info?'<div style="font-size:9px;color:#6a6050;margin-top:2px">'+q.info.slice(0,60)+'</div>':'') +
+      bewertungsButtons(key, '\'selbst\','+idx) +
+    '</div>';
+  });
+
+  // Modal anzeigen
+  var overlay = document.createElement("div");
+  overlay.id = "modal-datenbank-pflege";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;flex-direction:column";
+  overlay.innerHTML =
+    '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">' +
+      '<span style="font-size:13px;font-weight:700;color:#d4af7a;font-family:Georgia,serif">🗄 Datenbank pflegen</span>' +
+      '<button onclick="document.getElementById(\'modal-datenbank-pflege\').remove()" style="background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer">✕</button>' +
+    '</div>' +
+    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px">' + html + '</div>';
+  document.body.appendChild(overlay);
+}
+
+function dbPflegeSetze(key, wert) {
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+  pflege[key] = wert;
+  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  // Modal neu aufbauen
+  var m = document.getElementById("modal-datenbank-pflege");
+  if(m) m.remove();
+  zeigeDatenbankPflege();
+}
+
+function dbPflegeLoeschen(typ, id, extra) {
+  if(typ === 'teil') {
+    var teilId = parseInt(id);
+    for(var i=TEILE.length-1;i>=0;i--){ if(TEILE[i].id===teilId) TEILE.splice(i,1); }
+    extraTeile = extraTeile.filter(function(t){ return t.id!==teilId; });
+    if(geloeschteTeileIds.indexOf(teilId)===-1) geloeschteTeileIds.push(teilId);
+    speichern();
+  } else if(typ === 'kette') {
+    KETTEN.splice(parseInt(id), 1);
+    try { localStorage.setItem("ifs-ketten", JSON.stringify(KETTEN)); } catch(e){}
+  } else if(typ === 'gs') {
+    var t = findTeil(parseInt(id));
+    var gsText = decodeURIComponent(extra||"");
+    if(t) t.gs = t.gs.filter(function(g){ return g!==gsText; });
+    speichern();
+  } else if(typ === 'selbst') {
+    selbstQualitaeten.splice(parseInt(id), 1);
+    speichernSelbstQuali();
+  }
+  renderAlles();
+  zeigeBanner("🗑 Gelöscht — dauerhaft gespeichert");
+  var m = document.getElementById("modal-datenbank-pflege");
+  if(m) m.remove();
+  zeigeDatenbankPflege();
 }
 
 function schliesseChronikModal() {
