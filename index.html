@@ -485,6 +485,7 @@ body {
           <button class="export-btn-small" id="filter-alle-btn" onclick="setVerlaufFilter('alle',this)" style="color:var(--gold);border-color:var(--gold)">Alle</button>
           <button class="export-btn-small" id="filter-morgen-btn" onclick="setVerlaufFilter('morgen',this)">☀️</button>
           <button class="export-btn-small" id="filter-abend-btn" onclick="setVerlaufFilter('abend',this)">🌙</button>
+          <button class="export-btn-small" id="filter-chat-btn" onclick="setVerlaufFilter('chat',this)">💬</button>
         </div>
         <!-- Ansicht-Umschalter -->
         <div style="display:flex;gap:6px;padding:6px 12px 4px">
@@ -503,10 +504,12 @@ body {
           <div id="import-datei-status" style="font-size:10px;color:#d4af7a;margin-bottom:8px;display:none;text-align:center;padding:6px;background:rgba(212,175,122,0.08);border-radius:8px"></div>
 
           <div style="font-size:9px;color:#5a5068;margin-bottom:5px;text-align:center">— oder Text manuell einfügen —</div>
-          <textarea id="import-text" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:9px 11px;color:#e8e0d0;font-size:11px;font-family:Georgia,serif;outline:none;resize:vertical;min-height:50px;box-sizing:border-box" placeholder="Text hier einfügen..."></textarea>
-          <div style="display:flex;gap:6px;margin-top:6px">
-            <button class="export-btn-small" style="flex:1" onclick="importiereEintrag()">Importieren</button>
-            <button class="export-btn-small" onclick="document.getElementById('import-bereich').style.display='none'">Abbrechen</button>
+          <textarea id="import-text" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:9px 11px;color:#e8e0d0;font-size:11px;font-family:Georgia,serif;outline:none;resize:vertical;min-height:50px;box-sizing:border-box" placeholder="Tagebucheintrag (Morgen/Abend-Format) hier einfügen — oder unten '💬 Chat-Protokoll' für Chatverläufe nutzen..."></textarea>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-top:8px">
+            <button style="width:100%;padding:10px;background:rgba(128,200,200,0.15);border:1px solid rgba(128,200,200,0.4);border-radius:9px;color:#80c8c8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif" onclick="importiereChatAlsProtokoll()">💬 Chat-Protokoll erstellen</button>
+            <div style="font-size:9px;color:#4a4868;text-align:center;margin:-2px 0 2px">— für Chatverläufe und Sitzungsprotokolle —</div>
+            <button style="width:100%;padding:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:#6a6080;font-size:10px;cursor:pointer;font-family:Georgia,serif" onclick="importiereEintrag()">📋 Tagebuch-Format importieren (Morgen/Abend)</button>
+            <button style="width:100%;padding:6px;background:none;border:none;color:#4a4060;font-size:10px;cursor:pointer;font-family:Georgia,serif" onclick="document.getElementById('import-bereich').style.display='none'">Abbrechen</button>
           </div>
         </div>
         <div class="journal-verlauf" id="journal-list"></div>
@@ -1354,7 +1357,7 @@ async function startIFSSitzung(erstNachricht) {
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
         system: SITZUNG_SYSTEM,
-        messages: messages
+        messages: messages.slice(-60)
       })
     });
     var data = await resp.json();
@@ -1445,7 +1448,7 @@ var geloeschteTeileIds = []; // dauerhaft gelöschte Basis-Teile
 
 // ===================== STORAGE =====================
 function speichern() {
-  try { localStorage.setItem("ifs-messages", JSON.stringify(messages.slice(-40))); } catch(e){}
+  try { localStorage.setItem("ifs-messages", JSON.stringify(messages.slice(-200))); } catch(e){}
   try { localStorage.setItem("ifs-journal", JSON.stringify(journal)); } catch(e){}
   try { localStorage.setItem("ifs-progress", JSON.stringify(progress)); } catch(e){}
   try { localStorage.setItem("ifs-extrateile", JSON.stringify(extraTeile)); } catch(e){}
@@ -1973,7 +1976,7 @@ function importiereEintrag() {
   if(!dbg) {
     dbg = document.createElement("div");
     dbg.id = "import-debug";
-    dbg.style.cssText = "background:#0a0810;border:1px solid #3a2a48;border-radius:8px;padding:8px;font-size:9px;font-family:monospace;color:#a090c0;margin-top:6px;max-height:150px;overflow-y:auto;white-space:pre-wrap;word-break:break-all";
+    dbg.style.cssText = "display:none;background:#0a0810;border:1px solid #3a2a48;border-radius:8px;padding:8px;font-size:9px;font-family:monospace;color:#a090c0;margin-top:6px;max-height:150px;overflow-y:auto;white-space:pre-wrap;word-break:break-all";
     document.getElementById("import-bereich").appendChild(dbg);
   }
   dbg.textContent = "";
@@ -1982,7 +1985,7 @@ function importiereEintrag() {
 
   log("▶ importiereEintrag gestartet");
   log("Text-Länge: " + text.length);
-  if(!text) { log("❌ FEHLER: Textarea ist leer"); return; }
+  if(!text) { dbg.style.display="block"; log("❌ FEHLER: Textarea ist leer"); return; }
   log("Erste 100 Zeichen: " + text.slice(0,100));
 
   var eintraege = [];
@@ -2726,6 +2729,67 @@ function speichereEintrag(typ) {
   setJTab("verlauf");
 }
 
+
+// ============================================================
+// CHAT-PROTOKOLL IMPORT — freier Chatverlauf als Tagebucheintrag
+// ============================================================
+function importiereChatAlsProtokoll() {
+  var text = document.getElementById("import-text").value.trim();
+  if(!text || text.length < 50) {
+    zeigeBanner("⚠ Bitte erst Text einfügen.");
+    return;
+  }
+  
+  zeigeBanner("⏳ Chat wird zusammengefasst...");
+  
+  var heute = new Date().toLocaleDateString("de-DE");
+  var uhrzeit = new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
+  
+  var prompt = "Du analysierst einen IFS-Gespraechsverlauf von Norbert Schneider (65, Jobcoach, Elmshorn, angstlicher Bindungstyp). Erstelle daraus einen strukturierten Protokoll-Eintrag.\n\nCHATVERLAUF:\n" + text.slice(0,4000) + "\n\nErstelle NUR diesen Block ohne Erklaerungen:\n\n[CHAT-EINTRAG]\nf1: [Thema und Zusammenfassung in 2-3 Saetzen: Womit wurde gearbeitet?]\nf2: [Teile die aufgetaucht sind und wichtige Erkenntnisse darueber]\nf3: [SELBST-Momente und SELBST-Qualitaeten die sichtbar wurden]\nf4: [Wichtigste Einsicht oder Durchbruch dieser Sitzung]\n[/CHAT-EINTRAG]";
+  
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 600,
+      messages: [{role:"user", content: prompt}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    var txt = data.content && data.content[0] ? data.content[0].text : "";
+    var match = txt.match(/\[CHAT-EINTRAG\]([\s\S]*?)\[\/CHAT-EINTRAG\]/);
+    if(!match) { zeigeBanner("⚠ Konnte keinen Eintrag erstellen."); return; }
+    
+    var entry = {
+      id: Date.now(),
+      typ: "chat",
+      datum: heute,
+      wochentag: new Date().toLocaleDateString("de-DE",{weekday:"long"}),
+      zeit: uhrzeit,
+      felder: {f1:"",f2:"",f3:"",f4:""}
+    };
+    
+    match[1].split("\n").forEach(function(l){
+      var lo = l.toLowerCase().trim();
+      if(lo.startsWith("f1:")) entry.felder.f1 = l.split(":").slice(1).join(":").trim();
+      else if(lo.startsWith("f2:")) entry.felder.f2 = l.split(":").slice(1).join(":").trim();
+      else if(lo.startsWith("f3:")) entry.felder.f3 = l.split(":").slice(1).join(":").trim();
+      else if(lo.startsWith("f4:")) entry.felder.f4 = l.split(":").slice(1).join(":").trim();
+    });
+    
+    journal.unshift(entry);
+    speichern();
+    document.getElementById("import-bereich").style.display = "none";
+    document.getElementById("import-text").value = "";
+    zeigeBanner("✓ Chat-Protokoll gespeichert.");
+    renderAlles();
+    setJTab("verlauf");
+  })
+  .catch(function(e){ zeigeBanner("⚠ Fehler: " + e.message); });
+}
+
 function setVerlaufFilter(f, btn) {
   verlaufFilter = f;
   document.querySelectorAll(".export-btn-small").forEach(function(b){
@@ -2768,6 +2832,7 @@ function renderJournal() {
 
   var FRAGEN_MORGEN = ["🙏 Dankbar für ...","💭 Anteile & Bedürfnisse ...","⭐ Das ist mir heute wichtig ...","✦ SELBST-Qualitäten & Gedanken ..."];
   var FRAGEN_ABEND  = ["🌿 Erlebt & gefühlt ...","💭 Aktive Anteile im Körper ...","✦ SELBST-Qualitäten gespürt ...","💌 Botschaft an meine Teile ..."];
+  var FRAGEN_CHAT   = ["💬 Thema & Zusammenfassung","🔍 Teile & Erkenntnisse","✦ SELBST-Momente","💡 Wichtigste Einsicht"];
 
   if(verlaufDetailModus) {
     // ---- DETAILANSICHT ----
@@ -2800,17 +2865,18 @@ function renderJournal() {
           '<div style="font-size:9px;color:#5a5068">'+(eintraege[0].wochentag||"")+'</div>'+
         '</div>'+
         '<div style="margin-left:auto;display:flex;gap:4px">'+
-          eintraege.map(function(e){ return '<span style="font-size:14px">'+(e.typ==="morgen"?"☀️":"🌙")+'</span>'; }).join("")+
+          eintraege.map(function(e){ var ic=e.typ==="morgen"?"☀️":e.typ==="chat"?"💬":"🌙"; return '<span style="font-size:14px">'+ic+'</span>'; }).join("")+
         '</div>';
       tagBlock.appendChild(tagHeader);
 
       eintraege.forEach(function(e){
         var isMorgen = e.typ==="morgen";
-        var farbe = isMorgen ? "#7a9ec8" : "#c8a870";
-        var fragen = isMorgen ? FRAGEN_MORGEN : FRAGEN_ABEND;
+        var isChat = e.typ==="chat";
+        var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : "#c8a870";
+        var fragen = isMorgen ? FRAGEN_MORGEN : isChat ? FRAGEN_CHAT : FRAGEN_ABEND;
 
         var eCard = document.createElement("div");
-        eCard.style.cssText = "background:"+( isMorgen?"rgba(122,158,200,0.06)":"rgba(200,168,112,0.06)")+";border-radius:11px;padding:12px;margin-bottom:8px;border:1px solid "+(isMorgen?"rgba(122,158,200,0.15)":"rgba(200,168,112,0.15)");
+        eCard.style.cssText = "background:"+(isMorgen?"rgba(122,158,200,0.06)":isChat?"rgba(128,200,200,0.06)":"rgba(200,168,112,0.06)")+";border-radius:11px;padding:12px;margin-bottom:8px;border:1px solid "+(isMorgen?"rgba(122,158,200,0.15)":isChat?"rgba(128,200,200,0.2)":"rgba(200,168,112,0.15)");
 
         var felder = [1,2,3,4].map(function(i){
           var val = e.felder["f"+i];
@@ -2846,10 +2912,11 @@ function renderJournal() {
       var card = document.createElement("div");
       card.className = "entry-card";
       var isMorgen = e.typ==="morgen";
-      var farbe = isMorgen ? "#7a9ec8" : "#c8a870";
+      var isChat = e.typ==="chat";
+      var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : "#c8a870";
       var fragen = isMorgen ? FRAGEN_MORGEN : FRAGEN_ABEND;
-      var icon = isMorgen ? "☀️" : "🌙";
-      var titel = isMorgen ? "Morgen" : "Abend";
+      var icon = isMorgen ? "☀️" : isChat ? "💬" : "🌙";
+      var titel = isMorgen ? "Morgen" : isChat ? "Chat" : "Abend";
 
       // Vorschau — nur f1
       var preview = (e.felder.f1||"").slice(0,80)+(e.felder.f1&&e.felder.f1.length>80?"...":"");
@@ -3752,7 +3819,7 @@ function importiereChat() {
     "Antworte NUR als valides JSON:\n" +
     "{\n" +
     "  \"neue_teile\": [{\"name\":\"...\",\"typ\":\"exile|manager|feuerwehr|gesund\",\"job\":\"...\",\"glaubenssatz\":\"...\",\"koerper\":\"...\",\"ausloeser\":\"...\",\"braucht\":\"...\",\"status\":\"...\"}],\n" +
-    "  \"updates_teile\": [{\"id\":123,\"name\":\"...\",\"feld\":\"st|job|gs|braucht\",\"wert\":\"...\",\"begruendung\":\"...\"}],\n" +
+    "  \"updates_teile\": [{\"id\":123,\"name\":\"...\",\"feld\":\"st|job|gs|braucht\",\"wert\":\"...\",\"begruendung\":\"...\"}],\n  \"phasen_updates\": [{\"id\":123,\"name\":\"...\",\"neue_phase\":2,\"begruendung\":\"Ein Satz warum diese Phase jetzt passt\"}],\n" +
     "  \"neue_verbindungen\": [{\"von_id\":1,\"zu_id\":3,\"info\":\"...\",\"text\":\"...\"}],\n" +
     "  \"neue_ketten\": [{\"titel\":\"...\",\"beschreibung\":\"...\",\"teile_ids\":[1,2,3],\"intervention\":\"...\"}],\n" +
     "  \"neue_selbst_qualitaeten\": [{\"name\":\"...\",\"info\":\"...\",\"quelle\":\"...\",\"erlebt\":true}],\n" +
@@ -3829,13 +3896,13 @@ function starteUpdate() {
     "Antworte NUR als valides JSON (kein Markdown, keine Erklaerung davor oder danach):\n" +
     "{\n" +
     "  \"neue_teile\": [{\"name\":\"...\",\"typ\":\"exile|manager|feuerwehr|gesund\",\"job\":\"...\",\"glaubenssatz\":\"...\",\"koerper\":\"...\",\"ausloeser\":\"...\",\"braucht\":\"...\",\"status\":\"...\"}],\n" +
-    "  \"updates_teile\": [{\"id\":123,\"name\":\"...\",\"feld\":\"st|job|gs|braucht\",\"wert\":\"...\",\"begruendung\":\"...\"}],\n" +
+    "  \"updates_teile\": [{\"id\":123,\"name\":\"...\",\"feld\":\"st|job|gs|braucht\",\"wert\":\"...\",\"begruendung\":\"...\"}],\n  \"phasen_updates\": [{\"id\":123,\"name\":\"...\",\"neue_phase\":2,\"begruendung\":\"Ein Satz warum diese Phase jetzt passt\"}],\n" +
     "  \"neue_verbindungen\": [{\"von_id\":1,\"zu_id\":3,\"info\":\"...\",\"text\":\"...\"}],\n" +
     "  \"neue_ketten\": [{\"titel\":\"...\",\"beschreibung\":\"...\",\"teile_ids\":[1,2,3],\"intervention\":\"...\"}],\n" +
     "  \"neue_selbst_qualitaeten\": [{\"name\":\"...\",\"info\":\"...\",\"quelle\":\"...\",\"erlebt\":true}],\n" +
     "  \"zusammenfassung\": \"1-2 Saetze was du gefunden hast oder warum nichts gefunden wurde\"\n" +
     "}\n" +
-    "WICHTIG: Nur wirklich neue Erkenntnisse die noch nicht in den bestehenden Listen stehen. Leere Arrays [] wenn nichts neues gefunden.";
+    "\\nPHASEN (0-4): 0=Unbekannt, 1=Erkannt (benannt/beschrieben), 2=Kontakt (im Koerper gespuert, hat sich gezeigt), 3=Vertrauen (positive Absicht verstanden, hat Raum gelassen, Botschaft angenommen), 4=Entlastet (echte Entlastung stattgefunden, neue Qualitaeten eingestroemt). Setze phasen_updates NUR wenn im Gespraeche eindeutige Hinweise fuer einen Fortschritt sichtbar sind. Setze immer die hoehere Phase wenn sie erreicht wurde.\\nWICHTIG: Nur wirklich neue Erkenntnisse die noch nicht in den bestehenden Listen stehen. Leere Arrays [] wenn nichts neues gefunden.";
 
   fetch("https://api.anthropic.com/v1/messages", {
     method:"POST",
@@ -3879,7 +3946,8 @@ function zeigeUpdateVorschau(result) {
                 (result.updates_teile&&result.updates_teile.length) ||
                 (result.neue_verbindungen&&result.neue_verbindungen.length) ||
                 (result.neue_ketten&&result.neue_ketten.length) ||
-                (result.neue_selbst_qualitaeten&&result.neue_selbst_qualitaeten.length);
+                (result.neue_selbst_qualitaeten&&result.neue_selbst_qualitaeten.length) ||
+                (result.phasen_updates&&result.phasen_updates.length);
 
   document.getElementById("update-modal-titel").textContent = "⟳ Update — Vorschau";
 
@@ -3895,6 +3963,33 @@ function zeigeUpdateVorschau(result) {
     html += '<button class="gold-btn" onclick="schliesseModal(\'modal-update\')" style="margin-top:8px">Schließen</button>';
     document.getElementById("update-modal-inhalt").innerHTML = html;
     return;
+  }
+
+  // Phasen-Updates — zuerst anzeigen (wichtigste Info)
+  if(result.phasen_updates && result.phasen_updates.length) {
+    var PHASEN_NAMES = ["Unbekannt","Erkannt","Kontakt","Vertrauen","Entlastet"];
+    var PHASEN_FARBEN = ["#4a4060","#e74c3c","#e67e22","#d4af7a","#27ae60"];
+    html += '<div style="font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:#27ae60;margin-bottom:6px">' + result.phasen_updates.length + ' Fortschritt erkannt</div>';
+    result.phasen_updates.forEach(function(pu, i) {
+      var teil = TEILE.find(function(t){ return t.id===pu.id; });
+      var altePhase = teil ? (progress[teil.id]!==undefined ? progress[teil.id] : teil.ph) : 0;
+      var neuePhase = Math.min(4, Math.max(0, pu.neue_phase));
+      var fortschritt = neuePhase > altePhase;
+      var alteFarbe = PHASEN_FARBEN[altePhase] || "#4a4060";
+      var neueFarbe = PHASEN_FARBEN[neuePhase] || "#27ae60";
+      html += '<div style="background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.25);border-radius:8px;padding:10px 12px;margin-bottom:7px">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">' +
+          '<span style="font-size:11px;font-weight:700;color:#c0f0d4">' + (pu.name||"Unbekannt") + '</span>' +
+          '<span style="font-size:10px;color:' + alteFarbe + '">' + (PHASEN_NAMES[altePhase]||"?") + '</span>' +
+          '<span style="color:#5a6870">→</span>' +
+          '<span style="font-size:10px;font-weight:700;color:' + neueFarbe + '">' + (PHASEN_NAMES[neuePhase]||"?") + '</span>' +
+          (fortschritt ? '<span style="font-size:9px;color:#27ae60">↑ Fortschritt</span>' : '<span style="font-size:9px;color:#d4af7a">= unverändert</span>') +
+        '</div>' +
+        '<div style="font-size:10px;color:#7a9070;line-height:1.5;font-style:italic">' + (pu.begruendung||"") + '</div>' +
+        '<input type="checkbox" id="pu_' + i + '" checked style="margin-top:6px;cursor:pointer">' +
+        '<label for="pu_' + i + '" style="font-size:9px;color:#7a8070;margin-left:5px;cursor:pointer">Phase übernehmen</label>' +
+      '</div>';
+    });
   }
 
   // Neue Teile
@@ -4054,6 +4149,19 @@ function wendeUpdateAn() {
     TEILE.push(neuerTeil);
     extraTeile.push(neuerTeil);
     hinzugefuegt++;
+  });
+
+  // Phasen-Updates
+  (result.phasen_updates||[]).forEach(function(pu,i){
+    if(_updateSelections["pu_"+i]===false) return; // nur wenn abgewählt überspringen
+    var teil = TEILE.find(function(t){ return t.id===pu.id; });
+    if(!teil) return;
+    var neuePhase = Math.min(4, Math.max(0, pu.neue_phase));
+    var altePhase = progress[teil.id]!==undefined ? progress[teil.id] : teil.ph;
+    if(neuePhase >= altePhase) { // Nur höher setzen, nie zurück
+      setPhase(teil.id, neuePhase);
+      hinzugefuegt++;
+    }
   });
 
   // Updates bestehender Teile
@@ -5606,18 +5714,83 @@ function fs_setMicRing(aktiv){
 function fs_starteLauschen(){
   if(!fs_aktiv||fs_pause)return;
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  fs_recognition=new SR();fs_recognition.lang="de-DE";fs_recognition.continuous=false;fs_recognition.interimResults=true;
+  if(!SR){fs_setStatus("Spracherkennung nicht verfügbar");return;}
+  
+  var fs_gesammelt="";
+  var fs_pauseTimer=null;
+  var PAUSE_MS=2500; // 2.5 Sek Stille = senden
+  
+  fs_recognition=new SR();
+  fs_recognition.lang="de-DE";
+  fs_recognition.continuous=true;       // Laeuft durch ohne zu stoppen
+  fs_recognition.interimResults=true;   // Text waehrend Sprechen sichtbar
+  
   var transkript=document.getElementById("fs-transcript");
-  fs_recognition.onstart=function(){fs_hoert=true;fs_setMicRing(true);fs_setStatus("Ich höre zu ...");};
-  fs_recognition.onresult=function(event){
-    var interim="",final="";
-    for(var i=event.resultIndex;i<event.results.length;i++){if(event.results[i].isFinal)final+=event.results[i][0].transcript;else interim+=event.results[i][0].transcript;}
-    if(transkript)transkript.textContent=final||interim;
-    if(final.trim()){fs_recognition.stop();fs_verarbeiteEingabe(final.trim());}
+  
+  fs_recognition.onstart=function(){
+    fs_hoert=true;
+    fs_setMicRing(true);
+    fs_setStatus("Höre zu — sprich ruhig länger ...");
   };
-  fs_recognition.onerror=function(e){if(e.error==="no-speech"){fs_setStatus("Bereit — sprich jetzt");fs_setMicRing(false);setTimeout(function(){if(fs_aktiv&&!fs_pause)fs_starteLauschen();},500);}};
-  fs_recognition.onend=function(){fs_hoert=false;fs_setMicRing(false);if(fs_aktiv&&!fs_pause&&!fs_wartet)setTimeout(function(){if(fs_aktiv&&!fs_pause)fs_starteLauschen();},800);};
-  try{fs_recognition.start();}catch(e){fs_setStatus("⚠ Mikrofon Fehler");}
+  
+  fs_recognition.onresult=function(event){
+    var interim="";
+    for(var i=event.resultIndex;i<event.results.length;i++){
+      if(event.results[i].isFinal){
+        fs_gesammelt+=(fs_gesammelt?" ":"")+event.results[i][0].transcript.trim();
+      } else {
+        interim+=event.results[i][0].transcript;
+      }
+    }
+    // Vorschau
+    var vorschau=fs_gesammelt+(interim?" "+interim:"");
+    if(transkript)transkript.textContent=vorschau;
+    if(vorschau.trim().length>60){
+      fs_setStatus("„..."+vorschau.trim().slice(-50)+"“");
+    }
+    // Pause-Timer zuruecksetzen
+    if(fs_pauseTimer)clearTimeout(fs_pauseTimer);
+    if(fs_gesammelt.trim()){
+      fs_pauseTimer=setTimeout(function(){
+        if(fs_gesammelt.trim()&&fs_aktiv&&!fs_pause&&!fs_wartet){
+          var txt=fs_gesammelt.trim();
+          fs_gesammelt="";
+          try{fs_recognition.stop();}catch(e){}
+          fs_verarbeiteEingabe(txt);
+        }
+      },PAUSE_MS);
+    }
+  };
+  
+  fs_recognition.onerror=function(e){
+    if(e.error==="no-speech"){
+      // Kein Fehler — nur kurze Stille, weiter lauschen
+      fs_setStatus("Höre zu — sprich ruhig länger ...");
+    } else {
+      fs_setStatus("⚠ "+e.error);
+      fs_setMicRing(false);
+      setTimeout(function(){if(fs_aktiv&&!fs_pause)fs_starteLauschen();},800);
+    }
+  };
+  
+  fs_recognition.onend=function(){
+    fs_hoert=false;
+    fs_setMicRing(false);
+    if(fs_pauseTimer)clearTimeout(fs_pauseTimer);
+    // Noch ungesendeten Text verarbeiten
+    if(fs_gesammelt.trim()&&fs_aktiv&&!fs_pause&&!fs_wartet){
+      var txt=fs_gesammelt.trim();
+      fs_gesammelt="";
+      fs_verarbeiteEingabe(txt);
+      return;
+    }
+    // Weiter lauschen wenn noch aktiv
+    if(fs_aktiv&&!fs_pause&&!fs_wartet){
+      setTimeout(function(){if(fs_aktiv&&!fs_pause)fs_starteLauschen();},600);
+    }
+  };
+  
+  try{fs_recognition.start();}catch(e){fs_setStatus("⚠ Mikrofon Fehler: "+e.message);}
 }
 
 function fs_verarbeiteEingabe(text){
