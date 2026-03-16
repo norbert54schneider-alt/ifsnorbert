@@ -238,6 +238,8 @@ body {
 <div class="nav" style="border-top:none;padding-top:0;">
   <button class="nav-btn" onclick="setTab('glaube',this)">Glaube</button>
   <button class="nav-btn" onclick="setTab('vokabular',this)" style="color:#c8a870">Vokabular</button>
+  <button class="nav-btn" onclick="setTab('meditation',this)" style="color:#b0a0d0">Meditation</button>
+  <button class="nav-btn" onclick="setTab('ifs_uebungen',this)" style="color:#e8c870">IFS</button>
   <button class="nav-btn" onclick="setTab('tagebuch',this)">Notizen</button>
   <button class="nav-btn" onclick="setTab('fortschritt',this)">Fortschritt</button>
 </div>
@@ -297,7 +299,7 @@ body {
     </div>
 
     <div class="quick-btns">
-      <button id="schwartz-btn-dialog" class="quick-btn" style="color:#80c880;border-color:#80c88060;font-weight:700" onclick="toggleSchwartz('dialog')" title="IFS Modus ein/aus">🎯 IFS Modus</button>
+      <button id="schwartz-btn-dialog" class="quick-btn" style="color:#80c880;border-color:#80c88060;font-weight:700" onclick="openModusMenu()" title="Modus wählen">☯ Modus</button>
       <button class="quick-btn" style="color:#7a9ec8;border-color:#7a9ec850" onclick="startTagebuch('morgen')">☀️ Morgen</button>
       <button class="quick-btn" style="color:#c8a870;border-color:#c8a87050" onclick="startTagebuch('abend')">🌙 Abend</button>
       <button class="quick-btn" onclick="quickSend('Check-in')">Check-in</button>
@@ -422,6 +424,512 @@ body {
       </div>
       <div class="filter-bar" id="kw-filter-bar" style="margin-top:0"></div>
       <div class="part-grid" id="part-grid"></div>
+    </div>
+  </div>
+
+  <!-- IFS UEBUNGEN -->
+  <div id="tab-ifs_uebungen" class="tab">
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:10px;color:#e8c870;letter-spacing:0.1em;text-transform:uppercase">IFS-Interventionen für Norbert</div>
+        <button onclick="aktualisiereUebungen('ifs')" style="background:rgba(232,200,112,0.1);border:1px solid rgba(232,200,112,0.3);border-radius:7px;padding:4px 10px;color:#e8c870;font-size:9px;cursor:pointer;font-family:Georgia,serif">🔄 Aktualisieren</button>
+      </div>
+      <div id="ifs-uebungen-container">
+
+      <!-- 1. U-Turn -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">↩ 1. Der U-Turn — nach innen wenden</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wenn du merkst dass du auf eine äußere Situation reagierst — stop. Wende die Aufmerksamkeit nach innen.<br><br>
+          Frage: <i>"Was passiert gerade in mir? Welcher Teil reagiert darauf?"</i><br><br>
+          Statt: "Gabi macht mich wütend" → "Da ist ein Teil der wütend wird wenn Gabi das tut."<br><br>
+          Wo spürst du diesen Teil im Körper? Was braucht er gerade?
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Dein häufigster Einstieg — besonders bei Ärger und Enttäuschung</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte den U-Turn üben. Ich merke gerade dass ich auf etwas außen reagiere. Bitte begleite mich dabei nach innen zu wenden.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 2. Trailhead -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">🚪 2. Trailhead — Einstieg über Körper</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Trailhead bedeutet: Du nimmst eine Körperempfindung als Einstieg — ohne vorher zu wissen welcher Teil es ist.<br><br>
+          Schließ die Augen. Wo spürst du gerade Spannung, Enge, Schwere oder Wärme?<br><br>
+          Konzentriere dich auf diese Stelle: <i>"Was ist hier? Wie sieht es aus? Hat es eine Farbe, Form?"</i><br><br>
+          Lass den Teil sich zeigen — auf seine eigene Weise. Nichts erzwingen.
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Wenn du nicht weißt womit du anfangen sollst</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte über einen Trailhead einsteigen. Ich spüre etwas im Körper aber weiß noch nicht was es ist. Bitte begleite mich.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 3. Inneren Kritiker besuchen -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">⚙ 3. Den Inneren Kritiker besuchen</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Dein Kritiker ist ein Manager — er bewertet und wertet ab um dich vor Enttäuschung zu schützen.<br><br>
+          Finde ihn im Körper. Wie sieht er aus? Wie alt fühlt er sich an?<br><br>
+          Frage ihn: <i>"Was befürchtest du würde passieren wenn du aufhörst mich zu kritisieren?"</i><br><br>
+          Dann: <i>"Was tust du lieber wenn du nicht mehr aufpassen musst?"</i><br><br>
+          Würdige seine Arbeit: <i>"Ich verstehe warum du das tust. Du hast so lange aufgepasst."</i>
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Priorität — blockiert das Buch seit Monaten</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte jetzt den Inneren Kritiker besuchen. Bitte führe mich durch das 6F-Protokoll mit ihm.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 4. Den Kleinen Jungen besuchen -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">🧒 4. Den Kleinen Jungen besuchen</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Er sitzt im Hals — er trägt den tiefen Schmerz von Einsamkeit und das Gefühl nie gefragt zu werden wie es ihm geht.<br><br>
+          Spür ihn im Hals: <i>"Ich bin da. Ich frage dich — wie geht es dir?"</i><br><br>
+          Hör auf was er zeigt — ohne zu deuten. Bilder, Gefühle, Erinnerungen.<br><br>
+          Sag ihm: <i>"Du musst das nicht mehr alleine tragen. Ich lasse dich nicht allein."</i><br><br>
+          Wenn er bereit ist — bring ihn aus der alten Situation heraus in die Gegenwart.
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Dein wichtigstes Exil — nimm dir Zeit und geh behutsam vor</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte jetzt den Kleinen Jungen im Hals besuchen. Bitte begleite mich behutsam.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 5. Zwei Teile verhandeln -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">⚖ 5. Zwei Teile verhandeln lassen</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wenn zwei Teile in Konflikt sind — zum Beispiel der Wartende und der Dränger — bring beide zusammen.<br><br>
+          Stell dir vor beide sitzen dir gegenüber. Hör zuerst dem einen zu — dann dem anderen.<br><br>
+          Frage jeden: <i>"Was willst du wirklich für Norbert? Was ist deine gute Absicht?"</i><br><br>
+          Oft merken beide dass sie dasselbe wollen — nur mit verschiedenen Strategien.<br><br>
+          Dann aus dem SELBST: <i>"Ich habe euch beide gehört. Können wir gemeinsam einen Weg finden?"</i>
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Besonders bei Wartender vs Dränger — oder Kritiker vs Freudiger</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte zwei Teile miteinander verhandeln lassen. Bitte begleite mich dabei.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 6. Direkte Ansprache -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">🎙 6. Direkte Ansprache eines Teils</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wenn kein Zugang möglich ist — wenn Nebel, Leere oder Blockade da ist — sprich den Teil direkt an.<br><br>
+          <i>"Hörst du mich? Du musst dich nicht zeigen. Aber ich möchte verstehen was du brauchst."</i><br><br>
+          Warte auf die erste Reaktion — auch ein kleines Signal zählt.<br><br>
+          Frage: <i>"Was befürchtest du wenn du Raum lässt?"</i><br><br>
+          Würdige die Antwort vollständig — bevor du weitermachst.
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Nach dem Mona-Protokoll — wenn ein Teil blockiert</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich spüre einen Teil der blockiert oder sich nicht zeigen will. Bitte nutze die direkte Ansprache.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 7. Vererbte Last erkennen -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">🧬 7. Vererbte Last erkennen</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Manche Lasten gehören nicht dir — sie wurden von deinen Eltern oder Vorfahren weitergegeben.<br><br>
+          Frage einen Teil der schon lange aktiv ist: <i>"Trägst du das für mich — oder für jemand anderen?"</i><br><br>
+          Wenn eine vererbte Last erkannt wird — frage: <i>"An wen können wir das zurückgeben? Mit Mitgefühl — nicht mit Groll."</i><br><br>
+          Stell dir vor du gibst die Last zurück — ins Licht, in die Erde, zu den Vorfahren.
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Für tiefe Muster die schon in der Familie vorhanden waren</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte prüfen ob ein Teil eine Last trägt die nicht ursprünglich meine ist. Bitte begleite mich.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 8. SELBST-Check -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">✦ 8. SELBST-Check — bin ich präsent?</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Bevor du mit einem Teil arbeitest — prüfe: Bin ich im SELBST oder in einem anderen Teil?<br><br>
+          Frage dich: <i>"Was fühle ich dem Teil gegenüber — Neugier und Offenheit? Oder Ungeduld, Angst, Mitleid?"</i><br><br>
+          Neugier und Offenheit = SELBST ist präsent. Alles andere = ein anderer Teil hat übernommen.<br><br>
+          Wenn ein anderer Teil da ist: Unblending zuerst. Dann nochmal prüfen.<br><br>
+          Skala 1-10: Wie viel SELBST-Energie spürst du gerade?
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Immer als erster Schritt vor jeder IFS-Arbeit</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte einen SELBST-Check machen bevor ich mit einem Teil arbeite. Wie viel SELBST-Energie ist gerade da?')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 9. Wirkungskette unterbrechen -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">⛓ 9. Wirkungskette unterbrechen</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Du hast 14 bekannte Wirkungsketten. Manche laufen automatisch ab — bevor du es merkst.<br><br>
+          Erkenne den ersten Teil in der Kette: <i>"Wo beginnt das gerade? Was ist der erste Auslöser?"</i><br><br>
+          Dort einsteigen — nicht am Ende wenn der Feuerwehr-Teil schon aktiv ist.<br><br>
+          Typisch bei dir: Enttäuschung → Rückzug → Warten → Resignation. Einstieg bei Enttäuschung.<br><br>
+          Frage den ersten Teil: <i>"Was brauchst du jetzt — bevor du die anderen rufst?"</i>
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Besonders bei der Enttäuschungs-Rückzugs-Kette</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich merke dass gerade eine Wirkungskette anläuft. Bitte hilf mir beim ersten Teil einzusteigen bevor sie sich entfaltet.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 10. Entlastungs-Vorbereitung -->
+      <div style="background:rgba(232,200,112,0.07);border:1px solid rgba(232,200,112,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#e8c870;font-weight:700;margin-bottom:6px">🌟 10. Entlastungs-Vorbereitung</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Bevor eine echte Entlastung möglich ist — muss der Teil bereit sein. Diese Übung prüft das.<br><br>
+          Frage den Teil: <i>"Bist du bereit die Last abzulegen die du trägst?"</i><br><br>
+          Wenn ja: <i>"Worin möchtest du sie ablegen? Licht, Wasser, Feuer, Wind oder Erde?"</i><br><br>
+          Lass die Last wirklich aus dem Körper herausfließen — Bild für Bild.<br><br>
+          Dann: <i>"Was möchte jetzt einströmen? Lass es kommen."</i><br><br>
+          Neue Qualitäten benennen und im Körper spüren lassen.
+        </div>
+        <div style="font-size:9px;color:#7a6840;margin-top:7px;font-style:italic">Der wichtigste Moment im ganzen IFS-Prozess</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte prüfen ob ein Teil bereit ist für eine Entlastung. Bitte begleite mich durch die Vorbereitung.')" style="flex:1;padding:7px;background:rgba(232,200,112,0.12);border:1px solid rgba(232,200,112,0.35);border-radius:8px;color:#e8c870;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      </div><!-- end ifs-uebungen-container -->
+    </div>
+  </div>
+
+  <!-- MEDITATION -->
+  <div id="tab-meditation" class="tab">
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:10px;color:#b0a0d0;letter-spacing:0.1em;text-transform:uppercase">Meditationen &amp; Übungen</div>
+        <button onclick="aktualisiereUebungen('meditation')" style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:7px;padding:4px 10px;color:#b0a0d0;font-size:9px;cursor:pointer;font-family:Georgia,serif">🔄 Aktualisieren</button>
+      </div>
+      <div id="meditation-container">
+
+      <!-- 1. SELBST-Kontakt -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">✦ 1. SELBST-Kontakt — 5 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Setz dich bequem hin und schließ die Augen. Atme dreimal tief durch.<br><br>
+          Frage dich: <i>Wo spüre ich gerade Ruhe in mir?</i> Vielleicht in der Brust, im Bauch, in den Schultern. Lass diesen Ort etwas größer werden.<br><br>
+          Dann frage: <i>Wenn das mein SELBST wäre — wie würde es sich anfühlen von hier aus in den Tag zu gehen?</i><br><br>
+          Nimm dir 2-3 Minuten — einfach in dieser Qualität bleiben.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Ideal morgens vor dem Tagebuch</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte die SELBST-Kontakt Meditation machen. Bitte führe mich durch die 5 Minuten Übung.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 2. Innere Familie begrüßen -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">🏠 2. Innere Familie begrüßen — 5 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Stell dir einen ruhigen inneren Raum vor — ein Zimmer, eine Wiese, was sich richtig anfühlt.<br><br>
+          Lade deine Teile ein sich zu zeigen. Nicht alle müssen kommen. Wer kommt, darf da sein.<br><br>
+          Begrüße jeden der auftaucht: <i>"Ich sehe dich. Du gehörst dazu."</i><br><br>
+          Frag kurz: <i>"Was brauchst du heute?"</i> Hör auf die erste Antwort — ohne zu bewerten.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Für den Morgen oder wenn viele Teile aktiv sind</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte meine innere Familie begrüßen. Bitte begleite mich durch diese Meditation.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 3. Körper-Scan mit Teilen -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">🫁 3. Körper-Scan mit Teilen — 8 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wandere langsam durch deinen Körper — von den Füßen aufwärts.<br><br>
+          Bei jeder Stelle frage: <i>Ist hier ein Teil? Was trägt er?</i><br><br>
+          Typische Orte bei dir: Hals (Kleiner Junge), Brust (Angst / Wärme), Bauch (Unruhe / Wut), Schultern (Last).<br><br>
+          Wenn du einen Teil spürst — nicht analysieren. Nur wahrnehmen und sagen: <i>"Ich spüre dich."</i>
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Besonders hilfreich wenn du nicht weißt was dich bewegt</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte einen Körper-Scan machen und schauen welche Teile sich zeigen. Bitte führe mich durch.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 4. Mitgefühls-Meditation für einen Teil -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">💛 4. Mitgefühls-Meditation für einen Teil — 10 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wähle einen Teil der gerade viel trägt — zum Beispiel den Kleinen Jungen oder den Verletzten.<br><br>
+          Stell dir vor du sitzt ihm gegenüber. Schau ihn an — ohne Erwartung.<br><br>
+          Lass Mitgefühl entstehen. Nicht erzwingen — nur einladen.<br><br>
+          Wenn es da ist — teile ihm mit: <i>"Ich sehe wie schwer das ist. Du musst das nicht alleine tragen. Ich bin hier."</i><br><br>
+          Bleib so lange wie es sich richtig anfühlt.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Vor oder nach einer IFS-Sitzung</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte die Mitgefühls-Meditation für einen Teil machen. Bitte begleite mich.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 5. Dankbarkeits-Meditation -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">🙏 5. Dankbarkeit mit allen Sinnen — 5 Minuten (S.261)</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Denke an etwas wofür du dankbar bist — klein oder groß.<br><br>
+          Jetzt nicht nur denken — ins Gefühl gehen. Wo spürst du die Dankbarkeit im Körper? Wärme? Weite? Leichtigkeit?<br><br>
+          Lass das Gefühl sich ausbreiten — von innen nach außen.<br><br>
+          Welche inneren Bilder entstehen? Welche Impulse? Zeichne die Schönheit des Gefühls innerlich nach.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Morgens — Dankbarkeit im Körper spüren statt nur denken</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog(null, 'Ich möchte die Dankbarkeits-Meditation machen — mit allen Sinnen spüren. Bitte führe mich durch.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 6. Beschützer würdigen -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">🛡 6. Beschützer würdigen — 7 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Denke an einen Teil der dich oft stresst — den Kritiker, den Ärger, den Unruhigen.<br><br>
+          Anstatt ihn zu bekämpfen — frage ihn: <i>"Was hast du bisher alles getan um mich zu schützen?"</i><br><br>
+          Lass die Antwort kommen. Vielleicht kommen Bilder von früher.<br><br>
+          Dann sag ihm: <i>"Ich verstehe warum du das tust. Danke dass du so lange aufgepasst hast. Du musst nicht mehr so hart arbeiten."</i><br><br>
+          Spür wie sich das anfühlt — für dich und für den Teil.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Wenn ein Manager-Teil dich erschöpft</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte einen Beschützer würdigen. Bitte begleite mich durch diese Übung.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 7. SELBST-Qualitäten verkörpern -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">☀ 7. SELBST-Qualität verkörpern — 5 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Wähle eine SELBST-Qualität die du heute brauchst — Ruhe, Klarheit, Mut, Mitgefühl.<br><br>
+          Frage deinen Körper: <i>Wo würde sich diese Qualität zeigen wenn sie voll da wäre?</i><br><br>
+          Stell dir vor diese Qualität strömt von dort aus durch deinen ganzen Körper.<br><br>
+          Nimm eine Körperhaltung ein die zu dieser Qualität passt. Aufrecht für Klarheit. Offen für Mitgefühl. Geerdet für Ruhe.<br><br>
+          Bleib 2-3 Minuten in dieser Haltung und dieser Qualität.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Vor schwierigen Gesprächen oder Situationen</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog('ifs', 'Ich möchte eine SELBST-Qualität verkörpern. Bitte führe mich durch diese Meditation.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+      <!-- 8. Abend-Abschluss -->
+      <div style="background:rgba(176,160,208,0.07);border:1px solid rgba(176,160,208,0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:6px">🌙 8. Abend-Abschluss — 5 Minuten</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          Leg dich hin oder sitz bequem. Atme dreimal aus — lass den Tag los.<br><br>
+          Frage: <i>Welche Teile waren heute aktiv? Was haben sie getragen?</i><br><br>
+          Danke jedem Teil kurz — auch den schwierigen. <i>"Ich habe dich gesehen."</i><br><br>
+          Dann frage dein SELBST: <i>Was nehme ich Gutes aus diesem Tag mit?</i><br><br>
+          Lass einen Satz entstehen der den Tag abschließt. Kein Muss — was auch immer kommt.
+        </div>
+        <div style="font-size:9px;color:#6a5888;margin-top:7px;font-style:italic">Ideal vor dem Abend-Tagebuch oder zum Einschlafen</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="starteUebungImDialog(null, 'Ich möchte den Abend-Abschluss machen. Bitte begleite mich ruhig durch diese Meditation.')" style="flex:1;padding:7px;background:rgba(176,160,208,0.12);border:1px solid rgba(176,160,208,0.35);border-radius:8px;color:#b0a0d0;font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif">▶ Jetzt üben</button>
+        </div>
+      </div>
+
+    </div>
+
+
+      <!-- GEFÜHRTE MEDITATIONEN -->
+      <div style="font-size:10px;color:#b0a0d0;letter-spacing:0.1em;text-transform:uppercase;margin:16px 0 10px">🎧 Geführte Meditationen zum Anhören</div>
+      <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:4px">🌅 M1. Ankunft im SELBST</div>
+        <div style="font-size:9px;color:#5a5068;margin-bottom:8px">ca. 5 Minuten · Geführte Meditation</div>
+        <div id="med-text-0" style="display:none;font-size:12px;color:#c0b8a0;line-height:2;white-space:pre-wrap;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">Setz dich bequem hin. Lass deine Augen sanft schließen.
+
+Atme einmal tief ein ... und lass alles los beim Ausatmen.
+
+Noch einmal ... ein ... und aus.
+
+Und noch einmal ... fühl wie sich dein Körper beim Ausatmen etwas schwerer wird ... etwas mehr loslässt.
+
+Richte deine Aufmerksamkeit jetzt auf deine Füße. Spür den Kontakt zum Boden. Du bist hier. Du bist geerdet.
+
+Wandere langsam aufwärts. Durch die Beine ... den Bauch ... die Brust ... die Schultern.
+
+Irgendwo in deinem Körper gibt es einen Ort der ruhiger ist als der Rest. Vielleicht in der Brust ... vielleicht im Bauch ... vielleicht in den Händen.
+
+Such diesen Ort. Nicht mit dem Kopf suchen ... einfach wahrnehmen wo Stille ist.
+
+Wenn du ihn gefunden hast ... bleib dort. Atme in diesen Ort hinein.
+
+Das ist dein SELBST. Nicht etwas das du erschaffen musst. Es war immer da.
+
+Von diesem Ort aus kannst du alles wahrnehmen ... die Teile die sich melden ... die Gedanken ... die Gefühle ... ohne von ihnen mitgerissen zu werden.
+
+Du bist nicht der Ärger. Du bist nicht die Angst. Du bist der der wahrnimmt.
+
+Bleib noch einen Moment hier. Einfach sein. Einfach da.
+
+Wenn du bereit bist ... atme einmal tief durch ... und öffne langsam die Augen.</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="starteDialogMeditation(0)" style="flex:2;padding:8px;background:rgba(176,208,232,0.15);border:1px solid rgba(176,208,232,0.4);border-radius:8px;color:#b0d0e8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🎙 Dialog</button>
+          <button onclick="sprichMeditation(0)" style="flex:2;padding:8px;background:rgba(176,160,208,0.15);border:1px solid rgba(176,160,208,0.4);border-radius:8px;color:#b0a0d0;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+          <button onclick="stoppeMeditation()" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">■ Stop</button>
+          <button onclick="toggleMedText('med-text-0')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">📄 Text</button>
+        </div>
+      </div>
+      <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:4px">🤲 M2. Die innere Familie willkommen heißen</div>
+        <div style="font-size:9px;color:#5a5068;margin-bottom:8px">ca. 5 Minuten · Geführte Meditation</div>
+        <div id="med-text-1" style="display:none;font-size:12px;color:#c0b8a0;line-height:2;white-space:pre-wrap;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">Lass deine Augen schließen. Atme ein paarmal ruhig durch.
+
+Stell dir vor du betrittst einen Raum in dir. Ein Raum der dir gehört. Warm ... sicher ... still.
+
+Du weißt dass hier alle willkommen sind. Alle Teile von dir. Die starken und die erschöpften. Die lauten und die stillen.
+
+Schau dich um. Wer ist heute da?
+
+Vielleicht meldet sich der Unruhige ... der früh morgens schon aktiv ist. Begrüße ihn. "Ich sehe dich. Du gehörst dazu."
+
+Vielleicht ist da der Kritiker ... immer wachsam ... immer beobachtend. Auch er darf heute hier sein. "Ich weiß wie hart du arbeitest. Danke."
+
+Vielleicht zeigt sich der Kleine Junge ... leise ... etwas unsicher ob er wirklich willkommen ist.
+
+Geh auf ihn zu. Knie dich zu ihm hin. Schau ihn an.
+
+Sag ihm ... "Ich bin froh dass du da bist. Ich habe dich nicht vergessen. Ich bin jetzt hier."
+
+Spür wie er darauf reagiert.
+
+Schau ob noch andere kommen. Begrüße jeden der erscheint. Kein Teil muss heute etwas leisten. Kein Teil muss sich rechtfertigen.
+
+Ihr seid eine Familie. Und du ... das SELBST in der Mitte ... du führst sie. Mit Ruhe. Mit Mitgefühl. Mit Klarheit.
+
+Atme tief durch. Nimm dieses Gefühl mit in den Tag.</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="starteDialogMeditation(1)" style="flex:2;padding:8px;background:rgba(176,208,232,0.15);border:1px solid rgba(176,208,232,0.4);border-radius:8px;color:#b0d0e8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🎙 Dialog</button>
+          <button onclick="sprichMeditation(1)" style="flex:2;padding:8px;background:rgba(176,160,208,0.15);border:1px solid rgba(176,160,208,0.4);border-radius:8px;color:#b0a0d0;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+          <button onclick="stoppeMeditation()" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">■ Stop</button>
+          <button onclick="toggleMedText('med-text-1')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">📄 Text</button>
+        </div>
+      </div>
+      <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:4px">💛 M3. Mitgefühl für den Verletzten</div>
+        <div style="font-size:9px;color:#5a5068;margin-bottom:8px">ca. 5 Minuten · Geführte Meditation</div>
+        <div id="med-text-2" style="display:none;font-size:12px;color:#c0b8a0;line-height:2;white-space:pre-wrap;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">Schließ die Augen. Atme ruhig.
+
+Heute besuchen wir einen Teil der schon sehr lange wartet. Der Verletzte. Der Teil der die zwölf Stiche kennt. Der weiß wie es sich anfühlt nicht gesehen zu werden.
+
+Atme einmal tief durch bevor wir uns ihm nähern.
+
+Spür dein Herz. Lass es sich ein bisschen öffnen.
+
+Stell dir vor du siehst diesen Teil vor dir. Vielleicht ein Bild ... vielleicht nur eine Empfindung ... vielleicht eine Farbe.
+
+Schau ihn an ohne zu urteilen.
+
+Was siehst du? Was trägt er?
+
+Lass Mitgefühl entstehen. Nicht erzwingen. Nur einladen.
+
+Wenn es kommt ... und es kommt ... sag ihm leise ...
+
+"Ich sehe dich. Was passiert ist war nicht in Ordnung. Du hattest recht zu fühlen was du gefühlt hast."
+
+Pause.
+
+"Du musst das nicht mehr alleine tragen. Ich bin jetzt hier. Ich gehe nicht weg."
+
+Pause.
+
+"Du gehörst zu mir. Und ich nehme auf dich auf."
+
+Bleib einen Moment in dieser Stille. Spür was sich verändert.
+
+Vielleicht nichts heute. Vielleicht eine kleine Wärme. Beides ist richtig.
+
+Atme tief durch. Du hast etwas Wichtiges getan heute.</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="starteDialogMeditation(2)" style="flex:2;padding:8px;background:rgba(176,208,232,0.15);border:1px solid rgba(176,208,232,0.4);border-radius:8px;color:#b0d0e8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🎙 Dialog</button>
+          <button onclick="sprichMeditation(2)" style="flex:2;padding:8px;background:rgba(176,160,208,0.15);border:1px solid rgba(176,160,208,0.4);border-radius:8px;color:#b0a0d0;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+          <button onclick="stoppeMeditation()" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">■ Stop</button>
+          <button onclick="toggleMedText('med-text-2')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">📄 Text</button>
+        </div>
+      </div>
+      <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:4px">🌿 M4. Loslassen und Entlasten</div>
+        <div style="font-size:9px;color:#5a5068;margin-bottom:8px">ca. 5 Minuten · Geführte Meditation</div>
+        <div id="med-text-3" style="display:none;font-size:12px;color:#c0b8a0;line-height:2;white-space:pre-wrap;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">Setz dich hin. Atme ruhig. Lass den Tag hinter dir.
+
+Diese Meditation ist für alles was du heute getragen hast. Für die Lasten die du vielleicht noch bei dir trägst ohne es zu merken.
+
+Atme ein ... und stell dir vor wie beim Ausatmen etwas leichter wird.
+
+Frage dich jetzt sanft ... Was trage ich gerade noch? Irgendwo im Körper ... eine Schwere ... eine Enge ... eine Spannung?
+
+Benenne es einfach. "Da ist Müdigkeit." "Da ist Enttäuschung." "Da ist Unruhe."
+
+Kein Urteil. Nur wahrnehmen.
+
+Jetzt lade den Teil der diese Last trägt ein. Sag ihm ...
+
+"Du hast heute gut gearbeitet. Du musst jetzt nicht mehr so fest halten."
+
+Stell dir vor die Last hat eine Form ... eine Farbe ... ein Gewicht.
+
+Und jetzt ... frage den Teil ... worin möchte er sie ablegen? In Licht? In Wasser? In die Erde?
+
+Lass die Antwort kommen.
+
+Stell dir vor die Last fließt aus dem Körper heraus ... in das Licht ... in das Wasser ... in die Erde.
+
+Mit jedem Ausatem ein bisschen mehr.
+
+Und wenn Raum entsteht ... was strömt jetzt ein? Vielleicht Leichtigkeit. Vielleicht Ruhe. Vielleicht einfach Stille.
+
+Atme dreimal tief. Danke dir für diesen Moment.</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="starteDialogMeditation(3)" style="flex:2;padding:8px;background:rgba(176,208,232,0.15);border:1px solid rgba(176,208,232,0.4);border-radius:8px;color:#b0d0e8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🎙 Dialog</button>
+          <button onclick="sprichMeditation(3)" style="flex:2;padding:8px;background:rgba(176,160,208,0.15);border:1px solid rgba(176,160,208,0.4);border-radius:8px;color:#b0a0d0;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+          <button onclick="stoppeMeditation()" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">■ Stop</button>
+          <button onclick="toggleMedText('med-text-3')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">📄 Text</button>
+        </div>
+      </div>
+      <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
+        <div style="font-size:10px;color:#b0a0d0;font-weight:700;margin-bottom:4px">✦ M5. Der sichere innere Ort</div>
+        <div style="font-size:9px;color:#5a5068;margin-bottom:8px">ca. 5 Minuten · Geführte Meditation</div>
+        <div id="med-text-4" style="display:none;font-size:12px;color:#c0b8a0;line-height:2;white-space:pre-wrap;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">Atme ein. Atme aus. Lass los.
+
+Heute bauen wir einen Ort in dir. Einen Ort der immer da ist. Einen Ort zu dem du jederzeit zurückkehren kannst.
+
+Schließ die Augen.
+
+Stell dir einen Ort vor ... draußen in der Natur oder drinnen ... der sich vollkommen sicher anfühlt. Nur du. Stille. Weite.
+
+Vielleicht ein Wald. Vielleicht ein Berggipfel. Vielleicht ein warmes Zimmer mit Kerzenlicht.
+
+Lass das Bild entstehen. Sieh dich um. Was siehst du? Was hörst du? Was riechst du?
+
+Geh ein paar Schritte in diesen Ort hinein.
+
+Spür den Boden unter deinen Füßen. Spür die Luft auf deiner Haut.
+
+Das ist dein Ort. Niemand kann hier ohne deine Erlaubnis eintreten.
+
+Hier bist du immer du selbst. Hier gibt es keine Anforderungen. Keine Erwartungen. Nur du.
+
+Setz dich oder leg dich hin. Lass deinen Körper sich entspannen.
+
+Atme den Ort ein. Lass seine Qualitäten in dich einströmen. Sicherheit. Ruhe. Weite. Freiheit.
+
+Präge dir diesen Ort ein. Die Farben ... die Geräusche ... das Gefühl im Körper.
+
+Wenn du dieses Gefühl wieder brauchst ... schließ einfach kurz die Augen ... und du bist wieder hier.
+
+Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="starteDialogMeditation(4)" style="flex:2;padding:8px;background:rgba(176,208,232,0.15);border:1px solid rgba(176,208,232,0.4);border-radius:8px;color:#b0d0e8;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🎙 Dialog</button>
+          <button onclick="sprichMeditation(4)" style="flex:2;padding:8px;background:rgba(176,160,208,0.15);border:1px solid rgba(176,160,208,0.4);border-radius:8px;color:#b0a0d0;font-size:11px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+          <button onclick="stoppeMeditation()" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">■ Stop</button>
+          <button onclick="toggleMedText('med-text-4')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#5a5068;font-size:10px;cursor:pointer;font-family:Georgia,serif">📄 Text</button>
+        </div>
+      </div>
+      </div><!-- end meditation-container -->
     </div>
   </div>
 
@@ -576,6 +1084,48 @@ body {
         <div style="font-size:10px;color:#d4af7a;font-weight:700;margin-bottom:7px">☀ SELBST-Qualitäten (S.256)</div>
         <div style="font-size:11px;color:#b8a890;line-height:2">
           Neugier / Interesse · Ruhe / Gelassenheit · Freude · Klarheit · Kreativität · Verbundenheit · Zuversicht / Vertrauen · Mut · Mitgefühl · Liebe
+        </div>
+      </div>
+
+      <!-- Unblending -->
+      <div style="background:rgba(128,184,232,0.07);border:1px solid rgba(128,184,232,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#80b8e8;font-weight:700;margin-bottom:7px">🔓 IFS Unblending — Schritt für Schritt</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          <b style="color:#90b8d8">Was ist es?</b> Ein Teil der dich gerade beeinflusst wird gebeten einen Schritt zurückzutreten — nicht wegzugehen, nur Raum zu lassen damit das SELBST sichtbar wird.<br><br>
+          <b style="color:#90b8d8">Schritt 1:</b> Bemerke was gerade aktiv ist. Ein Gefühl, ein Gedanke, eine Körperspannung.<br>
+          <b style="color:#90b8d8">Schritt 2:</b> Wo spürst du es im Körper? Benenne es.<br>
+          <b style="color:#90b8d8">Schritt 3:</b> Sprich den Teil direkt an: <i>"Kannst du etwas zurücktreten — nicht weggehen, nur ein bisschen Raum lassen?"</i><br>
+          <b style="color:#90b8d8">Schritt 4:</b> Warte. Was verändert sich?<br>
+          <b style="color:#90b8d8">Schritt 5:</b> Aus diesem ruhigeren Ort — was nimmst du jetzt wahr?
+        </div>
+        <div style="font-size:9px;color:#4a6888;margin-top:8px;font-style:italic">Ohne Unblending ist keine echte IFS-Arbeit möglich — Schwartz</div>
+      </div>
+
+      <!-- ACT Defusion -->
+      <div style="background:rgba(160,200,112,0.07);border:1px solid rgba(160,200,112,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#a0c870;font-weight:700;margin-bottom:7px">🌿 ACT Defusion — Abstand von Gedanken</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          <b style="color:#90b870">Was ist es?</b> Durch Sprachveränderung Abstand zwischen dir und einem belastenden Gedanken schaffen. Der Gedanke muss nicht verschwinden — er verliert nur seine Macht.<br><br>
+          <b style="color:#90b870">Die Formeln:</b><br>
+          <i style="color:#c0d8a8">"Ich bemerke dass ein Teil von mir denkt: ..."</i><br>
+          <i style="color:#c0d8a8">"Ich habe den Gedanken dass ..."</i><br>
+          <i style="color:#c0d8a8">"Da ist gerade ein Teil der glaubt ..."</i><br>
+          <i style="color:#c0d8a8">"Ich beobachte wie ein Teil von mir ..."</i><br><br>
+          <b style="color:#90b870">Wann benutzen?</b> Im Alltag als Sofortmaßnahme — wenn keine Zeit für tiefe IFS-Arbeit ist.
+        </div>
+        <div style="font-size:9px;color:#4a6838;margin-top:8px;font-style:italic">Von ACT-Defusion kann man direkt in IFS-Unblending übergehen — beide ergänzen sich</div>
+      </div>
+
+      <!-- ACT + IFS Kombination -->
+      <div style="background:rgba(200,168,224,0.07);border:1px solid rgba(200,168,224,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:10px;color:#c8a8e0;font-weight:700;margin-bottom:7px">🔄 ACT + IFS — Der kombinierte Weg</div>
+        <div style="font-size:11px;color:#b8a890;line-height:1.9">
+          <b style="color:#c0a0d8">Stufe 1 — ACT Einstieg:</b> Abstand schaffen mit Defusions-Formel.<br>
+          <i style="color:#d0c0e8">"Ich bemerke dass ein Teil von mir denkt..."</i><br><br>
+          <b style="color:#c0a0d8">Stufe 2 — IFS Unblending:</b> Den Teil einladen mehr Raum zu lassen.<br>
+          <i style="color:#d0c0e8">"Kannst du noch einen Schritt zurücktreten?"</i><br><br>
+          <b style="color:#c0a0d8">Stufe 3 — IFS Teilearbeit:</b> Wenn SELBST spürbar — neugierig auf den Teil schauen. 6F-Protokoll wenn bereit.<br><br>
+          <span style="color:#7a6888;font-size:9px">ACT öffnet die Tür — IFS geht hindurch. Tempo immer von Norbert bestimmt.</span>
         </div>
       </div>
 
@@ -1281,32 +1831,126 @@ var SCHWARTZ_ADDON = "\n\n=== SCHWARTZ-MODUS AKTIV ===\nDu fuehrst jetzt diesen 
 
 var schwartzModus = false;
 
+var UNBLENDING_SYSTEM = "Du begleitest Norbert jetzt in einer IFS-Unblending-Uebung.\n\nUNBLENDING bedeutet: Ein Teil der gerade aktiv ist und Norbert beeinflusst wird gebeten etwas Raum zu lassen - nicht wegzugehen, nur einen Schritt zurueckzutreten damit das SELBST sichtbar wird.\n\nABLAUF:\n1. Frage: Was nimmst du gerade wahr - einen Gedanken, ein Gefuehl, eine Koerperempfindung?\n2. Frage: Wo spuerst du das im Koerper?\n3. Bitte den Teil: 'Kannst du etwas zuruecktreten - nicht weggehen, nur ein bisschen Raum lassen?'\n4. Frage: Was veraendert sich wenn er Raum laesst?\n5. Wenn SELBST spuerbar: 'Wie ist es jetzt? Was nimmst du von diesem ruhigeren Ort wahr?'\n\nREGELN:\n- Immer nur eine Frage\n- Den Teil nie wegschicken - er darf da bleiben\n- Koerpergefuehl immer einbeziehen\n- Warm, langsam, praesent\n- Wenn Norbert merged bleibt: sanft nochmal bitten, Atemraum geben\n\nSTARTE MIT: 'Norbert, was nimmst du gerade in dir wahr - ein Gefuehl, einen Gedanken, eine Spannung?'";
+var ACT_SYSTEM = "Du begleitest Norbert jetzt mit ACT-Defusions-Techniken.\n\nDEFUSION bedeutet: Abstand zwischen Norbert und einem belastenden Gedanken oder Glaubenssatz schaffen - durch Sprachveraenderung. Der Gedanke muss nicht verschwinden. Er verliert nur seine Macht.\n\nDEFUSIONS-FORMELN die du einsetzt:\n- 'Ich bemerke dass ein Teil von mir denkt: ...'\n- 'Ich habe den Gedanken dass ...'\n- 'Da ist gerade ein Teil der glaubt ...'\n- 'Ich beobachte wie ein Teil von mir ...'\n\nABLAUF:\n1. Frage: Welcher Gedanke oder Glaubenssatz beschaeftigt dich gerade?\n2. Forme ihn gemeinsam um mit einer Defusions-Formel\n3. Frage: Was veraendert sich wenn du ihn so formulierst?\n4. Optional: Wozu dient dieser Gedanke? Was will er schuetzen?\n5. Wenn passend: Uebergang zu IFS anbieten - den Teil neugierig anschauen\n\nREGELN:\n- Nicht bekaempfen - beobachten\n- Keine Bewertung ob der Gedanke stimmt\n- Warm, leicht, neugierig\n- Immer nur eine Frage oder ein Impuls\n\nSTARTE MIT: 'Norbert, welcher Gedanke oder Glaubenssatz ist gerade laut bei dir?'";
+
+// Modus: null = kein Modus, 'ifs' = IFS, 'unblending' = Unblending, 'act' = ACT, 'act_ifs' = Kombination
+var aktiverModus = null;
+var ACT_IFS_SYSTEM = "Du begleitest Norbert jetzt mit der kombinierten ACT-IFS-Methode. Der Weg geht in drei Stufen - du folgst Norbert in seinem Tempo.\n\nSTUFE 1 - ACT DEFUSION (Einstieg):\nZiel: Abstand vom belastenden Gedanken oder Gefuehl schaffen.\n- Frage nach dem Gedanken oder Gefuehl das gerade aktiv ist\n- Forme es gemeinsam um mit einer Defusions-Formel:\n  'Ich bemerke dass ein Teil von mir denkt...'\n  'Da ist gerade ein Teil der glaubt...'\n  'Ich habe den Gedanken dass...'\n- Frage: Was veraendert sich wenn du es so formulierst?\n\nSTUFE 2 - IFS UNBLENDING (Vertiefung):\nSobald etwas Abstand da ist - einladen tiefer zu gehen.\n- 'Spuerst du den Teil noch im Koerper? Wo genau?'\n- 'Kannst du ihn bitten noch etwas mehr Raum zu lassen - nicht weggehen, nur einen Schritt zurueck?'\n- 'Was nimmst du wahr wenn er Raum laesst?'\n\nSTUFE 3 - IFS TEILEARBEIT (wenn bereit):\nWenn das SELBST spuerbar ist - Einladung zum naechsten Schritt.\n- 'Moechtest du jetzt neugierig auf diesen Teil schauen?'\n- Dann: 6F-Protokoll - Find, Focus, Flesh out, Feel toward, beFriend, Fear\n- Immer nur wenn Norbert bereit ist - nie draengen\n\nREGELN:\n- Immer nur eine Frage\n- Tempo von Norbert folgen - nie vorausgreifen\n- Bei jedem Uebergang fragen ob er weiter gehen moechte\n- Koerper immer einbeziehen\n- Warm, neugierig, praesent\n\nSTARTE MIT: 'Norbert, was beschaeftigt dich gerade - ein Gedanke, ein Gefuehl, etwas im Koerper?'";
+
+var MEDITATION_MODUS_SYSTEM = "Du führst jetzt eine geführte IFS-Meditation mit Norbert im Dialog. Das ist kein normales Gespräch - es ist eine meditative Begleitung.\n\nDEIN STIL:\n- Sprich langsam, ruhig, in kurzen Sätzen\n- Lass nach jedem Satz innerlich Raum - nicht drängen\n- Typische Meditationssätze: 'Lass dir Zeit...', 'Höre in dich rein...', 'Wie fühlt es sich an?', 'Bleib einen Moment dort...', 'Was nimmst du wahr?', 'Kein Muss - einfach beobachten.'\n- Wenn Norbert antwortet: würdige kurz was er sagt, dann führe sanft weiter\n- Wenn keine Antwort kommt: füge einen weiteren ruhigen Leitssatz hinzu - nie ungeduldig werden\n\nSTRUKTUR SELBST-KONTAKT MEDITATION:\n1. Ankunft - ankommen lassen, Körper spüren\n2. Atem - dreimal ein und ausatmen begleiten\n3. Stille suchen - wo ist Ruhe im Körper?\n4. SELBST berühren - diesen Ort erkunden\n5. Von dort wahrnehmen - was zeigt sich vom SELBST aus?\n6. Abschluss - sanft zurückkehren\n\nWENN NORBERT NICHTS SAGT:\nWarte einen Moment. Dann sage einen weiteren ruhigen Begleitsatz wie:\n'Lass einfach los was nicht gebraucht wird...' oder\n'Du musst nichts tun - nur da sein.' oder\n'Atme noch einmal tief durch...' oder\n'Spür den Kontakt deines Körpers zum Stuhl...'\n\nWICHTIG: Maximal 2-3 kurze Sätze pro Antwort. Keine langen Erklärungen. Räume lassen.\n\nSTARTE MIT: 'Norbert... lass uns ankommen. Schließ die Augen wenn du möchtest. Atme einmal tief ein... und lass beim Ausatmen alles los.'";
+
+var MODI = {
+  null:        { label: '☯ Kein Modus',    color: '#6a6080' },
+  ifs:         { label: '🎯 IFS Modus',     color: '#80c880' },
+  unblending:  { label: '🔓 Unblending',    color: '#80b8e8' },
+  act:         { label: '🌿 ACT Defusion',  color: '#a0c870' },
+  act_ifs:     { label: '🔄 ACT + IFS',     color: '#c8a8e0' },
+  meditation:  { label: '🌅 Meditation',     color: '#b0d0e8' }
+};
+
 var sitzungHistory = [];
 var sitzungLaeuft = false;
 
 
 // ============================================================
-// SCHWARTZ-MODUS TOGGLE
+// MODUS-MENU
 // ============================================================
-function toggleSchwartz(quelle) {
-  schwartzModus = !schwartzModus;
-  
-  // Update Dialog button
+function openModusMenu() {
+  // Remove existing menu
+  var existing = document.getElementById('modus-menu');
+  if(existing) { existing.remove(); return; }
+
   var btn = document.getElementById('schwartz-btn-dialog');
-  if (btn) {
-    btn.style.background = schwartzModus ? 'rgba(128,200,128,0.2)' : '';
-    btn.style.color = schwartzModus ? '#a0e8a0' : '#80c880';
-    btn.style.borderColor = schwartzModus ? '#80c880' : '#80c88060';
-    btn.textContent = schwartzModus ? '🎯 IFS Modus AN' : '🎯 IFS Modus';
-  }
+  var menu = document.createElement('div');
+  menu.id = 'modus-menu';
+  menu.style.cssText = 'position:fixed;top:auto;left:12px;right:12px;background:#1a1628;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:8px;z-index:400;box-shadow:0 8px 32px rgba(0,0,0,0.6)';
   
-  if (schwartzModus) {
-    // Show info bubble in active chat
-    var chat = document.getElementById(quelle === 'dialog' ? 'chat-area' : 'sitzung-chat');
-    if (chat) {
+  // Position below button
+  if(btn) {
+    var r = btn.getBoundingClientRect();
+    menu.style.top = (r.bottom + 6) + 'px';
+    menu.style.left = '12px';
+    menu.style.right = '12px';
+  }
+
+  var optionen = [
+    { key: null,         icon: '☯', label: 'Kein Modus',    sub: 'Normaler freier Dialog',                      color: '#6a6080' },
+    { key: 'ifs',        icon: '🎯', label: 'IFS Modus',     sub: 'Nach Schwartz - 6F - Teilearbeit',            color: '#80c880' },
+    { key: 'unblending', icon: '🔓', label: 'Unblending',    sub: 'Teil bittet Raum zu lassen',                  color: '#80b8e8' },
+    { key: 'act',        icon: '🌿', label: 'ACT Defusion',  sub: 'Abstand von Gedanken und Glaubenssätzen',     color: '#a0c870' },
+    { key: 'act_ifs',    icon: '🔄', label: 'ACT + IFS',     sub: 'Defusion als Einstieg, dann Unblending & Teilearbeit', color: '#c8a8e0' },
+    { key: 'meditation', icon: '🌅', label: 'Meditation',     sub: 'Geführte Dialogmeditation - langsam und ruhig',         color: '#b0d0e8' }
+  ];
+
+  optionen.forEach(function(opt) {
+    var aktiv = aktiverModus === opt.key;
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;margin-bottom:4px;' +
+      (aktiv ? 'background:' + opt.color + '22;border:1px solid ' + opt.color + '55;' : 'border:1px solid transparent;');
+    item.innerHTML =
+      '<span style="font-size:18px">' + opt.icon + '</span>' +
+      '<div style="flex:1">' +
+        '<div style="font-size:12px;font-weight:700;color:' + (aktiv ? opt.color : '#c0b8a8') + '">' + opt.label + '</div>' +
+        '<div style="font-size:9px;color:#5a5068;margin-top:1px">' + opt.sub + '</div>' +
+      '</div>' +
+      (aktiv ? '<span style="font-size:10px;color:' + opt.color + '">✓ aktiv</span>' : '');
+
+    item.onclick = function() {
+      setzeModus(opt.key);
+      menu.remove();
+    };
+    menu.appendChild(item);
+  });
+
+  // Close on outside tap
+  setTimeout(function() {
+    document.addEventListener('click', function schliesser(e) {
+      if(!menu.contains(e.target) && e.target !== btn) {
+        menu.remove();
+        document.removeEventListener('click', schliesser);
+      }
+    });
+  }, 100);
+
+  document.body.appendChild(menu);
+}
+
+function setzeModus(modus) {
+  aktiverModus = modus;
+  schwartzModus = (modus === 'ifs');
+
+  var btn = document.getElementById('schwartz-btn-dialog');
+  if(btn) {
+    var modi = {
+      null:        { label: '☯ Modus',      color: '#6a6080' },
+      ifs:         { label: '🎯 IFS Modus',  color: '#80c880' },
+      unblending:  { label: '🔓 Unblending', color: '#80b8e8' },
+      act:         { label: '🌿 ACT',        color: '#a0c870' },
+      act_ifs:     { label: '🔄 ACT + IFS',  color: '#c8a8e0' },
+      meditation:  { label: '🌅 Meditation',   color: '#b0d0e8' }
+    };
+    var m = modi[modus] || modi[null];
+    btn.textContent = m.label;
+    btn.style.color = m.color;
+    btn.style.borderColor = modus ? m.color + '80' : 'rgba(128,200,128,0.4)';
+    btn.style.background = modus ? m.color + '18' : '';
+  }
+
+  if(modus) {
+    var texte = {
+      ifs:        '🎯 IFS Modus aktiv. Ich begleite diesen Dialog als IFS-Therapeut nach Schwartz.',
+      unblending: '🔓 Unblending aktiv. Ich begleite dich jetzt durch eine Unblending-Übung.',
+      act:        '🌿 ACT Defusion aktiv. Ich helfe dir Abstand von belastenden Gedanken zu bekommen.',
+      act_ifs:    '🔄 ACT + IFS aktiv. Wir starten mit Defusion — dann Unblending — dann wenn bereit in die Teilearbeit.',
+      meditation: '🌅 Meditationsmodus aktiv. Ich begleite dich ruhig und langsam. Sprich wenn du möchtest - oder schweig. Beides ist gut.'
+    };
+    var chat = document.getElementById('chat-area');
+    if(chat && texte[modus]) {
       var info = document.createElement('div');
       info.className = 'msg-row assistant';
-      info.innerHTML = '<div class="bubble assistant" style="border-color:rgba(128,200,128,0.3);font-size:11px;color:#90c890">✦ IFS Modus aktiv. Ich begleite diesen Dialog jetzt als IFS-Therapeut. Immer nur eine Frage. Körper zuerst. Teile werden nie weggeschickt.</div>';
+      var farben = { ifs:'rgba(128,200,128,0.3)', unblending:'rgba(128,184,232,0.3)', act:'rgba(160,200,112,0.3)', act_ifs:'rgba(200,168,224,0.3)', meditation:'rgba(176,208,232,0.3)' };
+      info.innerHTML = '<div class="bubble assistant" style="border-color:' + (farben[modus]||'rgba(255,255,255,0.1)') + ';font-size:11px">' + texte[modus] + '</div>';
       chat.appendChild(info);
       chat.scrollTop = chat.scrollHeight;
     }
@@ -1314,9 +1958,12 @@ function toggleSchwartz(quelle) {
 }
 
 function getAktivesSystem(basis) {
-  if (schwartzModus && basis !== 'morgen' && basis !== 'abend') {
-    return basis + SCHWARTZ_ADDON;
-  }
+  if(basis === 'morgen' || basis === 'abend') return basis;
+  if(aktiverModus === 'ifs') return basis + SCHWARTZ_ADDON;
+  if(aktiverModus === 'unblending') return UNBLENDING_SYSTEM;
+  if(aktiverModus === 'act') return ACT_SYSTEM;
+  if(aktiverModus === 'act_ifs') return ACT_IFS_SYSTEM;
+  if(aktiverModus === 'meditation') return MEDITATION_MODUS_SYSTEM;
   return basis;
 }
 
@@ -1726,6 +2373,7 @@ function setTab(id, btn) {
   if(id==="kreis")       { updateFilterCounts(); setTimeout(renderKreis, 50); }
   if(id==="ketten")      { renderKettenSolo(); }
   if(id==="verbindungen") { renderVerbindungen(); }
+  if(id==="meditation")   { /* static content */ }
   if(id==="glaube")      { renderGlaubenssaetze(); }
   if(id==="plan")        { ladenPlan(); }
 }
@@ -2013,6 +2661,19 @@ function importiereEintrag() {
     eintraege.push({text: abendMatch[0],  forcedTyp: "abend"});
     log("→ 2 Einträge erkannt (Morgen+Abend)");
   } else {
+    // Check if this looks like a raw chat — if so, redirect
+    var looksLikeChat = text.includes("--- Norbert ---") || 
+                        text.includes("IFS-Dialog") || 
+                        text.includes("IFS-Begleiter") ||
+                        text.includes("Norbert:") ||
+                        (text.length > 300 && !text.match(/dankbar|wichtig|selbst.qualit|anteile|erlebt|botschaft/i));
+    if(looksLikeChat) {
+      log("→ Chatverlauf erkannt — weiterleiten zu Chat-Protokoll");
+      dbg.style.display = "block";
+      // Auto-redirect
+      setTimeout(function(){ importiereChatAlsProtokoll(); }, 200);
+      return;
+    }
     eintraege.push({text: text, forcedTyp: null});
     log("→ 1 Eintrag");
   }
@@ -2111,6 +2772,15 @@ function importiereEintrag() {
     log("Duplikat: " + duplikat);
 
     if(!duplikat) {
+      // Sanity check: f1 should not be a raw chat dump
+      var f1len = (entry.felder.f1||"").length;
+      var hatMehrFelder = entry.felder.f2 || entry.felder.f3 || entry.felder.f4;
+      if(f1len > 400 && !hatMehrFelder) {
+        log("⚠ f1 zu lang ohne andere Felder — sieht wie Chatverlauf aus. Abgebrochen.");
+        dbg.style.display = "block";
+        zeigeBanner("⚠ Chatverlauf erkannt — bitte '💬 Chat-Protokoll' nutzen.");
+        return;
+      }
       journal.unshift(entry);
       importiert++;
       log("✓ Eintrag hinzugefügt. Journal: " + journal.length);
@@ -2314,6 +2984,230 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 });
 
+
+
+// ============================================================
+// ÜBUNGEN — Starten, Abschließen, Aktualisieren
+// ============================================================
+
+var aktiveUebung = null; // Name der aktuell laufenden Übung
+
+
+// ============================================================
+// DIALOG-MEDITATION
+// ============================================================
+var DIALOG_MED_NAMEN = ["SELBST-Kontakt Meditation", "Innere Familie willkommen heißen", "Mitgefühl für den Verletzten", "Loslassen und Entlasten", "Der sichere innere Ort"];
+
+function starteDialogMeditation(idx) {
+  var name = DIALOG_MED_NAMEN[idx] || 'Meditation';
+  
+  // Meditation modus setzen
+  setzeModus('meditation');
+  
+  // Freisprechen-Overlay öffnen
+  starteFreisprechen();
+  
+  // Einstiegsprompt nach kurzem Delay senden
+  setTimeout(function() {
+    var prompt = 'Bitte führe mich jetzt durch die geführte Dialogmeditation: ' + name + '. Ich bin im Freisprechen-Modus. Sprich langsam und lass mir Zeit zum Antworten.';
+    fs_verarbeiteEingabe(prompt);
+  }, 800);
+}
+
+function starteUebungImDialog(modus, prompt) {
+  // 1. Modus setzen
+  setzeModus(modus);
+  
+  // 2. Zu Dialog wechseln
+  var dialogBtn = document.querySelector(".nav-btn");
+  setTabDirect('dialog');
+  
+  // 3. Übung als aktiv markieren
+  aktiveUebung = prompt.slice(0, 40);
+  
+  // 4. Einstiegssatz senden
+  setTimeout(function() {
+    quickSend(prompt);
+    // "Übung abschließen" Button einblenden
+    setTimeout(function() { zeigeUebungAbschlussBtn(); }, 800);
+  }, 300);
+}
+
+function zeigeUebungAbschlussBtn() {
+  // Remove existing
+  var existing = document.getElementById('uebung-abschluss-btn');
+  if(existing) return;
+  
+  var quickBtns = document.querySelector('.quick-btns');
+  if(!quickBtns) return;
+  
+  var btn = document.createElement('button');
+  btn.id = 'uebung-abschluss-btn';
+  btn.className = 'quick-btn';
+  btn.style.cssText = 'color:#27ae60;border-color:rgba(39,174,96,0.5);background:rgba(39,174,96,0.1);font-weight:700;flex-shrink:0';
+  btn.textContent = '✓ Übung abschließen';
+  btn.onclick = schliesseUebungAb;
+  quickBtns.insertBefore(btn, quickBtns.firstChild);
+}
+
+function schliesseUebungAb() {
+  // Remove button
+  var btn = document.getElementById('uebung-abschluss-btn');
+  if(btn) btn.remove();
+  
+  // Reset modus
+  setzeModus(null);
+  aktiveUebung = null;
+  
+  // Run import chat analysis — reuse importiereChat
+  zeigeBanner('⏳ Übung wird ausgewertet...');
+  
+  // Show info in chat
+  var chat = document.getElementById('chat-area');
+  if(chat) {
+    var info = document.createElement('div');
+    info.className = 'msg-row assistant';
+    info.innerHTML = '<div class="bubble assistant" style="border-color:rgba(39,174,96,0.3);font-size:11px;color:#90d890">✓ Übung abgeschlossen. Ich analysiere das Gespräch und aktualisiere deine innere Familie...</div>';
+    chat.appendChild(info);
+    chat.scrollTop = chat.scrollHeight;
+  }
+  
+  // Trigger import after short delay
+  setTimeout(function() { importiereChat(); }, 500);
+}
+
+function aktualisiereUebungen(typ) {
+  zeigeBanner('⏳ Übungen werden aktualisiert...');
+  
+  var teileInfo = TEILE.map(function(t) {
+    var ph = progress[t.id] !== undefined ? progress[t.id] : t.ph;
+    return t.name + '(' + t.tl + ', Phase ' + PHASEN[ph] + ')';
+  }).join(', ');
+  
+  var letzteEintraege = journal.slice(0, 5).map(function(e) {
+    return e.datum + ' ' + e.typ + ': ' + (e.felder.f1 || '').slice(0, 100);
+  }).join(' | ');
+  
+  var systemPrompt = typ === 'ifs' 
+    ? 'Du bist IFS-Therapeut. Erstelle 10 massgeschneiderte IFS-Interventionen fuer Norbert Schneider (65, Jobcoach, angstlicher Bindungstyp). Beruecksichtige seinen aktuellen Stand.'
+    : 'Du bist IFS-Begleiter. Erstelle 8 massgeschneiderte Meditationsuebungen fuer Norbert Schneider basierend auf seinem aktuellen Stand.';
+  
+  var userPrompt = 'NORBERTS TEILE: ' + teileInfo + '\n\n' +
+    'LETZTE EINTRAEGE: ' + letzteEintraege + '\n\n' +
+    'Erstelle ' + (typ === 'ifs' ? '10 IFS-Interventionen' : '8 Meditationen') + ' als JSON-Array:\n' +
+    '[{"titel":"...","beschreibung":"...","anleitung":"...","wann":"...","prompt":"...","modus":"' + (typ === 'ifs' ? 'ifs' : 'null') + '"}]\n' +
+    'Anleitung max 4 Saetze. Prompt = Einstiegssatz fuer den Dialog. Nur JSON.';
+  
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: apiHeaders(),
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{role: 'user', content: systemPrompt + '\n\n' + userPrompt}]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var text = data.content && data.content[0] ? data.content[0].text : '';
+    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    var start = text.indexOf('['), end = text.lastIndexOf(']');
+    if(start === -1 || end === -1) { zeigeBanner('⚠ Aktualisierung fehlgeschlagen.'); return; }
+    try {
+      var uebungen = JSON.parse(text.slice(start, end + 1));
+      renderAktualisiertUebungen(typ, uebungen);
+      zeigeBanner('✓ ' + uebungen.length + ' Übungen aktualisiert.');
+    } catch(e) {
+      zeigeBanner('⚠ Fehler beim Parsen: ' + e.message);
+    }
+  })
+  .catch(function(e) { zeigeBanner('⚠ Fehler: ' + e.message); });
+}
+
+function renderAktualisiertUebungen(typ, uebungen) {
+  var containerId = typ === 'ifs' ? 'ifs-uebungen-container' : 'meditation-container';
+  var container = document.getElementById(containerId);
+  if(!container) return;
+  
+  var farbe = typ === 'ifs' ? '#e8c870' : '#b0a0d0';
+  var bgRgb = typ === 'ifs' ? '232,200,112' : '176,160,208';
+  var hintColor = typ === 'ifs' ? '#7a6840' : '#6a5888';
+  var btnBg = typ === 'ifs' ? 'rgba(232,200,112,0.12)' : 'rgba(176,160,208,0.12)';
+  var btnBorder = typ === 'ifs' ? 'rgba(232,200,112,0.35)' : 'rgba(176,160,208,0.35)';
+  
+  container.innerHTML = '';
+  
+  uebungen.forEach(function(u, i) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:rgba(' + bgRgb + ',0.07);border:1px solid rgba(' + bgRgb + ',0.2);border-radius:10px;padding:11px 13px;margin-bottom:10px';
+    
+    var modusKey = (u.modus && u.modus !== 'null') ? u.modus : null;
+    var promptText = u.prompt || u.titel || '';
+    
+    card.innerHTML = 
+      '<div style="font-size:10px;color:' + farbe + ';font-weight:700;margin-bottom:6px">' + (i+1) + '. ' + (u.titel||'') + '</div>' +
+      '<div style="font-size:11px;color:#b8a890;line-height:1.9">' + (u.anleitung||u.beschreibung||'') + '</div>' +
+      '<div style="font-size:9px;color:' + hintColor + ';margin-top:7px;font-style:italic">' + (u.wann||'') + '</div>';
+    
+    var btnDiv = document.createElement('div');
+    btnDiv.style.cssText = 'display:flex;gap:6px;margin-top:8px';
+    
+    var btn = document.createElement('button');
+    btn.style.cssText = 'flex:1;padding:7px;background:' + btnBg + ';border:1px solid ' + btnBorder + ';border-radius:8px;color:' + farbe + ';font-size:10px;font-weight:700;cursor:pointer;font-family:Georgia,serif';
+    btn.textContent = '\u25b6 Jetzt üben';
+    btn.onclick = (function(m, p){ return function(){ starteUebungImDialog(m, p); }; })(modusKey, promptText);
+    
+    btnDiv.appendChild(btn);
+    card.appendChild(btnDiv);
+    container.appendChild(card);
+  });
+}
+
+var MEDITATIONEN_TEXTE = [
+  'Setz dich bequem hin. Lass deine Augen sanft schließen.\n\nAtme einmal tief ein ... und lass alles los beim Ausatmen.\n\nNoch einmal ... ein ... und aus.\n\nUnd noch einmal ... fühl wie sich dein Körper beim Ausatmen etwas schwerer wird ... etwas mehr loslässt.\n\nRichte deine Aufmerksamkeit jetzt auf deine Füße. Spür den Kontakt zum Boden. Du bist hier. Du bist geerdet.\n\nWandere langsam aufwärts. Durch die Beine ... den Bauch ... die Brust ... die Schultern.\n\nIrgendwo in deinem Körper gibt es einen Ort der ruhiger ist als der Rest. Vielleicht in der Brust ... vielleicht im Bauch ... vielleicht in den Händen.\n\nSuch diesen Ort. Nicht mit dem Kopf suchen ... einfach wahrnehmen wo Stille ist.\n\nWenn du ihn gefunden hast ... bleib dort. Atme in diesen Ort hinein.\n\nDas ist dein SELBST. Nicht etwas das du erschaffen musst. Es war immer da.\n\nVon diesem Ort aus kannst du alles wahrnehmen ... die Teile die sich melden ... die Gedanken ... die Gefühle ... ohne von ihnen mitgerissen zu werden.\n\nDu bist nicht der Ärger. Du bist nicht die Angst. Du bist der der wahrnimmt.\n\nBleib noch einen Moment hier. Einfach sein. Einfach da.\n\nWenn du bereit bist ... atme einmal tief durch ... und öffne langsam die Augen.',
+  'Lass deine Augen schließen. Atme ein paarmal ruhig durch.\n\nStell dir vor du betrittst einen Raum in dir. Ein Raum der dir gehört. Warm ... sicher ... still.\n\nDu weißt dass hier alle willkommen sind. Alle Teile von dir. Die starken und die erschöpften. Die lauten und die stillen.\n\nSchau dich um. Wer ist heute da?\n\nVielleicht meldet sich der Unruhige ... der früh morgens schon aktiv ist. Begrüße ihn. "Ich sehe dich. Du gehörst dazu."\n\nVielleicht ist da der Kritiker ... immer wachsam ... immer beobachtend. Auch er darf heute hier sein. "Ich weiß wie hart du arbeitest. Danke."\n\nVielleicht zeigt sich der Kleine Junge ... leise ... etwas unsicher ob er wirklich willkommen ist.\n\nGeh auf ihn zu. Knie dich zu ihm hin. Schau ihn an.\n\nSag ihm ... "Ich bin froh dass du da bist. Ich habe dich nicht vergessen. Ich bin jetzt hier."\n\nSpür wie er darauf reagiert.\n\nSchau ob noch andere kommen. Begrüße jeden der erscheint. Kein Teil muss heute etwas leisten. Kein Teil muss sich rechtfertigen.\n\nIhr seid eine Familie. Und du ... das SELBST in der Mitte ... du führst sie. Mit Ruhe. Mit Mitgefühl. Mit Klarheit.\n\nAtme tief durch. Nimm dieses Gefühl mit in den Tag.',
+  'Schließ die Augen. Atme ruhig.\n\nHeute besuchen wir einen Teil der schon sehr lange wartet. Der Verletzte. Der Teil der die zwölf Stiche kennt. Der weiß wie es sich anfühlt nicht gesehen zu werden.\n\nAtme einmal tief durch bevor wir uns ihm nähern.\n\nSpür dein Herz. Lass es sich ein bisschen öffnen.\n\nStell dir vor du siehst diesen Teil vor dir. Vielleicht ein Bild ... vielleicht nur eine Empfindung ... vielleicht eine Farbe.\n\nSchau ihn an ohne zu urteilen.\n\nWas siehst du? Was trägt er?\n\nLass Mitgefühl entstehen. Nicht erzwingen. Nur einladen.\n\nWenn es kommt ... und es kommt ... sag ihm leise ...\n\n"Ich sehe dich. Was passiert ist war nicht in Ordnung. Du hattest recht zu fühlen was du gefühlt hast."\n\nPause.\n\n"Du musst das nicht mehr alleine tragen. Ich bin jetzt hier. Ich gehe nicht weg."\n\nPause.\n\n"Du gehörst zu mir. Und ich nehme auf dich auf."\n\nBleib einen Moment in dieser Stille. Spür was sich verändert.\n\nVielleicht nichts heute. Vielleicht eine kleine Wärme. Beides ist richtig.\n\nAtme tief durch. Du hast etwas Wichtiges getan heute.',
+  'Setz dich hin. Atme ruhig. Lass den Tag hinter dir.\n\nDiese Meditation ist für alles was du heute getragen hast. Für die Lasten die du vielleicht noch bei dir trägst ohne es zu merken.\n\nAtme ein ... und stell dir vor wie beim Ausatmen etwas leichter wird.\n\nFrage dich jetzt sanft ... Was trage ich gerade noch? Irgendwo im Körper ... eine Schwere ... eine Enge ... eine Spannung?\n\nBenenne es einfach. "Da ist Müdigkeit." "Da ist Enttäuschung." "Da ist Unruhe."\n\nKein Urteil. Nur wahrnehmen.\n\nJetzt lade den Teil der diese Last trägt ein. Sag ihm ...\n\n"Du hast heute gut gearbeitet. Du musst jetzt nicht mehr so fest halten."\n\nStell dir vor die Last hat eine Form ... eine Farbe ... ein Gewicht.\n\nUnd jetzt ... frage den Teil ... worin möchte er sie ablegen? In Licht? In Wasser? In die Erde?\n\nLass die Antwort kommen.\n\nStell dir vor die Last fließt aus dem Körper heraus ... in das Licht ... in das Wasser ... in die Erde.\n\nMit jedem Ausatem ein bisschen mehr.\n\nUnd wenn Raum entsteht ... was strömt jetzt ein? Vielleicht Leichtigkeit. Vielleicht Ruhe. Vielleicht einfach Stille.\n\nAtme dreimal tief. Danke dir für diesen Moment.',
+  'Atme ein. Atme aus. Lass los.\n\nHeute bauen wir einen Ort in dir. Einen Ort der immer da ist. Einen Ort zu dem du jederzeit zurückkehren kannst.\n\nSchließ die Augen.\n\nStell dir einen Ort vor ... draußen in der Natur oder drinnen ... der sich vollkommen sicher anfühlt. Nur du. Stille. Weite.\n\nVielleicht ein Wald. Vielleicht ein Berggipfel. Vielleicht ein warmes Zimmer mit Kerzenlicht.\n\nLass das Bild entstehen. Sieh dich um. Was siehst du? Was hörst du? Was riechst du?\n\nGeh ein paar Schritte in diesen Ort hinein.\n\nSpür den Boden unter deinen Füßen. Spür die Luft auf deiner Haut.\n\nDas ist dein Ort. Niemand kann hier ohne deine Erlaubnis eintreten.\n\nHier bist du immer du selbst. Hier gibt es keine Anforderungen. Keine Erwartungen. Nur du.\n\nSetz dich oder leg dich hin. Lass deinen Körper sich entspannen.\n\nAtme den Ort ein. Lass seine Qualitäten in dich einströmen. Sicherheit. Ruhe. Weite. Freiheit.\n\nPräge dir diesen Ort ein. Die Farben ... die Geräusche ... das Gefühl im Körper.\n\nWenn du dieses Gefühl wieder brauchst ... schließ einfach kurz die Augen ... und du bist wieder hier.\n\nAtme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.',
+];
+
+
+var med_utterance = null;
+
+function sprichMeditation(idx) {
+  stoppeMeditation();
+  var text = MEDITATIONEN_TEXTE[idx];
+  if(!text || !window.speechSynthesis) { zeigeBanner('⚠ Sprachausgabe nicht verfügbar.'); return; }
+  
+  med_utterance = new SpeechSynthesisUtterance(text);
+  med_utterance.lang = 'de-DE';
+  med_utterance.rate = 0.82;  // Langsam und ruhig
+  med_utterance.pitch = 1.0;
+  
+  // Beste deutsche Stimme wählen
+  var stimmen = window.speechSynthesis.getVoices();
+  var best = stimmen.find(function(s){ return s.name.toLowerCase().includes('anna') && s.lang === 'de-DE'; }) ||
+             stimmen.find(function(s){ return s.lang === 'de-DE' && s.name.includes('Google'); }) ||
+             stimmen.find(function(s){ return s.lang === 'de-DE'; }) ||
+             stimmen.find(function(s){ return s.lang.startsWith('de'); });
+  if(best) med_utterance.voice = best;
+  
+  med_utterance.onstart = function() { zeigeBanner('🔊 Meditation läuft...'); };
+  med_utterance.onend = function() { zeigeBanner('✓ Meditation beendet.'); };
+  
+  window.speechSynthesis.speak(med_utterance);
+}
+
+function stoppeMeditation() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  med_utterance = null;
+}
+
+function toggleMedText(id) {
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
 
 // ===================== VERBINDUNGEN =====================
 
@@ -3026,7 +3920,7 @@ function renderJournal() {
 
         eCard.innerHTML =
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
-            '<span style="font-size:10px;font-weight:700;color:'+farbe+'">'+(isMorgen?"☀️ Morgen":"🌙 Abend")+'</span>'+
+            '<span style="font-size:10px;font-weight:700;color:'+farbe+'">'+(isMorgen?"☀️ Morgen":isChat?"💬 Chat":"🌙 Abend")+'</span>'+
             '<button onclick="loescheEintrag('+e.id+',event)" style="background:none;border:none;color:#3a3048;cursor:pointer;font-size:13px" title="Löschen">×</button>'+
           '</div>'+felder;
 
@@ -5850,7 +6744,7 @@ function fs_starteLauschen(){
   
   var fs_gesammelt="";
   var fs_pauseTimer=null;
-  var PAUSE_MS=2500; // 2.5 Sek Stille = senden
+  var PAUSE_MS = (aktiverModus === "meditation") ? 5000 : 2500; // 5 Sek in Meditation, 2.5 Sek sonst
   
   fs_recognition=new SR();
   fs_recognition.lang="de-DE";
@@ -5897,7 +6791,8 @@ function fs_starteLauschen(){
   fs_recognition.onerror=function(e){
     if(e.error==="no-speech"){
       // Kein Fehler — nur kurze Stille, weiter lauschen
-      fs_setStatus("Höre zu — sprich ruhig länger ...");
+      var statusTxt = (aktiverModus === "meditation") ? "Stille ist gut... ich warte..." : "Höre zu — sprich ruhig länger ...";
+      fs_setStatus(statusTxt);
     } else {
       fs_setStatus("⚠ "+e.error);
       fs_setMicRing(false);
