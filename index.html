@@ -223,6 +223,7 @@ body {
     <button onclick="zeigeApiKeySetup()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔑</button>
     <button onclick="zeigeDiagnose()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔍</button>
     <button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 10px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Export</button>
+    <button onclick="erstelleVollsicherung()" style="background:linear-gradient(135deg,rgba(39,174,96,0.4),rgba(20,120,60,0.3));border:1px solid rgba(39,174,96,0.4);border-radius:9px;padding:5px 10px;color:#80e898;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.06em;white-space:nowrap">💾 Sicherung</button>
   </div>
 </div>
 
@@ -269,6 +270,7 @@ body {
       <button class="quick-btn" onclick="quickSend('Welcher Teil ist gerade aktiv?')">Welcher Teil?</button>
       <button class="quick-btn" onclick="quickSend('Innerer Kritiker')">Kritiker</button>
       <button class="quick-btn" style="color:#27ae60;border-color:#27ae6050" onclick="kopiereChatVerlauf()" title="Chat in Zwischenablage">📋 Chat kopieren</button>
+      <button class="quick-btn" style="color:#4a8ab0;border-color:#4a8ab050" onclick="importiereChat()" title="Chat analysieren und neue Erkenntnisse übernehmen">⬆ Import Chat</button>
       <button class="quick-btn" style="color:#e74c3c;border-color:#e74c3c50" onclick="loescheChatVerlauf()" title="Chat leeren">🗑 Chat leeren</button>
       <button class="quick-btn" style="color:#d4af7a;border-color:#d4af7a50" onclick="erzeugeTagebuchAusChat()" title="Tagebucheintrag aus Chat erstellen">📖 Chat → Tagebuch</button>
       <button class="quick-btn" style="color:#9a7ab0;border-color:#9a7ab050" onclick="kopiereLetzenTagebucheintrag()" title="Letzten Tagebucheintrag kopieren">📋 Tagebuch kopieren</button>
@@ -337,6 +339,7 @@ body {
         <button class="filter-btn" onclick="setKreisFilter('feuerwehr',this)" id="kf-feuerwehr">🔥 Feuerwehr</button>
         <button class="filter-btn" onclick="setKreisFilter('gesund',this)" id="kf-gesund">🌿 Gesund</button>
         <button class="filter-btn" onclick="toggleGesundKreis(this)" id="kf-hide-gesund" style="border-color:rgba(255,255,255,0.15);color:#5a5068">🌿 ausblenden</button>
+        <button class="filter-btn" onclick="toggleNurVerbindungen(this)" id="kf-nur-verb" style="border-color:rgba(154,122,176,0.3);color:#9a7ab0">🔗 Nur Verbindungen</button>
       </div>
       <div class="kreis-svg-container" id="kreis-container"></div>
       <div class="kreis-legende">
@@ -1814,6 +1817,63 @@ function importiereEintrag() {
   }
 }
 
+function erstelleVollsicherung() {
+  zeigeBanner("⏳ Erstelle Vollsicherung ...");
+
+  // Alle localStorage-Daten sammeln
+  var lsKeys = [
+    "ifs-messages","ifs-journal","ifs-progress","ifs-extrateile",
+    "ifs-geloescht","ifs-ketten","ifs-selbst-quali","ifs-geloescht-selbst",
+    "ifs-phase-verlauf","ifs-plan","ifs-prioritaeten","ifs-prio-erledigt",
+    "ifs-verbindungen-extra","ifs-teil-updates","ifs-verbindungen-ignoriert",
+    "ifs-ignoriert","ifs-datenbank-pflege","ifs-woche"
+    // API-Key bewusst NICHT gesichert — Sicherheitsgründe
+  ];
+
+  var lsDaten = {};
+  lsKeys.forEach(function(key) {
+    var val = localStorage.getItem(key);
+    if(val) lsDaten[key] = val;
+  });
+
+  var datum = new Date();
+  var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
+  var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
+  var restoreId = "ifs-restored-"+datum.getTime();
+
+  // Wiederherstellungs-Script — läuft BEVOR die App startet
+  var restoreScript =
+    '<script id="ifs-restore">' +
+    '(function(){' +
+    'if(localStorage.getItem("'+restoreId+'")) return;' +
+    'var d='+JSON.stringify(lsDaten)+';' +
+    'Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k]);});' +
+    'localStorage.setItem("'+restoreId+'","1");' +
+    '})();' +
+    '<\/script>';
+
+  // Aktuelle Seite als HTML holen — direkt aus dem DOM
+  var docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+  // Restore-Script direkt nach <head> einfügen
+  var sicherungHtml = docHtml.replace(/(<head[^>]*>)/i, '$1' + restoreScript);
+
+  // Herunterladen
+  try {
+    var blob = new Blob([sicherungHtml], {type:"text/html;charset=utf-8"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "IFS-Sicherung-"+datumStr.replace(/\./g,"-")+"-"+zeitStr+".html";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+    zeigeBanner("✓ Sicherung erstellt — "+datumStr+" "+zeitStr.slice(0,2)+":"+zeitStr.slice(2));
+  } catch(e) {
+    zeigeBanner("⚠ Fehler: "+e.message);
+  }
+}
+
 function exportiereAlles() {
   var now = new Date();
   var lines = [
@@ -2846,6 +2906,15 @@ var VERBINDUNGEN = [
 ];
 
 var kreisFilter = "alle";
+var nurVerbindungenModus = false;
+
+function toggleNurVerbindungen(btn) {
+  nurVerbindungenModus = !nurVerbindungenModus;
+  btn.style.background = nurVerbindungenModus ? "rgba(154,122,176,0.25)" : "";
+  btn.style.color = nurVerbindungenModus ? "#c0a0d8" : "#9a7ab0";
+  btn.style.borderColor = nurVerbindungenModus ? "rgba(154,122,176,0.6)" : "rgba(154,122,176,0.3)";
+  renderKreis();
+}
 var kreisGesundAus = false;
 var karteGesundAus = false;
 
@@ -2917,80 +2986,102 @@ function renderKreis() {
   var W = container.offsetWidth || 340;
   var H = container.offsetHeight || 340;
   var cx = W/2, cy = H/2;
-  var R = Math.min(W,H)/2 * 0.88;
 
-  // Remove old elements
+  // Padding damit Kreise nicht abgeschnitten werden
+  var PAD = 6;
+  var r = Math.max(24, Math.min(W,H) * 0.063);
+
   container.innerHTML = "";
 
-  // SVG
   var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
   svg.setAttribute("width",W); svg.setAttribute("height",H);
-  svg.style.position="absolute"; svg.style.inset="0";
+  svg.style.cssText = "position:absolute;inset:0;overflow:visible";
 
-  // Background circles
-  [0.82,0.60,0.38].forEach(function(r){
+  // Hintergrund-Ringe
+  var R = Math.min(W,H)/2 * 0.82;
+  [0.82,0.58,0.35].forEach(function(f){
     var c = document.createElementNS("http://www.w3.org/2000/svg","circle");
     c.setAttribute("cx",cx); c.setAttribute("cy",cy);
-    c.setAttribute("r",R*r);
-    c.setAttribute("fill","none");
-    c.setAttribute("stroke","rgba(255,255,255,0.05)");
-    c.setAttribute("stroke-width","1");
+    c.setAttribute("r",R*f); c.setAttribute("fill","none");
+    c.setAttribute("stroke","rgba(255,255,255,0.05)"); c.setAttribute("stroke-width","1");
     svg.appendChild(c);
   });
 
-  // Center-to-part dashed lines
+  // Position berechnen mit Clamp
+  function teilPos(t) {
+    var x = cx + (t.pos.x/100 - 0.5) * W;
+    var y = cy + (t.pos.y/100 - 0.5) * H * 1.02;
+    x = Math.max(PAD + r, Math.min(W - PAD - r, x));
+    y = Math.max(PAD + r, Math.min(H - PAD - r, y));
+    return {x:x, y:y};
+  }
+
+  // Verbindungslinien mit Label
+  VERBINDUNGEN.forEach(function(conn){
+    var av = findTeil(conn.v), an = findTeil(conn.n);
+    if(!av||!an) return;
+    var p1 = teilPos(av), p2 = teilPos(an);
+    var showConn = kreisFilter==="alle"||(av.typ===kreisFilter)||(an.typ===kreisFilter);
+
+    var line = document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",p1.x); line.setAttribute("y1",p1.y);
+    line.setAttribute("x2",p2.x); line.setAttribute("y2",p2.y);
+    line.setAttribute("stroke",conn.f+"88"); line.setAttribute("stroke-width","1.5");
+    line.setAttribute("stroke-dasharray","2 3");
+    line.style.opacity = showConn?"1":"0.04";
+    svg.appendChild(line);
+
+    if(showConn && conn.info) {
+      var mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+      var label = conn.info.slice(0,26)+(conn.info.length>26?"…":"");
+      var tw = label.length * 4.4 + 6;
+      var bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      bg.setAttribute("x",mx-tw/2); bg.setAttribute("y",my-7);
+      bg.setAttribute("width",tw); bg.setAttribute("height",13);
+      bg.setAttribute("rx","3"); bg.setAttribute("fill","rgba(8,6,14,0.82)");
+      svg.appendChild(bg);
+      var txt = document.createElementNS("http://www.w3.org/2000/svg","text");
+      txt.setAttribute("x",mx); txt.setAttribute("y",my+4);
+      txt.setAttribute("text-anchor","middle"); txt.setAttribute("fill",conn.f);
+      txt.setAttribute("font-size","7"); txt.setAttribute("font-family","Georgia,serif");
+      txt.style.opacity = "0.88";
+      txt.textContent = label;
+      svg.appendChild(txt);
+    }
+  });
+
+  // Gestrichelte Linien vom Zentrum
   TEILE.forEach(function(t){
     var show = (kreisFilter==="alle" || t.typ===kreisFilter) && !(kreisGesundAus && t.typ==="gesund");
-    var px = cx + R * Math.cos((t.pos.x/100-0.5)*Math.PI*2 - Math.PI/2) * (t.pos.y/100);
-    var x = cx + (t.pos.x/100 - 0.5) * W;
-    var y = cy + (t.pos.y/100 - 0.5) * H * 1.05;
+    var p = teilPos(t);
     var line = document.createElementNS("http://www.w3.org/2000/svg","line");
     line.setAttribute("x1",cx); line.setAttribute("y1",cy);
-    line.setAttribute("x2",x); line.setAttribute("y2",y);
-    line.setAttribute("stroke", t.f.rg+"44");
-    line.setAttribute("stroke-width","1");
+    line.setAttribute("x2",p.x); line.setAttribute("y2",p.y);
+    line.setAttribute("stroke",t.f.rg+"33"); line.setAttribute("stroke-width","1");
     line.setAttribute("stroke-dasharray","3 4");
     line.style.opacity = show?"1":"0.04";
     svg.appendChild(line);
   });
 
-  // Connection lines between parts
-  VERBINDUNGEN.forEach(function(conn){
-    var av = findTeil(conn.v), an = findTeil(conn.n);
-    if(!av||!an) return;
-    var x1 = cx+(av.pos.x/100-0.5)*W, y1 = cy+(av.pos.y/100-0.5)*H*1.05;
-    var x2 = cx+(an.pos.x/100-0.5)*W, y2 = cy+(an.pos.y/100-0.5)*H*1.05;
-    var showConn = kreisFilter==="alle"||(av.typ===kreisFilter)||(an.typ===kreisFilter);
-    var line = document.createElementNS("http://www.w3.org/2000/svg","line");
-    line.setAttribute("x1",x1); line.setAttribute("y1",y1);
-    line.setAttribute("x2",x2); line.setAttribute("y2",y2);
-    line.setAttribute("stroke",conn.f+"88");
-    line.setAttribute("stroke-width","1.6");
-    line.setAttribute("stroke-dasharray","2 3");
-    line.style.opacity = showConn?"1":"0.04";
-    svg.appendChild(line);
-  });
-
   container.appendChild(svg);
 
-  // SELBST in center
-  var selbstDiv = document.createElement("div");
-  selbstDiv.style.cssText = "position:absolute;left:"+cx+"px;top:"+cy+"px;transform:translate(-50%,-50%);width:"+Math.max(52,R*0.28)+"px;height:"+Math.max(52,R*0.28)+"px;border-radius:50%;background:radial-gradient(circle,#f5ecd4 0%,#d4af7a 55%,#a07840 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 22px rgba(212,175,122,0.5);z-index:10;cursor:pointer;";
-  selbstDiv.innerHTML = '<span style="font-size:16px">✦</span><span style="font-size:6px;color:#6a4010;font-weight:800;letter-spacing:0.1em">SELBST</span>';
-  selbstDiv.onclick = function(){ oeffneSelbst(); };
-  container.appendChild(selbstDiv);
+  // SELBST
+  var sR = Math.max(24,R*0.13);
+  var sD = document.createElement("div");
+  sD.style.cssText = "position:absolute;left:"+cx+"px;top:"+cy+"px;transform:translate(-50%,-50%);width:"+(sR*2)+"px;height:"+(sR*2)+"px;border-radius:50%;background:radial-gradient(circle,#f5ecd4 0%,#d4af7a 55%,#a07840 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 22px rgba(212,175,122,0.5);z-index:10;cursor:pointer;";
+  sD.innerHTML = '<span style="font-size:14px">✦</span><span style="font-size:6px;color:#6a4010;font-weight:800;letter-spacing:0.1em">SELBST</span>';
+  sD.onclick = function(){ oeffneSelbst(); };
+  container.appendChild(sD);
 
-  // Connection dots (clickable)
+  // Verbindungs-Dots
   VERBINDUNGEN.forEach(function(conn){
     var av = findTeil(conn.v), an = findTeil(conn.n);
     if(!av||!an) return;
-    var x1 = cx+(av.pos.x/100-0.5)*W, y1 = cy+(av.pos.y/100-0.5)*H*1.05;
-    var x2 = cx+(an.pos.x/100-0.5)*W, y2 = cy+(an.pos.y/100-0.5)*H*1.05;
-    var mx = (x1+x2)/2, my = (y1+y2)/2;
+    var p1 = teilPos(av), p2 = teilPos(an);
+    var mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
     var showConn = kreisFilter==="alle"||(av.typ===kreisFilter)||(an.typ===kreisFilter);
-
     var dot = document.createElement("div");
-    dot.style.cssText = "position:absolute;left:"+mx+"px;top:"+my+"px;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:"+conn.f+";border:2px solid "+conn.f+";z-index:8;cursor:pointer;box-shadow:0 0 5px "+conn.f+"88;opacity:"+(showConn?"1":"0.05")+";";
+    dot.style.cssText = "position:absolute;left:"+mx+"px;top:"+my+"px;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:"+conn.f+";border:2px solid "+conn.f+";z-index:8;cursor:pointer;box-shadow:0 0 5px "+conn.f+"88;opacity:"+(showConn?"1":"0.05")+";";
     dot.style.pointerEvents = showConn?"auto":"none";
     dot.onclick = (function(c,a1,a2){ return function(e){
       e.stopPropagation();
@@ -3000,38 +3091,45 @@ function renderKreis() {
         '<span style="color:#5a4868;font-size:13px">→</span>'+
         '<span style="padding:4px 9px;border-radius:7px;font-size:9px;font-weight:700;background:'+a2.f.bg+';color:'+a2.f.tx+'">'+a2.name+'</span>'+
         '</div>'+
-        '<div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6e80;margin-bottom:4px">Verbindung</div>'+
-        '<div style="font-style:italic;color:#d0c0a0;font-size:11px;margin-bottom:8px">'+c.info+'</div>'+
-        '<div style="color:#c0b8a8;font-size:11px;line-height:1.7">'+c.text+'</div>';
+        '<div style="font-size:11px;color:#c0b0a0;line-height:1.7;margin-bottom:8px">'+c.info+'</div>'+
+        '<div style="font-size:10px;color:#7a6870;font-style:italic;line-height:1.6">'+c.text+'</div>'+
+        '<button onclick="setTabDirect(\'dialog\');quickSend(\'Lass uns die Verbindung zwischen '+a1.name+' und '+a2.name+' besprechen.\');schliesseModal(\'modal-detail\')" style="margin-top:10px;width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:8px;color:#9a9090;font-size:10px;cursor:pointer;font-family:Georgia,serif">Im Dialog besprechen</button>';
       document.getElementById("modal-detail-box").innerHTML = html;
       document.getElementById("modal-detail").classList.add("offen");
-    };})(conn, av, an);
+    }; })(conn,av,an);
     container.appendChild(dot);
   });
 
-  // Part circles
+  // Teile-Kreise
   TEILE.forEach(function(t){
     var show = (kreisFilter==="alle" || t.typ===kreisFilter) && !(kreisGesundAus && t.typ==="gesund");
-    var x = cx+(t.pos.x/100-0.5)*W;
-    var y = cy+(t.pos.y/100-0.5)*H*1.05;
-    var r = Math.max(28, R*0.145);
-
+    // Im Nur-Verbindungen-Modus: Kreise ausblenden aber Name als kleines Label
+    if(nurVerbindungenModus) {
+      var p = teilPos(t);
+      var lbl = document.createElementNS("http://www.w3.org/2000/svg","text");
+      lbl.setAttribute("x",p.x); lbl.setAttribute("y",p.y+4);
+      lbl.setAttribute("text-anchor","middle"); lbl.setAttribute("fill",t.f.rg);
+      lbl.setAttribute("font-size","8"); lbl.setAttribute("font-family","Georgia,serif");
+      lbl.setAttribute("font-weight","700");
+      lbl.style.opacity = show?"0.9":"0.05";
+      lbl.textContent = t.kurz.split(" ")[0];
+      svg.appendChild(lbl);
+      return;
+    }
+    var p = teilPos(t);
     var div = document.createElement("div");
-    div.style.cssText = "position:absolute;left:"+x+"px;top:"+y+"px;transform:translate(-50%,-50%);width:"+(r*2)+"px;height:"+(r*2)+"px;border-radius:50%;background:"+t.f.bg+";border:2px solid "+t.f.rg+";display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3px;z-index:6;cursor:pointer;box-shadow:0 3px 12px "+t.f.rg+"55;opacity:"+(show?"1":"0.07")+";transition:transform 0.15s,opacity 0.2s;";
+    div.style.cssText = "position:absolute;left:"+p.x+"px;top:"+p.y+"px;transform:translate(-50%,-50%);width:"+(r*2)+"px;height:"+(r*2)+"px;border-radius:50%;background:"+t.f.bg+";border:2px solid "+t.f.rg+";display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2px;z-index:6;cursor:pointer;box-shadow:0 3px 10px "+t.f.rg+"55;opacity:"+(show?"1":"0.07")+";transition:transform 0.15s,opacity 0.2s;";
     div.style.pointerEvents = show?"auto":"none";
-
-    var nameLines = t.kurz.split(" ");
-    var line1 = nameLines.slice(0,Math.ceil(nameLines.length/2)).join(" ");
-    var line2 = nameLines.slice(Math.ceil(nameLines.length/2)).join(" ");
-    div.innerHTML = '<span style="font-size:6px;font-weight:700;color:'+t.f.tx+';line-height:1.3">'+line1+'<br>'+line2+'</span>';
-
+    var nl = t.kurz.split(" ");
+    var l1 = nl.slice(0,Math.ceil(nl.length/2)).join(" ");
+    var l2 = nl.slice(Math.ceil(nl.length/2)).join(" ");
+    div.innerHTML = '<span style="font-size:6px;font-weight:700;color:'+t.f.tx+';line-height:1.3;word-break:break-word">'+l1+'<br>'+l2+'</span>';
     div.onclick = (function(teil){ return function(){ oeffneDetail(teil); }; })(t);
     div.onmouseenter = function(){ if(show) this.style.transform="translate(-50%,-50%) scale(1.18)"; };
     div.onmouseleave = function(){ this.style.transform="translate(-50%,-50%) scale(1)"; };
     container.appendChild(div);
   });
 }
-
 // Resize handler for Kreis
 window.addEventListener("resize", function(){
   if(document.getElementById("tab-kreis").classList.contains("aktiv")) renderKreis();
@@ -3324,6 +3422,64 @@ function oeffneSelbst() {
 var letzterUpdate = null;
 var _updateResult = null; // Globale Variable für Vorschau-Ergebnis
 
+function importiereChat() {
+  if(!messages || messages.length < 2) {
+    zeigeBanner("⚠ Noch kein Chat-Verlauf vorhanden.");
+    return;
+  }
+
+  document.getElementById("update-modal-titel").textContent = "⬆ Chat-Import läuft ...";
+  document.getElementById("update-modal-inhalt").innerHTML =
+    '<div style="text-align:center;padding:24px 0;color:#7a6e80;font-size:12px">' +
+    '<div style="font-size:22px;margin-bottom:10px">⬆</div>' +
+    'Chat wird analysiert ...<br><br>' +
+    '<span style="font-size:10px;color:#4a4060">Suche nach neuen Teilen, Verbindungen, Ketten, Glaubenssätzen</span></div>';
+  document.getElementById("modal-update").classList.add("offen");
+
+  var teileNamen = TEILE.map(function(t){ return t.id+":"+t.name+"("+t.typ+")"; }).join(", ");
+  var verbNamen = VERBINDUNGEN.map(function(v){ return v.v+"→"+v.n; }).join(", ");
+
+  var dialogText = messages.slice(-130).map(function(m){
+    var txt = typeof m.content === "string" ? m.content : (m.content&&m.content[0]&&m.content[0].text ? m.content[0].text : "");
+    txt = txt.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,"").replace(/\[TAGEBUCH-EINTRAG\][\s\S]*?\[\/TAGEBUCH-EINTRAG\]/g,"").trim();
+    return (m.role==="user"?"Norbert":"Begleiter")+": "+txt.slice(0,700);
+  }).join("\n");
+
+  var prompt = "Du analysierst den IFS-Dialog von Norbert Schneider (65, Jobcoach, Elmshorn, ängstlicher Bindungstyp).\n\n" +
+    "BESTEHENDE TEILE (ID:Name:Typ): " + teileNamen + "\n" +
+    "BESTEHENDE VERBINDUNGEN: " + verbNamen + "\n\n" +
+    "BESTEHENDE KETTEN: " + KETTEN.map(function(k){ return k.t; }).join(" · ") + "\n\n" +
+    "CHAT-VERLAUF (letzte 130 Nachrichten):\n" + dialogText + "\n\n" +
+    "Analysiere genau: Gibt es Teile, Verbindungen, Ketten oder SELBST-Qualitaeten die im Chat erwaehnt werden aber NOCH NICHT in den bestehenden Listen sind?\n\n" +
+    "Antworte NUR als valides JSON:\n" +
+    "{\n" +
+    "  \"neue_teile\": [{\"name\":\"...\",\"typ\":\"exile|manager|feuerwehr|gesund\",\"job\":\"...\",\"glaubenssatz\":\"...\",\"koerper\":\"...\",\"ausloeser\":\"...\",\"braucht\":\"...\",\"status\":\"...\"}],\n" +
+    "  \"updates_teile\": [{\"id\":123,\"name\":\"...\",\"feld\":\"st|job|gs|braucht\",\"wert\":\"...\",\"begruendung\":\"...\"}],\n" +
+    "  \"neue_verbindungen\": [{\"von_id\":1,\"zu_id\":3,\"info\":\"...\",\"text\":\"...\"}],\n" +
+    "  \"neue_ketten\": [{\"titel\":\"...\",\"beschreibung\":\"...\",\"teile_ids\":[1,2,3],\"intervention\":\"...\"}],\n" +
+    "  \"neue_selbst_qualitaeten\": [{\"name\":\"...\",\"info\":\"...\",\"quelle\":\"...\",\"erlebt\":true}],\n" +
+    "  \"zusammenfassung\": \"1-2 Saetze was gefunden wurde\"\n" +
+    "}\n" +
+    "WICHTIG: Nur wirklich neue Erkenntnisse. Leere Arrays [] wenn nichts neues.";
+
+  fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST", headers:apiHeaders(),
+    body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:2000, messages:[{role:"user",content:prompt}]})
+  }).then(function(r){ return r.json(); })
+  .then(function(data){
+    var text = (data.content&&data.content[0]&&data.content[0].text) ? data.content[0].text : "";
+    text = text.replace(/```json\n?/g,"").replace(/```\n?/g,"").trim();
+    var start = text.indexOf("{"), end = text.lastIndexOf("}");
+    if(start !== -1 && end !== -1) text = text.slice(start, end+1);
+    var result;
+    try { result = JSON.parse(text); }
+    catch(e) { zeigeUpdateFehler("Analyse-Fehler: "+e.message); return; }
+    document.getElementById("update-modal-titel").textContent = "⬆ Chat-Import — Vorschau";
+    zeigeUpdateVorschau(result);
+  })
+  .catch(function(e){ zeigeUpdateFehler("Fehler: "+e.message); });
+}
+
 function starteUpdate() {
   document.getElementById("update-modal-titel").textContent = "⟳ Analyse läuft ...";
   document.getElementById("update-modal-inhalt").innerHTML =
@@ -3346,20 +3502,20 @@ function starteUpdate() {
   var verbNamen = VERBINDUNGEN.map(function(v){ return v.v+"→"+v.n; }).join(", ");
 
   var dialogText = hatDialog
-    ? messages.slice(-30).map(function(m){
+    ? messages.slice(-130).map(function(m){
         var txt = typeof m.content === "string" ? m.content : (m.content&&m.content[0]&&m.content[0].text ? m.content[0].text : "");
         txt = txt.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,"").replace(/\[TAGEBUCH-EINTRAG\][\s\S]*?\[\/TAGEBUCH-EINTRAG\]/g,"").trim();
-        return (m.role==="user"?"Norbert":"Begleiter")+": "+txt.slice(0,300);
+        return (m.role==="user"?"Norbert":"Begleiter")+": "+txt.slice(0,700);
       }).join("\n")
     : "(Noch kein Dialog vorhanden)";
 
   var journalText = hatJournal
-    ? journal.slice(0,15).map(function(e){
+    ? journal.slice(0,30).map(function(e){
         var fragen = e.typ==="morgen"
           ? ["Dankbar","Anteile","Wichtig","SELBST"]
           : ["Erlebt","Aktive Anteile","SELBST-Qualitaeten","Botschaft"];
         var felder = [1,2,3,4].map(function(i){
-          return e.felder["f"+i] ? fragen[i-1]+": "+e.felder["f"+i].replace(/[\x00-\x1F]/g," ").slice(0,200) : "";
+          return e.felder["f"+i] ? fragen[i-1]+": "+e.felder["f"+i].replace(/[\x00-\x1F]/g," ").slice(0,300) : "";
         }).filter(Boolean).join(" | ");
         return (e.wochentag||"") + " " + e.datum + " " + e.typ.toUpperCase() + ": " + felder;
       }).join("\n")
