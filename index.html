@@ -232,6 +232,7 @@ body {
   <button class="nav-btn" onclick="setTab('sitzung',this)" style="color:#a0d8a0">Sitzung</button>
   <button class="nav-btn" onclick="setTab('kreis',this)">Kreis</button>
   <button class="nav-btn" onclick="setTab('ketten',this)">Ketten</button>
+  <button class="nav-btn" onclick="setTab('verbindungen',this)" style="color:#9ab0d0">Verbindungen</button>
   <button class="nav-btn" onclick="setTab('karte',this)">Karte</button>
 </div>
 <div class="nav" style="border-top:none;padding-top:0;">
@@ -386,6 +387,18 @@ body {
     <div class="fort-wrap" id="ketten-list-wrap">
       <div class="section-label" style="margin-bottom:10px">Wirkungsketten — tippen zum Hervorheben im Kreis</div>
       <div id="ketten-list-solo"></div>
+    </div>
+  </div>
+
+  <!-- VERBINDUNGEN -->
+  <div id="tab-verbindungen" class="tab">
+    <div class="fort-wrap" id="verbindungen-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="section-label" style="margin-bottom:0">Verbindungen zwischen Teilen</div>
+        <div id="verbindungen-count" style="font-size:9px;color:#5a5068"></div>
+      </div>
+      <div id="verbindungen-filter" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"></div>
+      <div id="verbindungen-list"></div>
     </div>
   </div>
 
@@ -1712,6 +1725,7 @@ function setTab(id, btn) {
   if(id==="chronik")     { renderChronik(); }
   if(id==="kreis")       { updateFilterCounts(); setTimeout(renderKreis, 50); }
   if(id==="ketten")      { renderKettenSolo(); }
+  if(id==="verbindungen") { renderVerbindungen(); }
   if(id==="glaube")      { renderGlaubenssaetze(); }
   if(id==="plan")        { ladenPlan(); }
 }
@@ -2299,6 +2313,124 @@ document.addEventListener("DOMContentLoaded", function(){
     if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendMsg(); }
   });
 });
+
+
+// ===================== VERBINDUNGEN =====================
+
+function renderVerbindungen() {
+  var list = document.getElementById("verbindungen-list");
+  var countEl = document.getElementById("verbindungen-count");
+  var filterEl = document.getElementById("verbindungen-filter");
+  if(!list) return;
+
+  // Filter-Buttons nach Typ
+  if(filterEl && filterEl.children.length === 0) {
+    var typen = ["Alle","EXIL","MANAGER","FEUERWEHR","GESUND"];
+    var farben = {"Alle":"#9ab0d0","EXIL":"#E63946","MANAGER":"#2980b9","FEUERWEHR":"#e67e22","GESUND":"#27ae60"};
+    var aktivFilter = "Alle";
+    typen.forEach(function(typ) {
+      var btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.id = "vf-" + typ.toLowerCase();
+      btn.textContent = typ;
+      btn.style.color = farben[typ] || "#9ab0d0";
+      if(typ === "Alle") { btn.style.borderColor = farben[typ]; btn.classList.add("aktiv"); }
+      btn.onclick = function() {
+        document.querySelectorAll("#verbindungen-filter .filter-btn").forEach(function(b){ b.classList.remove("aktiv"); b.style.borderColor = ""; });
+        btn.classList.add("aktiv"); btn.style.borderColor = farben[typ];
+        renderVerbindungenListe(typ);
+      };
+      filterEl.appendChild(btn);
+    });
+  }
+
+  if(countEl) countEl.textContent = VERBINDUNGEN.length + " Verbindungen";
+  renderVerbindungenListe("Alle");
+}
+
+function renderVerbindungenListe(filter) {
+  var list = document.getElementById("verbindungen-list");
+  if(!list) return;
+  list.innerHTML = "";
+
+  var gefiltert = VERBINDUNGEN.filter(function(v) {
+    if(filter === "Alle") return true;
+    var a = findTeil(v.v), b = findTeil(v.n);
+    return (a && a.tl === filter) || (b && b.tl === filter);
+  });
+
+  if(gefiltert.length === 0) {
+    list.innerHTML = '<p style="font-size:11px;color:#4a4060;font-style:italic;padding:8px 0">Keine Verbindungen gefunden.</p>';
+    return;
+  }
+
+  gefiltert.forEach(function(v) {
+    var a = findTeil(v.v), b = findTeil(v.n);
+    if(!a || !b) return;
+    var phA = progress[a.id] !== undefined ? progress[a.id] : a.ph;
+    var phB = progress[b.id] !== undefined ? progress[b.id] : b.ph;
+
+    var card = document.createElement("div");
+    card.style.cssText = "background:rgba(154,176,208,0.05);border:1px solid rgba(154,176,208,0.15);border-radius:10px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s";
+    card.onmouseenter = function(){ this.style.borderColor = "rgba(154,176,208,0.35)"; };
+    card.onmouseleave = function(){ this.style.borderColor = "rgba(154,176,208,0.15)"; };
+
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">' +
+        '<div style="flex:1;text-align:center">' +
+          '<div style="font-size:11px;font-weight:700;color:' + a.f.tx + '">' + a.icon + ' ' + a.name + '</div>' +
+          '<div style="font-size:8px;color:' + a.f.rg + '">' + a.tl + ' · ' + PHASEN[phA] + '</div>' +
+        '</div>' +
+        '<div style="font-size:18px;color:#4a5868">⟷</div>' +
+        '<div style="flex:1;text-align:center">' +
+          '<div style="font-size:11px;font-weight:700;color:' + b.f.tx + '">' + b.icon + ' ' + b.name + '</div>' +
+          '<div style="font-size:8px;color:' + b.f.rg + '">' + b.tl + ' · ' + PHASEN[phB] + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:10px;color:#9a9080;line-height:1.6;font-style:italic">' + (v.info || "") + '</div>' +
+      (v.text && v.text !== v.info ? '<div style="font-size:10px;color:#7a7070;margin-top:4px;line-height:1.5">' + v.text + '</div>' : '');
+
+    card.onclick = (function(verb, ta, tb) {
+      return function() { zeigeVerbindungDetail(verb, ta, tb); };
+    })(v, a, b);
+
+    list.appendChild(card);
+  });
+}
+
+function zeigeVerbindungDetail(v, a, b) {
+  var phA = progress[a.id] !== undefined ? progress[a.id] : a.ph;
+  var phB = progress[b.id] !== undefined ? progress[b.id] : b.ph;
+  var modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.id = "modal-verb-detail";
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+
+  modal.innerHTML =
+    '<div class="modal-box" style="max-width:370px">' +
+      '<button class="modal-close" onclick="document.getElementById(\'modal-verb-detail\').remove()">✕</button>' +
+      '<div style="font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:#9ab0d0;margin-bottom:8px">Verbindung</div>' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+        '<div style="flex:1;background:' + a.f.bg + '40;border:1px solid ' + a.f.rg + '40;border-radius:9px;padding:10px;text-align:center">' +
+          '<div style="font-size:18px">' + a.icon + '</div>' +
+          '<div style="font-size:11px;font-weight:700;color:' + a.f.tx + ';margin-top:4px">' + a.name + '</div>' +
+          '<div style="font-size:8px;color:' + a.f.rg + '">' + PHASEN[phA] + '</div>' +
+        '</div>' +
+        '<div style="font-size:22px;color:#4a5868">⟷</div>' +
+        '<div style="flex:1;background:' + b.f.bg + '40;border:1px solid ' + b.f.rg + '40;border-radius:9px;padding:10px;text-align:center">' +
+          '<div style="font-size:18px">' + b.icon + '</div>' +
+          '<div style="font-size:11px;font-weight:700;color:' + b.f.tx + ';margin-top:4px">' + b.name + '</div>' +
+          '<div style="font-size:8px;color:' + b.f.rg + '">' + PHASEN[phB] + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#c0b0a0;line-height:1.7;margin-bottom:8px;font-style:italic">' + (v.info || "") + '</div>' +
+      (v.text && v.text !== v.info ? '<div style="font-size:11px;color:#9a8880;line-height:1.6;margin-bottom:12px">' + v.text + '</div>' : '') +
+      '<div style="display:flex;gap:8px;margin-top:12px">' +
+        '<button onclick="document.getElementById(\'modal-verb-detail\').remove();setTabDirect(\'dialog\');quickSend(\'Ich möchte die Verbindung zwischen ' + a.name + ' und ' + b.name + ' besprechen.\')" style="flex:1;background:rgba(212,175,122,0.15);border:1px solid rgba(212,175,122,0.3);border-radius:9px;padding:9px;color:#d4af7a;font-size:10px;cursor:pointer;font-family:Georgia,serif">💬 Im Dialog besprechen</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+}
 
 function renderKettenSolo() {
   var list = document.getElementById("ketten-list-solo");
