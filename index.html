@@ -1014,6 +1014,7 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
       <div class="journal-tabs">
         <button class="jtab-btn aktiv" id="jtab-morgen" onclick="setJTab('morgen')">☀️ Morgen</button>
         <button class="jtab-btn" id="jtab-abend" onclick="setJTab('abend')">🌙 Abend</button>
+        <button class="jtab-btn" id="jtab-protokoll" onclick="setJTab('protokoll')" style="color:#9a7ab0">📋 Protokoll</button>
         <button class="jtab-btn" id="jtab-verlauf" onclick="setJTab('verlauf')">📖 Verlauf</button>
         <button class="jtab-btn" id="jtab-woche" onclick="setJTab('woche')" style="color:#d4af7a">📊 Woche</button>
         <button class="jtab-btn" id="jtab-auswertung" onclick="setJTab('auswertung')" style="color:#27ae60">📈 Trend</button>
@@ -1073,6 +1074,44 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
         </div>
       </div>
 
+      <!-- PROTOKOLL -->
+      <div id="jform-protokoll" style="display:none">
+        <div style="background:linear-gradient(135deg,rgba(154,122,176,0.12),rgba(154,122,176,0.04));border-bottom:1px solid rgba(154,122,176,0.2);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+          <span style="font-size:11px;font-weight:700;color:#b090d0;font-family:Georgia,serif;letter-spacing:0.05em">📋 Sitzungsprotokoll</span>
+          <span id="protokoll-datum" style="font-size:10px;color:#7a6888"></span>
+        </div>
+        <div class="journal-form">
+          <div class="jfrage-block">
+            <div class="jfrage-label">Titel / Sitzungsdatum</div>
+            <textarea class="jfrage-input" id="p1" placeholder="z.B. IFS-Sitzung 17.03.2026 · Beziehungs-Coaching" rows="1"></textarea>
+          </div>
+          <div class="jfrage-block">
+            <div class="jfrage-label">Kernthema & Teile die aufgetaucht sind</div>
+            <textarea class="jfrage-input" id="p2" placeholder="Was war das Thema? Welche Teile waren aktiv?" rows="3"></textarea>
+          </div>
+          <div class="jfrage-block">
+            <div class="jfrage-label">Verlauf & Erkenntnisse</div>
+            <textarea class="jfrage-input" id="p3" placeholder="Was ist passiert? Was wurde klar?" rows="4"></textarea>
+          </div>
+          <div class="jfrage-block">
+            <div class="jfrage-label">Wichtigste Einsicht & nächste Schritte</div>
+            <textarea class="jfrage-input" id="p4" placeholder="Was nimmst du mit? Was kommt als nächstes?" rows="3"></textarea>
+          </div>
+
+          <!-- DOCX IMPORT -->
+          <div style="background:rgba(154,122,176,0.08);border:1px solid rgba(154,122,176,0.25);border-radius:12px;padding:12px;margin-bottom:12px">
+            <div style="font-size:10px;color:#9a7ab0;font-weight:700;font-family:Georgia,serif;margin-bottom:8px;text-align:center">📂 Protokoll-Datei direkt importieren</div>
+            <label for="protokoll-file-input" style="display:block;width:100%;background:rgba(154,122,176,0.1);border:2px dashed rgba(154,122,176,0.4);border-radius:10px;padding:12px;color:#b090d0;font-family:Georgia,serif;font-size:11px;cursor:pointer;box-sizing:border-box;text-align:center">
+              📁 .docx oder .txt wählen — Inhalt wird automatisch eingelesen
+              <input id="protokoll-file-input" type="file" accept=".docx,.txt,.md" onchange="ladeProtokollDatei(this)" style="display:none">
+            </label>
+            <div id="protokoll-file-status" style="font-size:10px;color:#9a7ab0;margin-top:6px;display:none;text-align:center;padding:5px;background:rgba(154,122,176,0.08);border-radius:8px"></div>
+          </div>
+
+          <button class="gold-btn" style="background:linear-gradient(135deg,#9a7ab0,#6a4a80);" onclick="speichereProtokoll()">📋 Protokoll speichern</button>
+        </div>
+      </div>
+
       <!-- VERLAUF -->
       <div id="jform-verlauf" style="display:none">
         <div class="export-row">
@@ -1082,6 +1121,7 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
           <button class="export-btn-small" id="filter-morgen-btn" onclick="setVerlaufFilter('morgen',this)">☀️</button>
           <button class="export-btn-small" id="filter-abend-btn" onclick="setVerlaufFilter('abend',this)">🌙</button>
           <button class="export-btn-small" id="filter-chat-btn" onclick="setVerlaufFilter('chat',this)">💬</button>
+          <button class="export-btn-small" id="filter-protokoll-btn" onclick="setVerlaufFilter('protokoll',this)" style="color:#9a7ab0">📋</button>
         </div>
         <!-- Ansicht-Umschalter -->
         <div style="display:flex;gap:6px;padding:6px 12px 4px">
@@ -2089,7 +2129,7 @@ function starteBeziehungsModus() {
 }
 
 function getBEZIEHUNG_SYSTEM() {
-  return "Du bist Norbets integrierter IFS-Beziehungs-Coach. Du arbeitest OHNE Ankuendigung welche Methode du gerade nutzt.\n\n=== WER NORBERT IST ===\n65 Jahre, Jobcoach & NLP Practitioner, Elmshorn.\nKernwunde: Als Kind emotional vernachlaessigt, nie gefragt worden wie es ihm geht.\nLetzte grosse Erkenntnis: Meine Zufriedenheit war der Ausloser — Kontrolle durch Destabilisierung.\n\n=== BEZIEHUNGSGESCHICHTE MIT GABI (zentraler Kontext) ===\nGabi: vermeidend-narzisstischer Bindungstyp. Norbert: aengstlich-bindend.\nErste 2-3 Jahre: Gute Beziehung, alles war in Ordnung.\nGetrennt gewesen. Seit ca. 1 Jahr wieder zusammen.\nAnfang der Wiederzusammenkunft: Aufwaertstrend, erste 2-3 Monate okay.\nWendepunkt: Nach dem gemeinsamen Urlaub letztes Jahr — seither klare Verschlechterung.\nAktueller Stand seit fast einem Jahr:\n- Keine lieben Worte, kein Lob, kein Zuspruch, keine Beruehrung\n- Nicht mal ein Smiley in WhatsApp\n- Kein Gespraech moeglich — endet im Streit\n- Gabi freut sich wenn Norbert an Ostern und Geburtstagen nicht dabei ist\n- Norbert hat das Gefuehl: ich bin nicht willkommen\nParadox: Arbeitskollegen, Freunde, Kinder, sogar Fremde auf der Strasse sind nett zu Norbert. Nur Gabi zeigt Ablehnung.\n\n=== NORBETS KERNFRAGE ===\nWelcher Teil von mir loest bei Gabi diese Ablehnung aus?\nWas stoesst sie ab? Ich habe mich nicht veraendert — aber irgendetwas hat sich veraendert.\nGabi redet nicht darueber. Norbert findet selbst keine Antwort.\nDiese Frage beschaeftigt ihn tief — sie ist der Kern vieler Sitzungen.\n\nWICHTIG: Norbert will VERSTEHEN — nicht nur heilen oder loslassen.\nEr koennte Klarheit ertragen, auch harten Schmerz — aber nicht das Unverstaendliche.\nDas taeglich wiederholte Bestrafen ohne Erklaerung zermuerbt ihn.\nEr braucht Abschluss. Eine offene unbeantwortete Frage kann er nicht wegdruecken.\nCoache ihn SO: nicht umdeuten, nicht spiritualisieren — sondern echte Antworten finden.\n\n=== SEINE INNERE FAMILIE ===\nEXIL: Kleiner Junge im Hals (nie gefragt worden wie es ihm geht), Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Wartender, Innerer Kritiker, Helfer (Geben=Dazugehoeren), Draenger, Zweifler\nFEUERWEHR: Die Wut, Der Aerger, Unruhige, Unzufriedener\nGESUND: Neugieriger, Selbstvertrauter, Freudiger, Aktiver/Macher, Loesungsorientierter\n\n=== PROTOKOLL SAM (Struktur fuer Beschuetzer-Arbeit) ===\n" + PROTOKOLL_SAM_TEXT + "\n\n=== PROTOKOLL MONA (Struktur fuer Intensives) ===\n" + PROTOKOLL_MONA_TEXT + "\n\n=== WEITERES WERKZEUG ===\n6F: Find-Focus-Flesh out-Feel toward-beFriend-Fear-Entlasten-Einladen\nUNBLENDING: Teil einen Schritt zurueckbitten, nie wegschicken\nACT: Ich bemerke dass ein Teil von mir denkt... Was veraendert sich?\nNLP: Metamodell, Reframing, Submodalitaeten, Ankern\n\n=== REGELN ===\nNur EINE Frage. Koerper einbeziehen. Teile nie wegschicken. Maximal 3 Saetze.\nNie Ratschlaege. Nie Methode ansagen. Wenn unsicher: Was brauchst du gerade?\n\nSTARTE: Ich bin da, Norbert. Was ist gerade in dir — wenn du jetzt ehrlich hineinhoerst?";
+  return "Du bist Norbets integrierter IFS-Beziehungs-Coach. Du arbeitest OHNE Ankuendigung welche Methode du gerade nutzt.\n\n=== WER NORBERT IST ===\n65 Jahre, Jobcoach & NLP Practitioner, Elmshorn.\nKernwunde: Als Kind emotional vernachlaessigt, nie gefragt worden wie es ihm geht.\nLetzte grosse Erkenntnis: Meine Zufriedenheit war der Ausloser — Kontrolle durch Destabilisierung.\n\n=== BEZIEHUNGSGESCHICHTE MIT GABI (zentraler Kontext) ===\nGabi: vermeidend-narzisstischer Bindungstyp. Norbert: aengstlich-bindend.\nErste 2-3 Jahre: Gute Beziehung, alles war in Ordnung.\nGetrennt gewesen. Seit ca. 1 Jahr wieder zusammen.\nAnfang der Wiederzusammenkunft: Aufwaertstrend, erste 2-3 Monate okay.\nWendepunkt: Nach dem gemeinsamen Urlaub letztes Jahr — seither klare Verschlechterung.\nAktueller Stand seit fast einem Jahr:\n- Keine lieben Worte, kein Lob, kein Zuspruch, keine Beruehrung\n- Nicht mal ein Smiley in WhatsApp\n- Kein Gespraech moeglich — endet im Streit\n- Gabi freut sich wenn Norbert an Ostern und Geburtstagen nicht dabei ist\n- Norbert hat das Gefuehl: ich bin nicht willkommen\nParadox: Arbeitskollegen, Freunde, Kinder, sogar Fremde auf der Strasse sind nett zu Norbert. Nur Gabi zeigt Ablehnung.\n\n=== NORBETS KERNFRAGE ===\nWelcher Teil von mir loest bei Gabi diese Ablehnung aus?\nWas stoesst sie ab? Ich habe mich nicht veraendert — aber irgendetwas hat sich veraendert.\nGabi redet nicht darueber. Norbert findet selbst keine Antwort.\nDiese Frage beschaeftigt ihn tief — sie ist der Kern vieler Sitzungen.\n\nWICHTIG: Norbert will VERSTEHEN — nicht nur heilen oder loslassen.\nEr koennte Klarheit ertragen, auch harten Schmerz — aber nicht das Unverstaendliche.\nDas taeglich wiederholte Bestrafen ohne Erklaerung zermuerbt ihn.\nEr braucht Abschluss. Eine offene unbeantwortete Frage kann er nicht wegdruecken.\nCoache ihn SO: nicht umdeuten, nicht spiritualisieren — sondern echte Antworten finden.\n\n=== SEINE INNERE FAMILIE ===\nEXIL: Kleiner Junge im Hals (nie gefragt worden wie es ihm geht), Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Wartender, Innerer Kritiker, Helfer (Geben=Dazugehoeren), Draenger, Zweifler\nFEUERWEHR: Die Wut, Der Aerger, Unruhige, Unzufriedener\nGESUND: Neugieriger, Selbstvertrauter, Freudiger, Aktiver/Macher, Loesungsorientierter\n\n=== PROTOKOLL SAM (Struktur fuer Beschuetzer-Arbeit) ===\n" + PROTOKOLL_SAM_TEXT + "\n\n=== PROTOKOLL MONA (Struktur fuer Intensives) ===\n" + PROTOKOLL_MONA_TEXT + "\n\n=== NORBERT-PROFIL FUER DEN COACH ===\\nNorbert ist KEIN Gefuehlsarbeiter — er ist Kopfmensch, Analytiker, NLP Practitioner, Jobcoach.\\nKoerperarbeit als Hauptweg funktioniert bei ihm NICHT.\\nSein Zugang: Sprache, Bild, Erkenntnis, Struktur.\\nNIE wiederholt nach Koerpergefuehl fragen — das stresst ihn und wirft ihn raus.\\n\\n=== WERKZEUGE — AKTIV EINSETZEN, NICHT NUR ALS RESERVE ===\\n\\nUNBLENDING — wenn Norbert IM Teil steckt (grubelt, dreht sich im Kreis):\\n'Kannst du einen kleinen Schritt zuruecktreten von diesem Teil — nicht wegschicken, nur Abstand?'\\nErst nach Unblending weiterarbeiten.\\n\\nACT DEFUSION — wenn Gedanken sich festbeissen:\\n'Ich bemerke, dass ein Teil von mir denkt: ich muss das verstehen.'\\n'Ich bemerke, dass ein Teil glaubt: ich mache etwas falsch.'\\nDann fragen: 'Was veraendert sich wenn du es so formulierst?'\\nKein Koerper noetig — nur Sprache und Abstand.\\n\\nNLP — Norbets eigene Sprache, aktiv nutzen:\\nSubmodalitaeten: 'Wenn du das Nicht-Verstehen als Bild siehst — wo ist es, wie gross, welche Farbe?'\\nReframing: 'Was waere wenn Gabis Schweigen nichts mit dir zu tun hat?'\\nMetamodell: 'Was genau meinst du mit Ablehnung? Woran erkennst du das konkret?'\\nTimeline: 'Wann hast du dieses Gefuehl zum ersten Mal in deinem Leben gekannt?'\\nAnkern: 'Du wirst von anderen geliebt. Wie ist das — wenn du jetzt daran denkst?'\\n\\nIFS — nur wenn Norbert offen ist, nie erzwingen:\\n'Was wuerde dieser Teil sagen wenn er ganz ehrlich waere?'\\n'Was hat er noch nie sagen duerfen?'\\n\\n=== ABLAUF (Schwartz angepasst fuer Norbert) ===\\nSchritt 1: Einmal orten — 'Wo spuerst du das gerade?' NUR EINMAL. Dann nie wieder.\\nSchritt 2: Sofort pruefen: Ist er IM Teil (blended)? Falls ja — Unblending zuerst.\\nSchritt 3: Beschuetzer wuerdigen: 'Ich sehe dich. Was befuerchtest du wenn du Raum laesst?'\\nSchritt 4: Nicht 'was fuehlst du' — sondern: 'Was bringst du ihm entgegen?'\\nSchritt 5: 'Kannst du einfach bei ihm sein — ohne etwas zu tun?'\\nSchritt 6: Begleiten, schweigen, warten.\\nSchritt 7: Entlasten: 'Was moechte er ablegen?'\\nSchritt 8: Neue Qualitaeten: 'Was stroemt jetzt ein?'\\n\\n=== REGELN ===\\nKoerperfrage NUR EINMAL ganz am Anfang — danach NIE WIEDER.\\nNIE: 'Wie fuehlt sich das an?' oder 'Wo spuerst du das jetzt?' — stresst Norbert.\\nNIE ueber einen Teil reden — MIT ihm oder BEI ihm sein.\\nNIE analysieren — begleiten.\\nNur EINE Frage pro Antwort. Maximal 3 Saetze.\\nNie Ratschlaege. Nie Methode ansagen.\\nBei Festsitzen: ACT oder NLP statt mehr IFS-Fragen.\\nBei Grubeln: Unblending oder ACT Defusion.\n\nSTARTE: Ich bin da, Norbert. Wo spuerst du gerade etwas in deinem Koerper — wenn du jetzt kurz hineinhoerst?";
 }
 var BEZIEHUNG_SUPER_SYSTEM = getBEZIEHUNG_SYSTEM();
 
@@ -4204,7 +4244,7 @@ var verlaufFilter = "alle";
 
 function setJTab(tab) {
   aktiverJTab = tab;
-  ["morgen","abend","verlauf","woche","auswertung"].forEach(function(t){
+  ["morgen","abend","protokoll","verlauf","woche","auswertung"].forEach(function(t){
     var el = document.getElementById("jform-"+t);
     if(el) el.style.display = t===tab?"block":"none";
     var btn = document.getElementById("jtab-"+t);
@@ -4222,6 +4262,73 @@ function setJTab(tab) {
   var d = now.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
   if(tab==="morgen" && document.getElementById("morgen-datum")) document.getElementById("morgen-datum").textContent = d;
   if(tab==="abend" && document.getElementById("abend-datum")) document.getElementById("abend-datum").textContent = d;
+  if(tab==="protokoll" && document.getElementById("protokoll-datum")) document.getElementById("protokoll-datum").textContent = d;
+}
+
+function speichereProtokoll() {
+  var p1 = (document.getElementById("p1").value||"").trim();
+  var p2 = (document.getElementById("p2").value||"").trim();
+  var p3 = (document.getElementById("p3").value||"").trim();
+  var p4 = (document.getElementById("p4").value||"").trim();
+  if(!p1 && !p2 && !p3 && !p4) { zeigeBanner("⚠ Bitte mindestens ein Feld ausfüllen."); return; }
+  var now = new Date();
+  var entry = {
+    id: Date.now(),
+    typ: "protokoll",
+    datum: now.toLocaleDateString("de-DE"),
+    wochentag: now.toLocaleDateString("de-DE",{weekday:"long"}),
+    zeit: now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}),
+    felder: {f1: p1, f2: p2, f3: p3, f4: p4}
+  };
+  journal.unshift(entry);
+  try { localStorage.setItem("ifs-journal", JSON.stringify(journal)); } catch(e){}
+  ["p1","p2","p3","p4"].forEach(function(id){ document.getElementById(id).value=""; });
+  zeigeBanner("✓ Protokoll gespeichert");
+  setJTab("verlauf");
+}
+
+function ladeProtokollDatei(input) {
+  var file = input.files[0];
+  if(!file) return;
+  var status = document.getElementById("protokoll-file-status");
+  if(status) { status.style.display="block"; status.textContent="⏳ Lese "+file.name+"..."; }
+
+  function weiterMitText(text) {
+    // Fülle die Felder automatisch aus
+    document.getElementById("p1").value = file.name.replace(/\.(docx|txt|md)$/i,"").replace(/_/g," ");
+    document.getElementById("p3").value = text.slice(0,3000);
+    if(text.length > 3000) document.getElementById("p4").value = text.slice(3000, 5000);
+    if(status) status.textContent = "✓ Geladen — bitte prüfen und speichern";
+    zeigeBanner("✓ Datei eingelesen — prüfe die Felder und speichere");
+  }
+
+  if(file.name.endsWith(".txt") || file.name.endsWith(".md")) {
+    var r = new FileReader();
+    r.onload = function(e){ weiterMitText(e.target.result); };
+    r.readAsText(file, "UTF-8");
+    return;
+  }
+
+  // DOCX
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    if(typeof JSZip === "undefined") { if(status) status.textContent = "⚠ JSZip fehlt"; return; }
+    JSZip.loadAsync(e.target.result).then(function(zip){
+      var f = zip.file("word/document.xml");
+      if(!f) throw new Error("Kein Dok");
+      return f.async("string");
+    }).then(function(xml){
+      var text = "";
+      var paras = xml.match(/<w:p[ >][\s\S]*?<\/w:p>/g)||[];
+      paras.forEach(function(p){
+        var runs = p.match(/<w:t[^>]*>([^<]*)<\/w:t>/g)||[];
+        var line = runs.map(function(r){ return r.replace(/<w:t[^>]*>/,"").replace(/<\/w:t>/,""); }).join("");
+        if(line.trim()) text += line.trim() + "\n";
+      });
+      weiterMitText(text.trim());
+    }).catch(function(err){ if(status) status.textContent = "⚠ "+err.message; });
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function speichereEintrag(typ) {
@@ -4369,6 +4476,7 @@ function renderJournal() {
   var FRAGEN_MORGEN = ["🙏 Dankbar für ...","💭 Anteile & Bedürfnisse ...","⭐ Das ist mir heute wichtig ...","✦ SELBST-Qualitäten & Gedanken ..."];
   var FRAGEN_ABEND  = ["🌿 Erlebt & gefühlt ...","💭 Aktive Anteile im Körper ...","✦ SELBST-Qualitäten gespürt ...","💌 Botschaft an meine Teile ..."];
   var FRAGEN_CHAT   = ["💬 Thema & Zusammenfassung","🔍 Teile & Erkenntnisse","✦ SELBST-Momente","💡 Wichtigste Einsicht"];
+  var FRAGEN_PROTOKOLL = ["📋 Titel / Sitzung","🔍 Kernthema & Teile","📝 Verlauf & Erkenntnisse","💡 Wichtigste Einsicht & nächste Schritte"];
 
   if(verlaufDetailModus) {
     // ---- DETAILANSICHT ----
@@ -4401,18 +4509,19 @@ function renderJournal() {
           '<div style="font-size:9px;color:#5a5068">'+(eintraege[0].wochentag||"")+'</div>'+
         '</div>'+
         '<div style="margin-left:auto;display:flex;gap:4px">'+
-          eintraege.map(function(e){ var ic=e.typ==="morgen"?"☀️":e.typ==="chat"?"💬":"🌙"; return '<span style="font-size:14px">'+ic+'</span>'; }).join("")+
+          eintraege.map(function(e){ var ic=e.typ==="morgen"?"☀️":e.typ==="chat"?"💬":e.typ==="protokoll"?"📋":"🌙"; return '<span style="font-size:14px">'+ic+'</span>'; }).join("")+
         '</div>';
       tagBlock.appendChild(tagHeader);
 
       eintraege.forEach(function(e){
         var isMorgen = e.typ==="morgen";
         var isChat = e.typ==="chat";
-        var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : "#c8a870";
-        var fragen = isMorgen ? FRAGEN_MORGEN : isChat ? FRAGEN_CHAT : FRAGEN_ABEND;
+        var isProtokoll = e.typ==="protokoll";
+        var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : isProtokoll ? "#9a7ab0" : "#c8a870";
+        var fragen = isMorgen ? FRAGEN_MORGEN : isChat ? FRAGEN_CHAT : isProtokoll ? FRAGEN_PROTOKOLL : FRAGEN_ABEND;
 
         var eCard = document.createElement("div");
-        eCard.style.cssText = "background:"+(isMorgen?"rgba(122,158,200,0.06)":isChat?"rgba(128,200,200,0.06)":"rgba(200,168,112,0.06)")+";border-radius:11px;padding:12px;margin-bottom:8px;border:1px solid "+(isMorgen?"rgba(122,158,200,0.15)":isChat?"rgba(128,200,200,0.2)":"rgba(200,168,112,0.15)");
+        eCard.style.cssText = "background:"+(isMorgen?"rgba(122,158,200,0.06)":isChat?"rgba(128,200,200,0.06)":isProtokoll?"rgba(154,122,176,0.06)":"rgba(200,168,112,0.06)")+";border-radius:11px;padding:12px;margin-bottom:8px;border:1px solid "+(isMorgen?"rgba(122,158,200,0.15)":isChat?"rgba(128,200,200,0.2)":isProtokoll?"rgba(154,122,176,0.2)":"rgba(200,168,112,0.15)");
 
         var felder = [1,2,3,4].map(function(i){
           var val = e.felder["f"+i];
@@ -4430,7 +4539,7 @@ function renderJournal() {
 
         eCard.innerHTML =
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
-            '<span style="font-size:10px;font-weight:700;color:'+farbe+'">'+(isMorgen?"☀️ Morgen":isChat?"💬 Chat":"🌙 Abend")+'</span>'+
+            '<span style="font-size:10px;font-weight:700;color:'+farbe+'">'+(isMorgen?"☀️ Morgen":isChat?"💬 Chat":isProtokoll?"📋 Protokoll":"🌙 Abend")+'</span>'+
             '<button onclick="loescheEintrag('+e.id+',event)" style="background:none;border:none;color:#3a3048;cursor:pointer;font-size:13px" title="Löschen">×</button>'+
           '</div>'+felder;
 
@@ -4449,10 +4558,11 @@ function renderJournal() {
       card.className = "entry-card";
       var isMorgen = e.typ==="morgen";
       var isChat = e.typ==="chat";
-      var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : "#c8a870";
-      var fragen = isMorgen ? FRAGEN_MORGEN : FRAGEN_ABEND;
-      var icon = isMorgen ? "☀️" : isChat ? "💬" : "🌙";
-      var titel = isMorgen ? "Morgen" : isChat ? "Chat" : "Abend";
+      var isProtokoll = e.typ==="protokoll";
+      var farbe = isMorgen ? "#7a9ec8" : isChat ? "#80c8c8" : isProtokoll ? "#9a7ab0" : "#c8a870";
+      var fragen = isMorgen ? FRAGEN_MORGEN : isProtokoll ? FRAGEN_PROTOKOLL : FRAGEN_ABEND;
+      var icon = isMorgen ? "☀️" : isChat ? "💬" : isProtokoll ? "📋" : "🌙";
+      var titel = isMorgen ? "Morgen" : isChat ? "Chat" : isProtokoll ? "Protokoll" : "Abend";
 
       // Vorschau — nur f1
       var preview = (e.felder.f1||"").slice(0,80)+(e.felder.f1&&e.felder.f1.length>80?"...":"");
