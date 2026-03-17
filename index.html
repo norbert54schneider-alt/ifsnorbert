@@ -2563,11 +2563,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 var messages = [];
 var journal = VORGELADENE_EINTRAEGE.slice(); // Immer direkt mit Eintraegen starten
-var progress = {}; // fest eingebaut
+var progress = {"1": 2, "2": 2, "3": 3, "6": 2, "11": 2, "13": 2, "14": 2, "18": 2, "20": 3, "21": 2, "22": 2, "27": 2, "30": 2, "33": 4, "34": 2, "36": 2, "39": 3, "44": 3, "45": 4, "47": 3, "48": 3, "49": 3, "54": 2, "55": 2, "56": 2, "61": 3}; // fest eingebaut
 var aktiverFilter = "alle";
 var tagebuchModus = null; // null | 'morgen' | 'abend'
-var extraTeile = []; // fest eingebaut
-var geloeschteTeileIds = []; // dauerhaft gelöschte Basis-Teile
+var extraTeile = [{"id": 53, "name": "Der Ärgerteil der KI", "kurz": "Der Ärgerteil…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Wird sehr aufgeregt, dann traurig", "gs": ["Die ganze Arbeit war umsonst, die Energie hat sich nicht gelohnt"], "job": "Reagiert auf Inkompetenz und Technikversagen, wird aktiv wenn Arbeit umsonst zu sein scheint", "aus": "KI macht Fehler, je mehr repariert wird desto schlimmer wird es", "angst": "Noch unbekannt", "braucht": "Jemand der sagt 'bleib ruhig, es wird alles gut, reg dich nicht auf'", "st": "Kennt Norbert schon ganz lange, war früher aktiver, ist jetzt ruhiger geworden weil Norbert ruhiger wurde", "ph": 1, "pos": {"x": 61, "y": 44}}, {"id": 54, "name": "Der Weggegangene Teil", "kurz": "Der Weggegang…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Unbekannt", "gs": ["Wenn ich nicht gesehen werde, gehe ich weg"], "job": "Schutz vor Übersehen durch Rückzug", "aus": "Nicht beachtet werden in IFS-Sitzungen", "angst": "Noch unbekannt", "braucht": "Gesehen und einbezogen werden", "st": "Aktiv - ist weggegangen als andere Teile ignoriert wurden", "ph": 1, "pos": {"x": 38, "y": 67}}, {"id": 57, "name": "Der Ablenk-Anteil", "kurz": "Der Ablenk-An…", "typ": "manager", "tl": "MANAGER", "icon": "🔍", "f": {"bg": "#1A3A6B", "tx": "#d0e8ff", "rg": "#2980b9"}, "kp": "Gibt Zeichen bevor Explosion", "gs": ["Ich kann helfen runter zu fahren"], "job": "Auf schöne Dinge hinweisen und vom Ärger ablenken", "aus": "Wenn Ärger zu groß wird", "angst": "Noch unbekannt", "braucht": "Vertrauen dass seine Hilfe angenommen wird", "st": "Kooperativ und hilfreich", "ph": 1, "pos": {"x": 29, "y": 66}}, {"id": 58, "name": "Der Früh-Warner", "kurz": "Der Früh-Warn…", "typ": "manager", "tl": "MANAGER", "icon": "🔍", "f": {"bg": "#1A3A6B", "tx": "#d0e8ff", "rg": "#2980b9"}, "kp": "Gibt körperliche Zeichen als Warnung", "gs": ["Ich kann rechtzeitig warnen"], "job": "Frühwarnsignale geben bevor Norbert explodiert", "aus": "Aufsteigende Wut/Ärger", "angst": "Noch unbekannt", "braucht": "Dass Norbert auf seine Signale achtet", "st": "Präventiv arbeitend", "ph": 1, "pos": {"x": 66, "y": 19}}, {"id": 59, "name": "Der KI-Ärgerteil", "kurz": "Der KI-Ärgert…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Nicht näher lokalisiert, wird ruhiger wenn Norbert ruhiger wird", "gs": ["Die ganze Arbeit ist umsonst wenn es nicht funktioniert"], "job": "Sich über die Inkompetenz von Technik ärgern und Frust abbauen", "aus": "Technische Probleme, Fehler die sich häufen, gescheiterte Reparaturversuche", "angst": "Noch unbekannt", "braucht": "Frühwarnung bevor er explodiert, jemand der sagt 'bleib ruhig, es wird alles gut'", "st": "Will Ablenkung geben und an schöne Dinge erinnern", "ph": 1, "pos": {"x": 43, "y": 42}}, {"id": 60, "name": "Das Team der frustrierten Teile", "kurz": "Das Team der …", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Verschiedene Körperstellen", "gs": ["Wir stehen rum und haben keine Antworten"], "job": "Sammlung verschiedener Frust-Teile die bei Problemen aktiv werden", "aus": "Unvollendete Projekte, technische Probleme", "angst": "Noch unbekannt", "braucht": "Gesehen und gehört werden, nicht übergangen werden", "st": "Sind weggegangen als sie nicht beachtet wurden", "ph": 1, "pos": {"x": 20, "y": 65}}]; // fest eingebaut
+var geloeschteTeileIds = [47, 54, 53, 59, 60, 38, 43, 48, 44, 49, 41, 50, 45];
+var entferntTeileIds = [];
+var entferntVerbIds = [];
+var entferntKettenTitel = [];
+var entferntKettenObjekte = [];
+var entferntVerbObjekte = [];
+var entferntSelbstNamen = [];
 
 // ===================== STORAGE =====================
 function speichern() {
@@ -2576,6 +2582,12 @@ function speichern() {
   try { localStorage.setItem("ifs-progress", JSON.stringify(progress)); } catch(e){}
   try { localStorage.setItem("ifs-extrateile", JSON.stringify(extraTeile)); } catch(e){}
   try { localStorage.setItem("ifs-geloescht", JSON.stringify(geloeschteTeileIds)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt", JSON.stringify(entferntTeileIds)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt-verb", JSON.stringify(entferntVerbIds)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt-verb-obj", JSON.stringify(entferntVerbObjekte)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt-ketten", JSON.stringify(entferntKettenTitel)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt-ketten-obj", JSON.stringify(entferntKettenObjekte)); } catch(e){}
+  try { localStorage.setItem("ifs-entfernt-selbst", JSON.stringify(entferntSelbstNamen)); } catch(e){}
   // Verbindungen die über Basis hinausgehen speichern
   try {
     var basisVerbIds = ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14","c15","c16","c17","c18","c19","c20","c21","c23","c24","c25","c26","c28","c29","c30","c31","c32","c33"];
@@ -2685,8 +2697,19 @@ function laden() {
       var parsedG = JSON.parse(rawGeloescht);
       if(Array.isArray(parsedG)) {
         geloeschteTeileIds = parsedG;
-        // Basis-Teile die gelöscht wurden entfernen
         TEILE = TEILE.filter(function(t){ return geloeschteTeileIds.indexOf(t.id) === -1; });
+      }
+    }
+  } catch(e){}
+
+  // Entfernte Basis-Teile laden (können durch Update wiederkommen)
+  try {
+    var rawEntfernt = localStorage.getItem("ifs-entfernt");
+    if(rawEntfernt) {
+      var parsedEnt = JSON.parse(rawEntfernt);
+      if(Array.isArray(parsedEnt)) {
+        entferntTeileIds = parsedEnt;
+        TEILE = TEILE.filter(function(t){ return entferntTeileIds.indexOf(t.id) === -1; });
       }
     }
   } catch(e){}
@@ -2703,14 +2726,19 @@ function laden() {
   } catch(err) { _ladenFehler.push("extrateile: " + err.message); }
 
   // Ketten aus localStorage laden
+  // Entfernte Ketten IMMER laden und filtern (unabhängig von extra Ketten)
+  try { var rawEntK = localStorage.getItem("ifs-entfernt-ketten"); if(rawEntK) entferntKettenTitel = JSON.parse(rawEntK); } catch(e){}
+  try { var rawEntKO = localStorage.getItem("ifs-entfernt-ketten-obj"); if(rawEntKO) entferntKettenObjekte = JSON.parse(rawEntKO); } catch(e){}
+  if(entferntKettenTitel.length > 0) {
+    KETTEN = KETTEN.filter(function(k){ return entferntKettenTitel.indexOf(k.t) === -1; });
+  }
   try {
     var rawKetten = localStorage.getItem("ifs-ketten");
     if(rawKetten && rawKetten.length > 2) {
       var parsedK = JSON.parse(rawKetten);
       if(Array.isArray(parsedK)) {
-        // Immer mergen — neue Ketten aus localStorage hinzufügen
         parsedK.forEach(function(k){
-          var duplikat = KETTEN.some(function(x){ return x.t === k.t; });
+          var duplikat = KETTEN.some(function(x){ return x.t === k.t; }) || entferntKettenTitel.indexOf(k.t) !== -1;
           if(!duplikat) KETTEN.push(k);
         });
       }
@@ -2758,6 +2786,21 @@ function laden() {
   });
 
   // Extra-Verbindungen laden (via Update hinzugefügt)
+  // Entfernte Verbindungen IMMER laden und filtern
+  try { var rawEntVerb = localStorage.getItem("ifs-entfernt-verb"); if(rawEntVerb) entferntVerbIds = JSON.parse(rawEntVerb); } catch(e){}
+  try { var rawEntVerbO = localStorage.getItem("ifs-entfernt-verb-obj"); if(rawEntVerbO) entferntVerbObjekte = JSON.parse(rawEntVerbO); } catch(e){}
+  // Notfall: alte Verbindungen aus Basis wiederherstellen falls Objekte fehlen aber IDs vorhanden
+  if(entferntVerbIds.length > 0 && entferntVerbObjekte.length === 0) {
+    entferntVerbIds.forEach(function(vkey) {
+      var parts = vkey.split("_");
+      // Objekt aus VERBINDUNGEN-Backup suchen (alle IDs)
+      entferntVerbObjekte.push({v:parseInt(parts[0]), n:parseInt(parts[1]), id:"entfernt_"+vkey, f:"#7a7090", info:"", text:""});
+    });
+  }
+  try { var rawEntVerbO = localStorage.getItem("ifs-entfernt-verb-obj"); if(rawEntVerbO) entferntVerbObjekte = JSON.parse(rawEntVerbO); } catch(e){}
+  if(entferntVerbIds.length > 0) {
+    VERBINDUNGEN = VERBINDUNGEN.filter(function(v){ return entferntVerbIds.indexOf(v.v+"_"+v.n) === -1; });
+  }
   try {
     var rawExtraVerb = localStorage.getItem("ifs-verbindungen-extra");
     if(rawExtraVerb) {
@@ -4004,11 +4047,12 @@ function renderGlaubenssaetze() {
     // Teil-Header
     var header = document.createElement("div");
     header.style.cssText = "display:flex;align-items:center;gap:8px;padding:8px 11px;cursor:pointer;";
-    header.innerHTML =
-      '<span style="font-size:13px">'+t.icon+'</span>'+
-      '<span style="font-size:10px;font-weight:700;color:'+t.f.tx+'">'+t.name+'</span>'+
-      neuBadgeGlaube+
-      '<span style="font-size:8px;background:'+t.f.rg+'22;color:'+t.f.rg+';border-radius:5px;padding:1px 6px;margin-left:auto">'+t.tl+'</span>';
+    var _ico = document.createElement('span'); _ico.style.fontSize='13px'; _ico.textContent=t.icon;
+    var _nm = document.createElement('span'); _nm.style.cssText='font-size:10px;font-weight:700;color:'+t.f.tx; _nm.textContent=t.name;
+    var _tl = document.createElement('span'); _tl.style.cssText='font-size:8px;background:'+t.f.rg+'22;color:'+t.f.rg+';border-radius:5px;padding:1px 6px;margin-left:auto'; _tl.textContent=t.tl;
+    header.appendChild(_ico); header.appendChild(_nm);
+    if(neuBadgeGlaube){var _nb=document.createElement('span');_nb.innerHTML=neuBadgeGlaube;header.appendChild(_nb);}
+    header.appendChild(_tl);
     header.onclick = (function(teil){ return function(){ oeffneDetail(teil); }; })(t);
     block.appendChild(header);
 
@@ -4018,9 +4062,9 @@ function renderGlaubenssaetze() {
     t.gs.forEach(function(g, gi) {
       var item = document.createElement("div");
       item.style.cssText = "display:flex;gap:8px;align-items:flex-start;padding:5px 0;"+(gi>0?"border-top:1px solid rgba(255,255,255,0.05)":"");
-      item.innerHTML =
-        '<span style="color:'+t.f.rg+';font-size:14px;line-height:1;flex-shrink:0;margin-top:1px">❝</span>'+
-        '<span style="font-size:11px;color:#c8c0b0;line-height:1.6;font-style:italic">'+g+'</span>';
+      var _q=document.createElement('span'); _q.style.cssText='color:'+t.f.rg+';font-size:14px;line-height:1;flex-shrink:0;margin-top:1px'; _q.textContent='❝';
+      var _g=document.createElement('span'); _g.style.cssText='font-size:11px;color:#c8c0b0;line-height:1.6;font-style:italic'; _g.textContent=g;
+      item.appendChild(_q); item.appendChild(_g);
       gsWrap.appendChild(item);
     });
     block.appendChild(gsWrap);
@@ -4989,7 +5033,36 @@ var VERBINDUNGEN = [
   {id:"c42",v:47,n:51,f:"#7a7090",info:"Kranker Teil aktiviert Kreativität",text:"Trotz Krankheit die IFS-App programmiert"},
   {id:"c43",v:51,n:17,f:"#7a7090",info:"Kreativität führt zu Freude",text:"Meisten Spaß hatte ich beim App-Basteln"},
   {id:"c44",v:30,n:17,f:"#7a7090",info:"Aktivität führt zu Freude",text:"Initiative ergreifen bringt Freude"},
-  {id:"c45",v:47,n:52,f:"#7a7090",info:"Krankheit aktiviert Selbstfürsorge",text:"Der Kranke löst den sich um sich selbst Kümmernden aus"}
+  {id:"c45",v:47,n:52,f:"#7a7090",info:"Krankheit aktiviert Selbstfürsorge",text:"Der Kranke löst den sich um sich selbst Kümmernden aus"},
+{"id": "c34", "v": 20, "n": 39, "f": "#7a7090", "info": "Verletzung führt zu Rückzug als Schutz", "text": "Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
+{"id": "c35", "v": 21, "n": 40, "f": "#7a7090", "info": "Wut führt zu Reflexion und Klarheit", "text": "Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
+{"id": "c36", "v": 33, "n": 46, "f": "#7a7090", "info": "Konflikt um Schimpfen", "text": "Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
+{"id": "c37", "v": 33, "n": 33, "f": "#7a7090", "info": "Der Schimpfende will durch Frust rausschimpfen Ruhe schaffen", "text": "Schimpfen für Ruhe"},
+{"id": "c38", "v": 30, "n": 46, "f": "#7a7090", "info": "Der Macher arbeitet trotz des Kranken weiter", "text": "Auch in der Krankheit bleibt der Macher aktiv"},
+{"id": "c39", "v": 33, "n": 39, "f": "#7a7090", "info": "Kranksein führt zum Rückzug", "text": "Wegen Erkältung den ganzen Tag im Bett gelegen"},
+{"id": "c40", "v": 33, "n": 30, "f": "#7a7090", "info": "Der kranke Teil aktiviert den aktiven Macher", "text": "Obwohl krank macht Norbert Termine und plant Unternehmungen"},
+{"id": "c41", "v": 20, "n": 33, "f": "#7a7090", "info": "Verletzung bringt Klarheit über Muster", "text": "Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"},
+{"id": "c42", "v": 33, "n": 51, "f": "#7a7090", "info": "Kranker Teil aktiviert Kreativität", "text": "Trotz Krankheit die IFS-App programmiert"},
+{"id": "c43", "v": 51, "n": 17, "f": "#7a7090", "info": "Kreativität führt zu Freude", "text": "Meisten Spaß hatte ich beim App-Basteln"},
+{"id": "c44", "v": 30, "n": 17, "f": "#7a7090", "info": "Aktivität führt zu Freude", "text": "Initiative ergreifen bringt Freude"},
+{"id": "c45", "v": 33, "n": 52, "f": "#7a7090", "info": "Krankheit aktiviert Selbstfürsorge", "text": "Der Kranke löst den sich um sich selbst Kümmernden aus"},
+{"id": "c47", "v": 33, "n": 1, "f": "#7a7090", "info": "Der Grübler trägt die schweren Gedanken für den kleinen Jungen", "text": "Er macht das schon immer für mich, aber er hatte auch viel Zeit wo er Urlaub machen kann"},
+{"id": "c49", "v": 3, "n": 52, "f": "#7a7090", "info": "Der Wahrheits-Suchende aktiviert den Ohnmachts-Erwartenden", "text": "Wenn der Wahrheits-Suchende die direkte Frage stellen will, aktiviert sich sofort die Ohnmacht vor der möglichen Antwort"},
+{"id": "c50", "v": 55, "n": 3, "f": "#7a7090", "info": "Der Traumbeziehungs-Bewahrer verstärkt den Wahrheits-Suchenden", "text": "Je mehr der Traum bedroht ist, desto verzweifelter wird die Suche nach Antworten und Klarheit"},
+{"id": "c51", "v": 55, "n": 56, "f": "#7a7090", "info": "Der Wahrheits-Suchende aktiviert den Antwort-Suchenden", "text": "Beide Teile suchen verzweifelt nach Verständnis für Gabis Verhalten"},
+{"id": "c52", "v": 56, "n": 57, "f": "#7a7090", "info": "Der Antwort-Suchende arbeitet mit dem Gedanken-Träger zusammen", "text": "Beide versuchen Norbert zu entlasten, sind aber selbst überlastet"},
+{"id": "c53", "v": 58, "n": 39, "f": "#7a7090", "info": "Der Überforderte will den Traumbeziehungs-Träger schützen", "text": "Der Überforderte übernimmt die schweren Gedanken, damit der Traumbeziehungs-Träger nicht alleine leiden muss"},
+{"id": "c54", "v": 56, "n": 39, "f": "#7a7090", "info": "Der Antwort-Suchende versucht den Traumbeziehungs-Anteil zu retten", "text": "Der suchende Teil will verstehen um die Traumbeziehung zu bewahren"},
+{"id": "c55", "v": 61, "n": 62, "f": "#7a7090", "info": "Der verstehen-wollende Teil aktiviert den ohnmächtigen Teil bei Trennungsgedanken", "text": "Wenn der Ablehnung-Verstehen-Wollende an die mögliche Antwort 'Nein' von Gabi denkt, aktiviert das sofort den Ohnmächtigen"},
+{"id": "c56", "v": 63, "n": 61, "f": "#7a7090", "info": "Der Traumbewahrer verstärkt die Verzweiflung des verstehen-wollenden Teils", "text": "Je mehr der Traumbewahrer am Bild der Traumfrau festhält, desto verzweifelter wird der Ablehnung-Verstehen-Wollende in seiner Suche nach Antworten"},
+{"id": "c57", "v": 33, "n": 64, "f": "#7a7090", "info": "Ärger aktiviert Frustration", "text": "Bei KI-Problemen aktiviert der Ärger auch die Frustration - sie arbeiten zusammen"},
+{"id": "c58", "v": 64, "n": 66, "f": "#7a7090", "info": "Frustration führt zu Frust", "text": "Die Frustration verstärkt den allgemeinen Frust über die Situation"},
+{"id": "c59", "v": 33, "n": 40, "f": "#7a7090", "info": "Beide gehören zum 'Team' frustrierter Teile", "text": "Der KI-Ärgerteil erwähnt, dass noch mehr Teile 'rumstehen', vielleicht seine Freunde, ein ganzes Team"},
+{"id": "c56", "v": 33, "n": 12, "f": "#7a7090", "info": "Der Ärger aktiviert sich besonders bei technischen/analytischen Problemen", "text": "KI-Arbeit triggert den Ärger wenn Reparaturversuche scheitern"},
+{"id": "c57", "v": 33, "n": 54, "f": "#7a7090", "info": "Der Ärger aktiviert den Weggegangenen Teil", "text": "Wenn der Ärger zu viel Aufmerksamkeit bekommt, schickt der Weggegangene Teil die anderen weg"},
+{"id": "c58", "v": 33, "n": 55, "f": "#7a7090", "info": "Ärger führt zu Trauer über verlorene Zeit", "text": "Der Ärger trägt auch Traurigkeit - beide leiden unter 'umsonst' investierter Energie"},
+{"id": "c59", "v": 33, "n": 56, "f": "#7a7090", "info": "Ärger kann andere Teile verdrängen", "text": "Wenn der Ärger zu viel Aufmerksamkeit bekommt, gehen andere Teile weg"},
+{"id": "c60", "v": 33, "n": 57, "f": "#7a7090", "info": "Der Ärger will durch Ablenkung helfen", "text": "Er sagt er kann mich versuchen abzulenken an was schönes zu denken"}
 ];
 
 var kreisFilter = "alle";
@@ -5022,37 +5095,292 @@ function toggleGesundKarte(btn) {
 }
 
 var KETTEN = [
-  {t:"Kette 1: Die Naehe-Spirale", f:"#E63946", ids:[1,3,9,7,1],
-   i:"Kleiner Junge schmerzt → Wartender wartet passiv → wird erschoepft → Draenger uebernimmt → verstaerkt Hoffnungsanteil → scheitert → mehr Schmerz → Zyklus wiederholt sich."},
-  {t:"Kette 2: Die Schutz-Kaskade", f:"#2980b9", ids:[1,2,6,5],
-   i:"Jede Schutzschicht haelt die naechste aufrecht: Bindungsanteil schuetzt kleinen Jungen, Zweifler schuetzt Bindungsanteil, Kritiker und Zweifler verstaerken sich. Alle schuetzen den kleinen Jungen."},
-  {t:"Kette 3: Die Buch-Blockade", f:"#e67e22", ids:[5,10,12],
-   i:"Innerer Kritiker sagt nicht gut genug → Autor/Schreiber kann nicht frei schreiben → Analyst uebernimmt und analysiert statt zu schreiben. Das Buch liegt still."},
-  {t:"Kette 4: Der groesste innere Kampf", f:"#d4af7a", ids:[7,15,3,14],
-   i:"Hoffnungsanteil haelt bei Gabi → Auszieh-Anteil kennt die Freiheit → Wartender harrt aus → Neugieriger bleibt offen. Beide Kaempfe sind verbunden."},
-  {t:"Kette 5: Die Korrektiv-Achse", f:"#4a9a30", ids:[13,14,6,12],
-   i:"Hinterfrager und Neugieriger korrigieren zusammen Analysten und Zweifler. Diese Achse zeigt das wachsende Selbst."},
-  {t:"Kette 6: Die Helfer-Falle", f:"#5a9a30", ids:[1,4,5],
-   i:"Kleiner Junge will dazugehoeren → Helfer gibt und gibt → Kritiker sagt: noch nicht genug gegeben. Helfen als Strategie fuer Zugehoerigkeit die nie befriedigt wird."},
-  {t:"Kette 7: Der Schmerz-Schutz-Kreislauf", f:"#c0246a", ids:[20,21,11,1],
-   i:"14.03.2026: Verletzter wird getroffen → Die Wut springt auf um ihn zu schuetzen → Resignierender kommt wenn Wut erschoepft ist → Kleiner Junge liegt darunter — der Ursprung von allem."},
-  {t:"Kette 8: Die Passivitaets-Falle", f:"#7a4060", ids:[3,11,3],
-   i:"Wartender wartet passiv → Hoffnung wird enttaeuscht → kippt in Resignation → Resignierender bestaetigt: es aendert sich nichts → Wartender wartet weiter. Ein Kreislauf der sich selbst aufrechterhaelt."},
-  {t:"Kette 9: Das Selbst heilt", f:"#d4af7a", ids:[13,20,13,3],
-   i:"Das Selbst sieht den Verletzten und gibt ihm Raum: Ich sehe dich, du hast recht. Das Selbst gibt dem Wartenden was er von aussen nie bekommen hat: Du musst nicht mehr warten, ich bin hier. Earned Security in Aktion."},
-  {t:"Kette 10: Der gesunde Tag", f:"#2878b0", ids:[22,23,24,19,25],
-   i:"12.03.2026: Zuhoerer bleibt praesentm → Fragesteller stellt echte Fragen → Erzaehler teilt mit Gabi → Verbundener entsteht → Erschoepfter darf verdient muede sein. Ein vollstaendiger gesunder Tagesablauf aus dem Selbst heraus."},
-  {t:"Kette 11: Der IFS-Schluesselmoment", f:"#c02020", ids:[33,13,33],
-   i:"11.03.2026: Der Aerger wird aktiviert (TN versetzt) → Das Selbst bemerkt ihn spontan mitten im Alltag — ohne Anleitung → Das Selbst spricht mit dem Aerger: Ich werde dich besuchen. Das war SELBST-Fuehrung in Reinform."},
-  {t:"Kette 12: Die Coaching-Achse", f:"#3878c0", ids:[22,23,19],
-   i:"Offener Zuhoerer schafft Sicherheit und bleibt praesent → Fragesteller stellt echte Fragen → Verbundener entsteht. Das ist Norbets professionelle Staerke als Coach."},
-  {t:"Kette 13: Das Bindungs-Dreieck", f:"#8040b0", ids:[2,37,36,2],
-   i:"10.03.2026: Aengstlicher Bindungsanteil, vermeidender Beziehungsanteil und sicherer Beziehungsanteil erschoepfen sich gegenseitig. Das Muster liegt in Norbert selbst — nicht nur in Gabi. Ziel: Der sichere Anteil waechst unabhaengig vom Gegenueber."},
-  {t:"Kette 14: Spontaner und Zweifler", f:"#6030a0", ids:[34,6,34],
-   i:"10.03 erstes IFS-Gespraech auf dem Fahrrad ohne Anleitung: Der Spontane handelt zu schnell → Zweifler bremst ihn → beide erschoepft. Beide wurden entlastet und bekamen Botschaft vom Selbst."},
-  {t:"Kette 18: Der Nadelstich-Zyklus", f:"#c0246a", ids:[37,20,21,11,37],
-   i:"Gabis Nadelstiche treffen den Vermeidenden Beziehungsanteil → Der Verletzte spürt die Ablehnung und zaehlt jeden Stich → Die Wut springt als Schutz auf → Der Resignierende uebernimmt: 'Es aendert sich sowieso nichts' → Der Vermeidende zieht sich weiter zurueck. Ein Zyklus der sich selbst aufrechterhaelt. 14. und 15.03: erkannt dass die Nadelstiche nicht Norbots Schuld sind — aber der Zyklus laeuft trotzdem automatisch ab.",
-   int:"Zyklus unterbrechen: Den Verletzten zuerst besuchen bevor Die Wut oder Der Resignierende uebernehmen. Selbst-Fuehrung: 'Ich sehe dich, du hast recht — das ist sein Muster, nicht deins.'"}
+  {
+    "t": "Kette 1: Die Naehe-Spirale",
+    "f": "#E63946",
+    "ids": [
+      1,
+      3,
+      9,
+      7,
+      1
+    ],
+    "i": "Kleiner Junge schmerzt → Wartender wartet passiv → wird erschoepft → Draenger uebernimmt → verstaerkt Hoffnungsanteil → scheitert → mehr Schmerz → Zyklus wiederholt sich."
+  },
+  {
+    "t": "Kette 2: Die Schutz-Kaskade",
+    "f": "#2980b9",
+    "ids": [
+      1,
+      2,
+      6,
+      5
+    ],
+    "i": "Jede Schutzschicht haelt die naechste aufrecht: Bindungsanteil schuetzt kleinen Jungen, Zweifler schuetzt Bindungsanteil, Kritiker und Zweifler verstaerken sich. Alle schuetzen den kleinen Jungen."
+  },
+  {
+    "t": "Kette 3: Die Buch-Blockade",
+    "f": "#e67e22",
+    "ids": [
+      5,
+      10,
+      12
+    ],
+    "i": "Innerer Kritiker sagt nicht gut genug → Autor/Schreiber kann nicht frei schreiben → Analyst uebernimmt und analysiert statt zu schreiben. Das Buch liegt still."
+  },
+  {
+    "t": "Kette 4: Der groesste innere Kampf",
+    "f": "#d4af7a",
+    "ids": [
+      7,
+      15,
+      3,
+      14
+    ],
+    "i": "Hoffnungsanteil haelt bei Gabi → Auszieh-Anteil kennt die Freiheit → Wartender harrt aus → Neugieriger bleibt offen. Beide Kaempfe sind verbunden."
+  },
+  {
+    "t": "Kette 5: Die Korrektiv-Achse",
+    "f": "#4a9a30",
+    "ids": [
+      13,
+      14,
+      6,
+      12
+    ],
+    "i": "Hinterfrager und Neugieriger korrigieren zusammen Analysten und Zweifler. Diese Achse zeigt das wachsende Selbst."
+  },
+  {
+    "t": "Kette 6: Die Helfer-Falle",
+    "f": "#5a9a30",
+    "ids": [
+      1,
+      4,
+      5
+    ],
+    "i": "Kleiner Junge will dazugehoeren → Helfer gibt und gibt → Kritiker sagt: noch nicht genug gegeben. Helfen als Strategie fuer Zugehoerigkeit die nie befriedigt wird."
+  },
+  {
+    "t": "Kette 7: Der Schmerz-Schutz-Kreislauf",
+    "f": "#c0246a",
+    "ids": [
+      20,
+      21,
+      11,
+      1
+    ],
+    "i": "14.03.2026: Verletzter wird getroffen → Die Wut springt auf um ihn zu schuetzen → Resignierender kommt wenn Wut erschoepft ist → Kleiner Junge liegt darunter — der Ursprung von allem."
+  },
+  {
+    "t": "Kette 8: Die Passivitaets-Falle",
+    "f": "#7a4060",
+    "ids": [
+      3,
+      11,
+      3
+    ],
+    "i": "Wartender wartet passiv → Hoffnung wird enttaeuscht → kippt in Resignation → Resignierender bestaetigt: es aendert sich nichts → Wartender wartet weiter. Ein Kreislauf der sich selbst aufrechterhaelt."
+  },
+  {
+    "t": "Kette 9: Das Selbst heilt",
+    "f": "#d4af7a",
+    "ids": [
+      13,
+      20,
+      13,
+      3
+    ],
+    "i": "Das Selbst sieht den Verletzten und gibt ihm Raum: Ich sehe dich, du hast recht. Das Selbst gibt dem Wartenden was er von aussen nie bekommen hat: Du musst nicht mehr warten, ich bin hier. Earned Security in Aktion."
+  },
+  {
+    "t": "Kette 10: Der gesunde Tag",
+    "f": "#2878b0",
+    "ids": [
+      22,
+      23,
+      24,
+      19,
+      25
+    ],
+    "i": "12.03.2026: Zuhoerer bleibt praesentm → Fragesteller stellt echte Fragen → Erzaehler teilt mit Gabi → Verbundener entsteht → Erschoepfter darf verdient muede sein. Ein vollstaendiger gesunder Tagesablauf aus dem Selbst heraus."
+  },
+  {
+    "t": "Kette 11: Der IFS-Schluesselmoment",
+    "f": "#c02020",
+    "ids": [
+      33,
+      13,
+      33
+    ],
+    "i": "11.03.2026: Der Aerger wird aktiviert (TN versetzt) → Das Selbst bemerkt ihn spontan mitten im Alltag — ohne Anleitung → Das Selbst spricht mit dem Aerger: Ich werde dich besuchen. Das war SELBST-Fuehrung in Reinform."
+  },
+  {
+    "t": "Kette 12: Die Coaching-Achse",
+    "f": "#3878c0",
+    "ids": [
+      22,
+      23,
+      19
+    ],
+    "i": "Offener Zuhoerer schafft Sicherheit und bleibt praesent → Fragesteller stellt echte Fragen → Verbundener entsteht. Das ist Norbets professionelle Staerke als Coach."
+  },
+  {
+    "t": "Kette 13: Das Bindungs-Dreieck",
+    "f": "#8040b0",
+    "ids": [
+      2,
+      37,
+      36,
+      2
+    ],
+    "i": "10.03.2026: Aengstlicher Bindungsanteil, vermeidender Beziehungsanteil und sicherer Beziehungsanteil erschoepfen sich gegenseitig. Das Muster liegt in Norbert selbst — nicht nur in Gabi. Ziel: Der sichere Anteil waechst unabhaengig vom Gegenueber."
+  },
+  {
+    "t": "Kette 14: Spontaner und Zweifler",
+    "f": "#6030a0",
+    "ids": [
+      34,
+      6,
+      34
+    ],
+    "i": "10.03 erstes IFS-Gespraech auf dem Fahrrad ohne Anleitung: Der Spontane handelt zu schnell → Zweifler bremst ihn → beide erschoepft. Beide wurden entlastet und bekamen Botschaft vom Selbst."
+  },
+  {
+    "t": "Kette 18: Der Nadelstich-Zyklus",
+    "f": "#c0246a",
+    "ids": [
+      37,
+      20,
+      21,
+      11,
+      37
+    ],
+    "i": "Gabis Nadelstiche treffen den Vermeidenden Beziehungsanteil → Der Verletzte spürt die Ablehnung und zaehlt jeden Stich → Die Wut springt als Schutz auf → Der Resignierende uebernimmt: 'Es aendert sich sowieso nichts' → Der Vermeidende zieht sich weiter zurueck. Ein Zyklus der sich selbst aufrechterhaelt. 14. und 15.03: erkannt dass die Nadelstiche nicht Norbots Schuld sind — aber der Zyklus laeuft trotzdem automatisch ab.",
+    "int": "Zyklus unterbrechen: Den Verletzten zuerst besuchen bevor Die Wut oder Der Resignierende uebernehmen. Selbst-Fuehrung: 'Ich sehe dich, du hast recht — das ist sein Muster, nicht deins.'"
+  },
+  {
+    "t": "Kette 15: Der Kreativ-Flow",
+    "i": "Vom kreativen Anteil über Freude zur gesunden Selbstverwirklichung - der Weg der schöpferischen Kraft",
+    "ids": [
+      38,
+      17,
+      18
+    ]
+  },
+  {
+    "t": "Kette 16: Der Erkenntnisweg",
+    "i": "Reflexion führt über Neugier zu neuen Erkenntnissen und schließlich zu Klarheit und Freude",
+    "ids": [
+      42,
+      14,
+      43,
+      17
+    ]
+  },
+  {
+    "t": "Kette 17: Der Verletzungs-Schutz-Kreislauf",
+    "i": "Wenn Norbert verletzt wird (besonders durch Gabi), zieht er sich zurück um weitere Verletzungen zu vermeiden",
+    "ids": [
+      20,
+      48
+    ]
+  },
+  {
+    "t": "Kette 19: Die Schimpf-Scham-Spirale",
+    "i": "Zeitdruck/Frust → Schimpfender wird aktiv → Beschämter Ruhiger schämt sich → innerer Konflikt um Beherrschung",
+    "ids": [
+      45,
+      46
+    ]
+  },
+  {
+    "t": "Kette 20: Die Frust-Ruhe-Spirale",
+    "i": "Der Schimpfende will durch Frust rausschimpfen Ruhe schaffen, aber der Beschämte Ruhige schämt sich dafür. Lösung: 2-3x tief durchatmen statt schimpfen",
+    "ids": [
+      47,
+      46,
+      44
+    ]
+  },
+  {
+    "t": "Kette 21: Die Antwort-Such-Falle",
+    "i": "Der Grübler sucht verzweifelt nach Antworten warum Gabi ihn ablehnt, findet keine, wird immer aktiver und belastet den ganzen Körper. Der Traumbeziehungs-Anteil will die Beziehung retten und treibt die Suche weiter an.",
+    "ids": [
+      49,
+      50
+    ]
+  },
+  {
+    "t": "Kette 22: Das Wahrheits-Dilemma",
+    "i": "Der Grübler braucht die Wahrheit um Ruhe zu finden, aber die Wahrheit könnte den Ohnmachts-Anteil und den Traumbeziehungs-Bewahrer aktivieren. Ein Teufelskreis aus Suchen und gleichzeitigem Vermeiden.",
+    "ids": [
+      49,
+      52,
+      53
+    ]
+  },
+  {
+    "t": "Kette 23: Die Verstehen-Wollen-Falle",
+    "i": "Der Antwort-Suchende versucht verzweifelt Gabis Ablehnung zu verstehen um die Traumbeziehung zu retten, hat aber selbst keine Antworten und leidet mit",
+    "ids": [
+      56,
+      50,
+      52
+    ]
+  },
+  {
+    "t": "Kette 24: Die Ohnmachts-Vermeidungs-Spirale",
+    "i": "Der verstehen-wollende Teil arbeitet verzweifelt daran, Antworten zu finden, um die drohende Ohnmacht bei einer möglichen Trennung zu vermeiden. Je mehr er sucht, desto näher kommt die gefürchtete Ohnmacht, weshalb er noch intensiver sucht.",
+    "ids": [
+      61,
+      62,
+      63
+    ]
+  },
+  {
+    "t": "Kette 25: Die Unvollendungs-Angst-Spirale",
+    "i": "KI-Fehler → Ärger → Frustration → Frust → Angst vor verlorener Zeit/Energie → Abbruch → Traurigkeit über unvollendete Arbeit",
+    "ids": [
+      62,
+      64,
+      66,
+      65
+    ]
+  },
+  {
+    "t": "Kette 26: Die Reparatur-Frust-Spirale",
+    "i": "Je mehr versucht wird KI-Fehler zu reparieren, desto mehr Fehler entstehen, bis zum Abbruch und Gefühl der verschwendeten Energie",
+    "ids": [
+      33,
+      12,
+      11
+    ]
+  },
+  {
+    "t": "Kette 27: Die IFS-Abbruch-Falle",
+    "i": "Wenn Teile in IFS-Sitzungen nicht alle gesehen werden, gehen sie weg und die Sitzung wird unvollständig abgebrochen",
+    "ids": [
+      33,
+      57
+    ]
+  },
+  {
+    "t": "Kette 28: Die Teil-Vernachlässigungs-Falle",
+    "i": "Ein Teil bekommt alle Aufmerksamkeit → andere Teile fühlen sich übersehen → ziehen sich zurück → Sitzung wird unvollständig abgebrochen → Frustration über Unvollständigkeit",
+    "ids": [
+      33,
+      56
+    ]
+  },
+  {
+    "t": "Kette 29: Die KI-Frust-Eskalations-Spirale",
+    "i": "Technische Probleme führen zu Reparaturversuchen, die mehr Fehler erzeugen, bis hin zum kompletten Abbruch und Gefühl der verschwendeten Zeit",
+    "ids": [
+      33,
+      57,
+      54
+    ]
+  }
 ];
 
 function setKreisFilter(f, btn) {
@@ -5224,132 +5552,7 @@ window.addEventListener("resize", function(){
 
 
 // ===================== SELBST QUALITAETEN =====================
-var SELBST_QUALITAETEN_BASIS = [
-  {name:"Ruhe",
-   erlebt:true,
-   quelle:"Tagebuch 13.03 + 14.03.2026",
-   info:"Grundton der ganzen Woche vom 09.–14.03. — trotz Krankheit und dem schweren Abend am 14.03. 'Ruhe und Neugier fuehlten sich diese Woche als Grundton an — eine seltene Qualitaet die nur mir gehoert.' Erlaubnissatz: Es darf leicht gehen."},
-
-  {name:"Mitgefühl / Empathie",
-   erlebt:true,
-   quelle:"IFS-Sitzung 09.03.2026 + Coaching + Tagebuch 11.03",
-   info:"Du verurteilst Gabi nicht — du versuchst sie zu verstehen. Im Coaching siehst du den Menschen hinter dem Verhalten. Als Jobcoach und NLP Practitioner spürst du Bedürfnisse anderer — manchmal stärker als deine eigenen. Empathie als Stärke und als Falle (Helfer-Teil). 11.03: Drei Stunden Coaching — TN hat sich geöffnet und bedankt."},
-
-  {name:"Vertrauen",
-   erlebt:true,
-   quelle:"IFS-Sitzung 09.03.2026",
-   info:"Ich weiss: Ich kann alleine gluecklich sein. Das wurde im IFS-Kontext als Selbst-Moment erkannt — kein Teil hat das gesagt. Das Selbst weiss es."},
-
-  {name:"Neugier",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 + IFS-Sitzung",
-   info:"Beim Hoerbuch Mutige Liebe — Aha-Momente und neue Perspektiven gespuert. Auch in der IFS-Sitzung: 'Ich weiss dass das alles stimmt — aber ich bin neugierig.' Das war dein Selbst."},
-
-  {name:"Klarheit",
-   erlebt:true,
-   quelle:"IFS-Sitzung 09.03.2026 + Tagebuch 13.03",
-   info:"Du siehst das Muster heute klarer als vor 2 Jahren. Beim Hoerbuch neue Klarheit ueber Paartherapie und Bindungssystem. Der Hinterfrager ist ein Ausdruck dieser Qualitaet."},
-
-  {name:"Selbstverantwortung",
-   erlebt:false,
-   quelle:"Persoenlicher Selbst-Kreis",
-   info:"In deinem handgeschriebenen Selbst-Kreis notiert. Noch nicht explizit in Sitzungen oder Tagebuch als Moment beschrieben — aber als Wert klar benannt."},
-
-  {name:"Mut",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 — Abend",
-   info:"Im Coaching und Bewerbungsgespraech — praesentm klar, auch bei schwierigen Themen nicht ausgewichen. Mut als SELBST-Qualitaet explizit im Abend-Eintrag notiert."},
-
-  {name:"Entwicklungsfähigkeit",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 — Morgen",
-   info:"'Dass mir gerade vieles klar wird, ich mich entwickle und diese Erkenntnisse bekomme.' Dankbarkeit am Morgen — Entwicklung als spuerbarer Prozess, nicht nur als Ziel."},
-
-  {name:"Kreativität",
-   erlebt:true,
-   quelle:"Buchprojekt + Tagebuch 14.03.2026",
-   info:"Du hast ein Buch geschrieben — eine Freundin hat dabei geweint. Und: 14.03.2026 die IFS-App programmiert — krank, allein, emotional aufgewuehlt — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.'"},
-
-  {name:"Selbstannahme",
-   erlebt:false,
-   quelle:"Persoenlicher Selbst-Kreis",
-   info:"In deinem Selbst-Kreis notiert. Noch in Arbeit — der innere Kritiker ('Ich bin nicht gut genug') blockiert sie noch aktiv. Wird ein Ziel der Heilungsarbeit."},
-
-  {name:"Verlässlichkeit",
-   erlebt:false,
-   quelle:"Persoenlicher Selbst-Kreis",
-   info:"In deinem Selbst-Kreis notiert. Als Jobcoach und Kollege verlaeesslich — noch nicht als Selbst-Moment in Sitzungen explizit gespuert."},
-
-  {name:"Verbundenheit",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 — Abend",
-   info:"Im Abendgespraech mit Gabi — echte Verbundenheit gespuert. Spontan, ohne Kaempfen. Der Verbundene als Teil entstand aus diesem Moment. Verbundenheit ist moeglich."},
-
-  {name:"Motivation",
-   erlebt:false,
-   quelle:"Persoenlicher Selbst-Kreis",
-   info:"In deinem Selbst-Kreis notiert. Als treibende Kraft hinter IFS-Arbeit und Coaching erkennbar — aber noch nicht als bewusster Selbst-Moment benannt."},
-
-  {name:"Zuhören",
-   erlebt:true,
-   quelle:"Coaching-Alltag + IFS-Sitzungen",
-   info:"Als Jobcoach taegliche Staerke. In IFS-Sitzungen: Du laesst Teile reden bevor du antwortest. Du hoerst zu ohne sofort zu loesen. Das ist echtes Zuhören aus dem Selbst."},
-
-  {name:"Reflexionsfähigkeit",
-   erlebt:true,
-   quelle:"IFS-Sitzung 09.03.2026 + Tagebuch 11.03.2026",
-   info:"11.03 IFS-Schlüsselmoment: Mitten im Ärger spontan einen getriggerten Teil bemerkt — ohne Anleitung. Das Selbst war kurz sichtbar. 'Ich kann einen Teil beobachten ohne von ihm übernommen zu werden.' Das ist Reflexionsfähigkeit in Aktion."},
-
-  {name:"Resilienz",
-   erlebt:true,
-   quelle:"Persoenliche Geschichte",
-   info:"Du hast Jahrzehnte schwieriger Beziehungsmuster und emotionaler Vernachlaessigung ueberlebt — und stehst hier und machst IFS-Arbeit. Das ist gelebte Resilienz."},
-
-  {name:"Freundlichkeit",
-   erlebt:true,
-   quelle:"Tagebuch 11.03.2026 — Supermarkt",
-   info:"11.03: Jemand lässt mich im Supermarkt vor — nettes Gespräch, Wärme gespürt. Freundlichkeit als gelebter Moment mit einem Fremden. Nicht nur im Coaching — auch im Alltag."},
-
-  {name:"Erworbene Sicherheit",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 — Wichtigste Erkenntnis",
-   info:"Earned Security in Aktion: Das Selbst hat dem Wartenden gesagt: 'Du musst nicht mehr warten. Ich passe auf dich auf.' Das kam vom Selbst — nicht von einem Manager."},
-
-  {name:"Leichtigkeit",
-   erlebt:true,
-   quelle:"Tagebuch 13.03.2026 — Morgen",
-   info:"Erlaubnissatz am Morgen: 'Ich finde meinen Weg. Und: Es darf leicht gehen.' Der Freudige als Teil traegt diese Qualitaet — er geniesst einfach, ohne Beduerfnis."},
-
-  {name:"Selbstvertrauen",
-   erlebt:true,
-   quelle:"Tagebuch 13.03 + 14.03.2026",
-   info:"Im Coaching praesentm klar, sicher. Und: 14.03 — ich war alleine verantwortlich fuer meine Zufriedenheit. Ganz ohne Gabi. Das ist echte Staerke. Erlaubnissatz: Meine Zufriedenheit gehoert mir."},
-
-  {name:"Selbstfürsorge",
-   erlebt:true,
-   quelle:"Tagebuch 14.03.2026 — Abend",
-   info:"Krank geworden — Tee, Tablette, frueh ins Bett. Gut fuer mich gesorgt ohne jede Unterstuetzung von aussen. Nicht gewartet bis jemand sagt: Leg dich hin. Selbst entschieden was gut tut — aus dem Selbst heraus."},
-
-  {name:"Stolz",
-   erlebt:true,
-   quelle:"Tagebuch 14.03.2026 — Wichtigste Erkenntnis",
-   info:"Echter Stolz auf eigene Schoepfung: die IFS-App trotz Krankheit erschaffen — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.' Gesunder Stolz der nicht von aussen bestaetigt werden muss."},
-
-  {name:"Kraft",
-   erlebt:true,
-   quelle:"Tagebuch 12.03.2026 — Morgen",
-   info:"12.03: Drei Termine ohne Pause, zwei neue Mitarbeiter eingearbeitet — und trotzdem praesent und gelassen geblieben. Kraft als SELBST-Qualitaet: nicht Anstrengung, sondern ruhige Staerke die einfach da ist."},
-
-  {name:"Energie",
-   erlebt:true,
-   quelle:"Tagebuch 12.03.2026 — Morgen",
-   info:"Lebendige Praesenz am Morgen des 12.03. Bereit fuer einen vollen Tag — nicht aus Pflicht, sondern aus echter Lebendigkeit. Energie als Ausdruck von innerem Gleichgewicht."},
-
-  {name:"Sicherheit",
-   erlebt:true,
-   quelle:"Tagebuch 10.03.2026 — Abend",
-   info:"10.03 in der Naehe von Gabi — harmonischer Abend gespuert. Und: Der sichere Beziehungsanteil wurde zum ersten Mal bewusst begruesst. Das Ziel der Heilungsarbeit: Sicherheit die von innen kommt — nicht von der Zuverlaessigkeit des anderen."}
-];
+var SELBST_QUALITAETEN_BASIS = [{"name": "Ruhe", "erlebt": true, "quelle": "Tagebuch 13.03 + 14.03.2026", "info": "Grundton der ganzen Woche vom 09.–14.03. — trotz Krankheit und dem schweren Abend am 14.03. 'Ruhe und Neugier fuehlten sich diese Woche als Grundton an — eine seltene Qualitaet die nur mir gehoert.' Erlaubnissatz: Es darf leicht gehen."}, {"name": "Mitgefühl / Empathie", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Coaching + Tagebuch 11.03", "info": "Du verurteilst Gabi nicht — du versuchst sie zu verstehen. Im Coaching siehst du den Menschen hinter dem Verhalten. Als Jobcoach und NLP Practitioner spürst du Bedürfnisse anderer — manchmal stärker als deine eigenen. Empathie als Stärke und als Falle (Helfer-Teil). 11.03: Drei Stunden Coaching — TN hat sich geöffnet und bedankt."}, {"name": "Vertrauen", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026", "info": "Ich weiss: Ich kann alleine gluecklich sein. Das wurde im IFS-Kontext als Selbst-Moment erkannt — kein Teil hat das gesagt. Das Selbst weiss es."}, {"name": "Neugier", "erlebt": true, "quelle": "Tagebuch 13.03.2026 + IFS-Sitzung", "info": "Beim Hoerbuch Mutige Liebe — Aha-Momente und neue Perspektiven gespuert. Auch in der IFS-Sitzung: 'Ich weiss dass das alles stimmt — aber ich bin neugierig.' Das war dein Selbst."}, {"name": "Klarheit", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Tagebuch 13.03", "info": "Du siehst das Muster heute klarer als vor 2 Jahren. Beim Hoerbuch neue Klarheit ueber Paartherapie und Bindungssystem. Der Hinterfrager ist ein Ausdruck dieser Qualitaet."}, {"name": "Selbstverantwortung", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem handgeschriebenen Selbst-Kreis notiert. Noch nicht explizit in Sitzungen oder Tagebuch als Moment beschrieben — aber als Wert klar benannt."}, {"name": "Mut", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Abend", "info": "Im Coaching und Bewerbungsgespraech — praesentm klar, auch bei schwierigen Themen nicht ausgewichen. Mut als SELBST-Qualitaet explizit im Abend-Eintrag notiert."}, {"name": "Entwicklungsfähigkeit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Morgen", "info": "'Dass mir gerade vieles klar wird, ich mich entwickle und diese Erkenntnisse bekomme.' Dankbarkeit am Morgen — Entwicklung als spuerbarer Prozess, nicht nur als Ziel."}, {"name": "Kreativität", "erlebt": true, "quelle": "Buchprojekt + Tagebuch 14.03.2026", "info": "Du hast ein Buch geschrieben — eine Freundin hat dabei geweint. Und: 14.03.2026 die IFS-App programmiert — krank, allein, emotional aufgewuehlt — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.'"}, {"name": "Verlässlichkeit", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem Selbst-Kreis notiert. Als Jobcoach und Kollege verlaeesslich — noch nicht als Selbst-Moment in Sitzungen explizit gespuert."}, {"name": "Verbundenheit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Abend", "info": "Im Abendgespraech mit Gabi — echte Verbundenheit gespuert. Spontan, ohne Kaempfen. Der Verbundene als Teil entstand aus diesem Moment. Verbundenheit ist moeglich."}, {"name": "Motivation", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem Selbst-Kreis notiert. Als treibende Kraft hinter IFS-Arbeit und Coaching erkennbar — aber noch nicht als bewusster Selbst-Moment benannt."}, {"name": "Zuhören", "erlebt": true, "quelle": "Coaching-Alltag + IFS-Sitzungen", "info": "Als Jobcoach taegliche Staerke. In IFS-Sitzungen: Du laesst Teile reden bevor du antwortest. Du hoerst zu ohne sofort zu loesen. Das ist echtes Zuhören aus dem Selbst."}, {"name": "Reflexionsfähigkeit", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Tagebuch 11.03.2026", "info": "11.03 IFS-Schlüsselmoment: Mitten im Ärger spontan einen getriggerten Teil bemerkt — ohne Anleitung. Das Selbst war kurz sichtbar. 'Ich kann einen Teil beobachten ohne von ihm übernommen zu werden.' Das ist Reflexionsfähigkeit in Aktion."}, {"name": "Resilienz", "erlebt": true, "quelle": "Persoenliche Geschichte", "info": "Du hast Jahrzehnte schwieriger Beziehungsmuster und emotionaler Vernachlaessigung ueberlebt — und stehst hier und machst IFS-Arbeit. Das ist gelebte Resilienz."}, {"name": "Freundlichkeit", "erlebt": true, "quelle": "Tagebuch 11.03.2026 — Supermarkt", "info": "11.03: Jemand lässt mich im Supermarkt vor — nettes Gespräch, Wärme gespürt. Freundlichkeit als gelebter Moment mit einem Fremden. Nicht nur im Coaching — auch im Alltag."}, {"name": "Erworbene Sicherheit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Wichtigste Erkenntnis", "info": "Earned Security in Aktion: Das Selbst hat dem Wartenden gesagt: 'Du musst nicht mehr warten. Ich passe auf dich auf.' Das kam vom Selbst — nicht von einem Manager."}, {"name": "Leichtigkeit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Morgen", "info": "Erlaubnissatz am Morgen: 'Ich finde meinen Weg. Und: Es darf leicht gehen.' Der Freudige als Teil traegt diese Qualitaet — er geniesst einfach, ohne Beduerfnis."}, {"name": "Selbstvertrauen", "erlebt": true, "quelle": "Tagebuch 13.03 + 14.03.2026", "info": "Im Coaching praesentm klar, sicher. Und: 14.03 — ich war alleine verantwortlich fuer meine Zufriedenheit. Ganz ohne Gabi. Das ist echte Staerke. Erlaubnissatz: Meine Zufriedenheit gehoert mir."}, {"name": "Selbstfürsorge", "erlebt": true, "quelle": "Tagebuch 14.03.2026 — Abend", "info": "Krank geworden — Tee, Tablette, frueh ins Bett. Gut fuer mich gesorgt ohne jede Unterstuetzung von aussen. Nicht gewartet bis jemand sagt: Leg dich hin. Selbst entschieden was gut tut — aus dem Selbst heraus."}, {"name": "Stolz", "erlebt": true, "quelle": "Tagebuch 14.03.2026 — Wichtigste Erkenntnis", "info": "Echter Stolz auf eigene Schoepfung: die IFS-App trotz Krankheit erschaffen — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.' Gesunder Stolz der nicht von aussen bestaetigt werden muss."}, {"name": "Kraft", "erlebt": true, "quelle": "Tagebuch 12.03.2026 — Morgen", "info": "12.03: Drei Termine ohne Pause, zwei neue Mitarbeiter eingearbeitet — und trotzdem praesent und gelassen geblieben. Kraft als SELBST-Qualitaet: nicht Anstrengung, sondern ruhige Staerke die einfach da ist."}, {"name": "Energie", "erlebt": true, "quelle": "Tagebuch 12.03.2026 — Morgen", "info": "Lebendige Praesenz am Morgen des 12.03. Bereit fuer einen vollen Tag — nicht aus Pflicht, sondern aus echter Lebendigkeit. Energie als Ausdruck von innerem Gleichgewicht."}, {"name": "Sicherheit", "erlebt": true, "quelle": "Tagebuch 10.03.2026 — Abend", "info": "10.03 in der Naehe von Gabi — harmonischer Abend gespuert. Und: Der sichere Beziehungsanteil wurde zum ersten Mal bewusst begruesst. Das Ziel der Heilungsarbeit: Sicherheit die von innen kommt — nicht von der Zuverlaessigkeit des anderen."}, {"name": "Mitgefühl", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Dankbarkeit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Geduld", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Gelassenheit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Offenheit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Strukturierte IFS-Begleitung", "info": "Erkennt wenn IFS-Sitzungen unvollständig werden und fordert bessere Struktur", "quelle": "Dialog - Norbert kritisiert die unstrukturierte Sitzungsführung", "erlebt": true, "neu": true}, {"name": "Strukturiertes IFS-Bewusstsein", "info": "Erkennt wenn IFS-Sitzungen unvollständig bleiben und fordert bessere Begleitung ein", "quelle": "Kritik an unvollständiger Session und Forderung nach Neustart", "erlebt": true, "neu": true}, {"name": "Meta-Coaching-Kompetenz", "info": "Kann den Begleitungsprozess selbst reflektieren und Verbesserungen vorschlagen", "quelle": "Feedback an den Begleiter über fehlende Struktur und bessere IFS-Führung", "erlebt": true, "neu": true}, {"name": "Strukturelle Achtsamkeit", "info": "Erkennt wenn IFS-Prozesse unvollständig sind und fordert bessere Struktur ein", "quelle": "Dialog Feedback zu unvollständiger Session", "erlebt": true, "neu": true}];
 
 var selbstQualitaeten = [];
 
@@ -5359,13 +5562,15 @@ function ladenSelbstQuali() {
     var sq = localStorage.getItem("ifs-selbst-quali");
     var gespeichert = sq ? JSON.parse(sq) : [];
     // Start with basis — gelöschte herausfiltern
+    // Entfernte SELBST laden
+    try { var rawEntS = localStorage.getItem("ifs-entfernt-selbst"); if(rawEntS) entferntSelbstNamen = JSON.parse(rawEntS); } catch(e){}
     selbstQualitaeten = SELBST_QUALITAETEN_BASIS
-      .filter(function(b){ return geloeschteSelbstNamen.indexOf(b.name) === -1; })
+      .filter(function(b){ return geloeschteSelbstNamen.indexOf(b.name) === -1 && entferntSelbstNamen.indexOf(b.name) === -1; })
       .map(function(b){ return Object.assign({},b); });
     // Merge in extras die nicht in basis sind und nicht gelöscht wurden
     var basisNamen = selbstQualitaeten.map(function(q){ return q.name.toLowerCase(); });
     gespeichert.forEach(function(g){
-      if(basisNamen.indexOf(g.name.toLowerCase()) === -1 && geloeschteSelbstNamen.indexOf(g.name) === -1) {
+      if(basisNamen.indexOf(g.name.toLowerCase()) === -1 && geloeschteSelbstNamen.indexOf(g.name) === -1 && entferntSelbstNamen.indexOf(g.name) === -1) {
         selbstQualitaeten.push(g);
       }
     });
@@ -5855,6 +6060,9 @@ function wendeUpdateAn() {
     var duplikat = TEILE.some(function(x){ return x.name.toLowerCase()===t.name.toLowerCase(); });
     if(duplikat) return;
     maxId++;
+    // Falls Teil vorher entfernt war — aus entferntTeileIds rausnehmen
+    var entferntIdx = entferntTeileIds.indexOf(maxId);
+    if(entferntIdx !== -1) entferntTeileIds.splice(entferntIdx, 1);
     var typ = t.typ||"manager";
     var f = FARBEN[typ]||FARBEN.manager;
     var neuerTeil = {
@@ -5867,7 +6075,7 @@ function wendeUpdateAn() {
       aus:t.ausloeser||"Noch unbekannt",
       angst:"Noch unbekannt",
       braucht:t.braucht||"Noch zu erkunden",
-      st:t.status||(function(){var d=new Date();var dd=String(d.getDate()).padStart(2,'0');var mm=String(d.getMonth()+1).padStart(2,'0');return "Update "+dd+"."+mm+"."+d.getFullYear();}()),
+      st:(function(){var d=new Date();var dd=String(d.getDate()).padStart(2,'0');var mm=String(d.getMonth()+1).padStart(2,'0');var datum="Entdeckt am "+dd+"."+mm+"."+d.getFullYear();return t.status?datum+" - "+t.status:datum;}()),
       ph:1,
       pos:{x:20+((maxId*37)%60), y:15+((maxId*23)%70)}
     };
@@ -5906,15 +6114,21 @@ function wendeUpdateAn() {
   (result.neue_verbindungen||[]).forEach(function(v,i){
     if(!_updateSelections["nv_"+i]) return;
     var key = v.von_id+"_"+v.zu_id;
-    if(ignoriertConn[key]) return; // Ignoriert — nicht vorschlagen
+    if(ignoriertConn[key]) return;
     var duplikat = VERBINDUNGEN.some(function(x){ return x.v===v.von_id&&x.n===v.zu_id; });
     if(duplikat) return;
+    var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+    // Aus entfernt-Liste entfernen falls vorhanden
+    var vk = v.von_id+"_"+v.zu_id;
+    var evi = entferntVerbIds.indexOf(vk);
+    if(evi !== -1) entferntVerbIds.splice(evi, 1);
     VERBINDUNGEN.push({
       id:"c"+(VERBINDUNGEN.length+1),
       v:v.von_id, n:v.zu_id,
       f:"#7a7090",
       info:v.info||"Neue Verbindung",
-      text:v.text||v.info||"Neu entdeckt"
+      text:v.text||v.info||"Neu entdeckt",
+      datum: heute
     });
   });
 
@@ -5922,13 +6136,19 @@ function wendeUpdateAn() {
   var kettenHinzugefuegt = 0;
   (result.neue_ketten||[]).forEach(function(k,i){
     if(!_updateSelections["nk_"+i]) return;
-    var duplikat = KETTEN.some(function(x){ return x.t.toLowerCase().includes(k.titel.toLowerCase().slice(0,8)); });
+    var duplikat = KETTEN.some(function(x){ return x.t.toLowerCase().includes(k.titel.toLowerCase()); });
     if(duplikat) return;
     var neueNr = KETTEN.length + 1;
+    var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+    // Aus entfernt-Liste entfernen falls vorhanden
+    var kt = "Kette "+neueNr+": "+k.titel;
+    var eki = entferntKettenTitel.indexOf(kt);
+    if(eki !== -1) entferntKettenTitel.splice(eki, 1);
     KETTEN.push({
-      t: "Kette "+neueNr+": "+k.titel,
+      t: kt,
       i: k.beschreibung||k.intervention||"Neu entdeckt",
-      ids: k.teile_ids||[]
+      ids: k.teile_ids||[],
+      datum: heute
     });
     kettenHinzugefuegt++;
   });
@@ -5938,8 +6158,12 @@ function wendeUpdateAn() {
     if(!_updateSelections["sq_"+i]) return;
     var duplikat = selbstQualitaeten.some(function(x){ return x.name.toLowerCase()===q.name.toLowerCase(); });
     if(duplikat) return;
+    var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+    // Aus entfernt-Liste entfernen falls vorhanden
+    var esi = entferntSelbstNamen.indexOf(q.name);
+    if(esi !== -1) entferntSelbstNamen.splice(esi, 1);
     selbstQualitaeten.push({
-      name:q.name, info:q.info||"", quelle:q.quelle||(function(){var d=new Date();var dd=String(d.getDate()).padStart(2,'0');var mm=String(d.getMonth()+1).padStart(2,'0');return "Update "+dd+"."+mm+"."+d.getFullYear();}()),
+      name:q.name, info:q.info||"", quelle:"Entdeckt am "+heute,
       erlebt:q.erlebt===true, neu:true
     });
   });
@@ -7081,97 +7305,638 @@ function updateTeilEntscheid(wert, nameEnc, idx) {
 }
 
 function zeigeDatenbankPflege() {
-  // Gespeicherte Bewertungen laden
   var pflege = {};
   try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
-
-  function getBewertung(key) { return pflege[key] || "neu"; }
-  function setBewertung(key, wert) {
-    pflege[key] = wert;
-    try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  }
+  function getBewertung(key) { return pflege[key] || ""; }
 
   var typFarben = {exile:"#E63946", manager:"#2980b9", feuerwehr:"#e67e22", gesund:"#27ae60"};
 
-  function bewertungsButtons(key, onLoeschen) {
+  function hatDatum(str) {
+    if(!str) return false;
+    return /\d{2}\.\d{2}\.\d{4}/.test(str);
+  }
+
+  // Textspeicher außerhalb HTML-Strings — Umlaut-sicher
+  window._pflegeDetails = {};
+  window._pflegeTexte = {};
+
+  function karte(id, farbe, titelTxt, subtitelTxt, datumStr, key, typ, extra, detail) {
     var bw = getBewertung(key);
-    return '<div style="display:flex;gap:4px;margin-top:5px">' +
-      '<button onclick="dbPflegeSetze(\''+key+'\',\'sinnvoll\');pflegeKarteFaden(this)" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(39,174,96,'+(bw==='sinnvoll'?'0.6':'0.2')+');background:rgba(39,174,96,'+(bw==='sinnvoll'?'0.2':'0.05')+');color:'+(bw==='sinnvoll'?'#27ae60':'#5a7060')+'">✓ Sinnvoll</button>' +
-      '<button onclick="dbPflegeSetze(\''+key+'\',\'ignorieren\');pflegeKarteFaden(this)" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(154,122,176,'+(bw==='ignorieren'?'0.6':'0.2')+');background:rgba(154,122,176,'+(bw==='ignorieren'?'0.2':'0.05')+');color:'+(bw==='ignorieren'?'#9a7ab0':'#5a5068')+'">✕ Nicht mehr</button>' +
-      '<button onclick="dbPflegeLoeschenMitFade(\''+key+'\','+onLoeschen+',\'\')" style="flex:1;padding:4px 0;border-radius:6px;font-size:9px;cursor:pointer;border:1px solid rgba(231,76,60,0.2);background:rgba(231,76,60,0.05);color:#7a4040">🗑 Löschen</button>' +
+    if(bw === "entfernt" || bw === "geloescht") return "";
+    var ohneD = !hatDatum(datumStr||"");
+    var dm = (datumStr||"").match(/\d{2}\.\d{2}\.\d{4}/);
+    var datumAnzeige = dm ? dm[0] : "";
+    var heute = (function(){ var d=new Date(); return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear(); })();
+    if(detail) window._pflegeDetails[id] = detail;
+    window._pflegeTexte[id] = {titel: titelTxt||"", sub: subtitelTxt||""};
+    var extraEnc = encodeURIComponent(extra||"");
+    return '<div id="pfk-'+id+'" style="background:rgba(255,255,255,0.03);border-left:3px solid '+(ohneD?farbe:'rgba(255,255,255,0.06)')+';border-radius:0 9px 9px 0;padding:7px 10px;margin-bottom:4px">' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<div id="pfk-cb-'+id+'" onclick="pflegeMarkieren(\''+id+'\',\''+key+'\',\''+typ+'\',\''+extraEnc+'\')" style="width:18px;height:18px;border-radius:3px;border:1.5px solid rgba(255,255,255,0.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1a1020;cursor:pointer;transition:all 0.15s"></div>' +
+        '<div onclick="pflegeZeigeDetailById(\''+id+'\')" style="flex:1;min-width:0;overflow:hidden;cursor:pointer">' +
+          '<div id="pfk-titel-'+id+'" style="font-size:10px;font-weight:700;color:#e0d8c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>' +
+          '<div id="pfk-sub-'+id+'" style="font-size:8px;color:#8a7898;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none"></div>' +
+        '</div>' +
+        (ohneD
+          ? '<span style="font-size:8px;background:rgba(231,76,60,0.18);color:#e07060;padding:2px 5px;border-radius:4px;flex-shrink:0;font-weight:700;white-space:nowrap">kein Datum</span>'
+          : '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">' +
+              '<span style="font-size:8px;color:#27ae60;font-weight:700;white-space:nowrap">'+datumAnzeige+'</span>' +
+              (datumAnzeige===heute ? '<span style="font-size:7px;background:#27ae60;color:#fff;padding:1px 5px;border-radius:3px;font-weight:700">neu</span>' : '') +
+            '</div>') +
+      '</div>' +
     '</div>';
   }
 
-  var html = '<div style="font-size:9px;color:#5a5068;line-height:1.5;margin-bottom:12px">Bewerte jeden Eintrag. Gespeichert wird sofort — auch nach Neuladen erhalten.</div>';
+  function befuelleKartenTexte() {
+    Object.keys(window._pflegeTexte||{}).forEach(function(id) {
+      var t = window._pflegeTexte[id];
+      var tEl = document.getElementById("pfk-titel-"+id);
+      var sEl = document.getElementById("pfk-sub-"+id);
+      if(tEl) tEl.textContent = t.titel;
+      if(sEl && t.sub) { sEl.textContent = t.sub; sEl.style.display = "block"; }
+    });
+  }
 
-  // TEILE
-  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(212,175,122,0.2)">' +
-    '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase">🧩 Teile ('+TEILE.length+')</div>' +
-    '<button onclick="allePflegeTeileUebernehmen()" style="background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.4);border-radius:7px;padding:4px 10px;color:#27ae60;font-size:9px;font-weight:700;cursor:pointer;font-family:Georgia,serif">✓ Alle übernehmen</button>' +
-  '</div>';
-  TEILE.forEach(function(t) {
-    var farbe = typFarben[t.typ]||"#7a7090";
-    var key = "teil_"+t.id;
-    var bw = getBewertung(key);
-    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
-      '<div style="display:flex;align-items:center;gap:7px">' +
-        '<span style="font-size:13px">'+t.icon+'</span>' +
-        '<span style="font-size:11px;font-weight:700;color:#e0d8c8;flex:1">'+t.name+'</span>' +
-        '<span style="font-size:8px;background:'+farbe+'18;color:'+farbe+';padding:1px 5px;border-radius:4px">'+t.tl+'</span>' +
-      '</div>' +
-      bewertungsButtons(key, '\'teil\','+t.id) +
-    '</div>';
+  var html = '';
+
+  // TEILE — sortiert nach Typ
+  var typReihenfolge = ["exile","manager","feuerwehr","gesund"];
+  var typLabels = {exile:"Exil", manager:"Manager", feuerwehr:"Feuerwehr", gesund:"Gesund"};
+  var typIcons  = {exile:"💔", manager:"🛡", feuerwehr:"🔥", gesund:"🌿"};
+  var teilAnz = 0;
+  var teilzeilen = '';
+  typReihenfolge.forEach(function(typ) {
+    var teileTyp = TEILE.filter(function(t){ return t.typ===typ; });
+    if(!teileTyp.length) return;
+    var farbe = typFarben[typ]||"#7a7090";
+    var sectionHtml = '';
+    teileTyp.forEach(function(t) {
+      var key = "teil_"+t.id;
+      var bw = getBewertung(key);
+      if(bw === "entfernt" || bw === "geloescht") return;
+      teilAnz++;
+      sectionHtml += karte("t"+t.id, farbe,
+        t.icon+" "+t.name+" ["+t.tl+"]",
+        t.job && t.job !== "Noch zu erkunden" ? t.job.slice(0,55) : "",
+        t.st||"", key, "teil", String(t.id),
+        {name:t.name, typ:t.typ, job:t.job, gs:(t.gs||[]).join(" / "), koerper:t.kp, ausloeser:t.aus, braucht:t.braucht, status:t.st, farbe:farbe});
+    });
+    if(sectionHtml) {
+      teilzeilen += '<div style="font-size:8px;color:'+farbe+';letter-spacing:0.1em;text-transform:uppercase;margin:10px 0 5px;padding-bottom:3px;border-bottom:1px solid '+farbe+'30">'+typIcons[typ]+' '+typLabels[typ]+'</div>';
+      teilzeilen += sectionHtml;
+    }
   });
+  if(teilzeilen) {
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(212,175,122,0.2)">' +
+      '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase">🧩 Teile ('+teilAnz+')</div></div>';
+    html += teilzeilen;
+  }
 
   // KETTEN
-  html += '<div style="font-size:8px;color:#9a7ab0;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(154,122,176,0.2)">⛓ Ketten ('+KETTEN.length+')</div>';
+  var kettenzeilen = '';
   KETTEN.forEach(function(k, idx) {
     var key = "kette_"+idx;
     var bw = getBewertung(key);
-    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
-      '<div style="font-size:10px;font-weight:700;color:#c0a0d8">'+k.t+'</div>' +
-      '<div style="font-size:9px;color:#6a5878;margin-top:2px">'+k.i.slice(0,60)+'...</div>' +
-      bewertungsButtons(key, '\'kette\','+idx) +
-    '</div>';
+    if(bw === "entfernt" || bw === "geloescht") return;
+    kettenzeilen += karte("k"+idx, "#9a7ab0",
+      k.t, k.i ? k.i.slice(0,55) : "",
+      k.datum||"", key, "kette", String(idx),
+      {name:k.t, typ:"Kette", job:k.i, koerper:"", ausloeser:"", braucht:k.int||"", status:"", farbe:"#9a7ab0"});
   });
+  if(kettenzeilen) {
+    html += '<div style="font-size:8px;color:#9a7ab0;letter-spacing:0.12em;text-transform:uppercase;margin:12px 0 6px;padding-bottom:3px;border-bottom:1px solid rgba(154,122,176,0.2)">⛓ Ketten ('+KETTEN.length+')</div>';
+    html += kettenzeilen;
+  }
 
-  // GLAUBENSSÄTZE
-  var gsListe = [];
-  TEILE.forEach(function(t){ (t.gs||[]).forEach(function(gs){ if(gs&&gs.length>5) gsListe.push({gs:gs,teil:t}); }); });
-  html += '<div style="font-size:8px;color:#c8a870;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(200,168,112,0.2)">💭 Glaubenssätze ('+gsListe.length+')</div>';
-  gsListe.forEach(function(item, idx) {
-    var key = "gs_"+item.teil.id+"_"+idx;
+  // VERBINDUNGEN
+  var verbzeilen = '';
+  VERBINDUNGEN.forEach(function(v, idx) {
+    var key = "verb_"+idx;
     var bw = getBewertung(key);
-    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
-      '<div style="font-size:10px;color:#e0d0c0;font-style:italic">"'+item.gs+'"</div>' +
-      '<div style="font-size:8px;color:#6a5868;margin-top:2px">'+item.teil.icon+' '+item.teil.name+'</div>' +
-      bewertungsButtons(key, '\'gs\','+item.teil.id+',\''+encodeURIComponent(item.gs)+'\'') +
-    '</div>';
+    if(bw === "entfernt" || bw === "geloescht") return;
+    var vt = findTeil(v.v), nt = findTeil(v.n);
+    if(!vt||!nt) return;
+    verbzeilen += karte("v"+idx, "#7a9ec8",
+      vt.name+" → "+nt.name,
+      v.info ? v.info.slice(0,55) : "",
+      v.datum||"", key, "verb", String(idx),
+      {name:vt.name+" → "+nt.name, typ:"Verbindung", job:v.text||v.info||"", koerper:"", ausloeser:"", braucht:"", status:"", farbe:"#7a9ec8"});
   });
+  if(verbzeilen) {
+    html += '<div style="font-size:8px;color:#7a9ec8;letter-spacing:0.12em;text-transform:uppercase;margin:12px 0 6px;padding-bottom:3px;border-bottom:1px solid rgba(122,158,200,0.2)">🔗 Verbindungen ('+VERBINDUNGEN.length+')</div>';
+    html += verbzeilen;
+  }
 
-  // SELBST-QUALITÄTEN
-  html += '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(212,175,122,0.2)">✦ SELBST-Qualitäten ('+selbstQualitaeten.length+')</div>';
+  // SELBST
+  var selbstzeilen = '';
   selbstQualitaeten.forEach(function(q, idx) {
     var key = "selbst_"+idx;
     var bw = getBewertung(key);
-    html += '<div style="background:rgba(255,255,255,0.03);border-left:2px solid '+(bw==='sinnvoll'?'#27ae60':bw==='ignorieren'?'#9a7ab0':'rgba(255,255,255,0.1)')+';border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:6px">' +
-      '<div style="font-size:11px;font-weight:700;color:#d4c898">✦ '+q.name+'</div>' +
-      (q.info?'<div style="font-size:9px;color:#6a6050;margin-top:2px">'+q.info.slice(0,60)+'</div>':'') +
-      bewertungsButtons(key, '\'selbst\','+idx) +
-    '</div>';
+    if(bw === "entfernt" || bw === "geloescht") return;
+    selbstzeilen += karte("s"+idx, "#d4af7a",
+      "✦ "+q.name,
+      q.info ? q.info.slice(0,55) : "",
+      q.quelle||"", key, "selbst", String(idx),
+      {name:q.name, typ:"SELBST", job:q.info||"", koerper:"", ausloeser:"", braucht:"", status:q.quelle||"", farbe:"#d4af7a"});
   });
+  if(selbstzeilen) {
+    html += '<div style="font-size:8px;color:#d4af7a;letter-spacing:0.12em;text-transform:uppercase;margin:12px 0 6px;padding-bottom:3px;border-bottom:1px solid rgba(212,175,122,0.2)">✦ SELBST ('+selbstQualitaeten.length+')</div>';
+    html += selbstzeilen;
+  }
 
-  // Modal anzeigen
+  // Modal
   var overlay = document.createElement("div");
   overlay.id = "modal-datenbank-pflege";
-  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;flex-direction:column";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;flex-direction:column";
   overlay.innerHTML =
-    '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">' +
+    '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">' +
       '<span style="font-size:13px;font-weight:700;color:#d4af7a;font-family:Georgia,serif">🗄 Datenbank pflegen</span>' +
       '<button onclick="document.getElementById(\'modal-datenbank-pflege\').remove()" style="background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer">✕</button>' +
     '</div>' +
-    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px">' + html + '</div>';
+    '<div style="background:#150f22;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:8px;flex-shrink:0">' +
+      '<button id="pflege-alle-btn" onclick="pflegeAlleMarkieren()" style="background:rgba(212,175,122,0.12);border:1px solid rgba(212,175,122,0.3);border-radius:7px;padding:5px 12px;color:#d4af7a;font-size:9px;font-weight:700;cursor:pointer;font-family:Georgia,serif">☐ Alle ohne Datum</button>' +
+      '<button onclick="zeigeLSDebug()" style="background:rgba(100,100,100,0.2);border:1px solid rgba(255,255,255,0.2);border-radius:7px;padding:5px 10px;color:#888;font-size:9px;cursor:pointer">🔍 LS</button>' +
+      '<button onclick="pflegeZeigeEntfernte()" style="background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.3);border-radius:7px;padding:5px 12px;color:#27ae60;font-size:9px;font-weight:700;cursor:pointer;font-family:Georgia,serif">♻ Entfernte</button>' +
+      '<div style="flex:1"></div>' +
+      '<div id="pflege-aktion-bar" style="display:none;gap:6px">' +
+        '<span id="pflege-anz" style="font-size:9px;color:#7a6880;align-self:center"></span>' +
+        '<button onclick="pflegeAusfuehren(\'entfernen\')" style="background:rgba(154,122,176,0.15);border:1px solid rgba(154,122,176,0.4);border-radius:7px;padding:5px 10px;color:#9a7ab0;font-size:9px;font-weight:700;cursor:pointer;font-family:Georgia,serif">✕ Entfernen</button>' +
+        '<button onclick="pflegeAusfuehren(\'loeschen\')" style="background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);border-radius:7px;padding:5px 10px;color:#e07060;font-size:9px;font-weight:700;cursor:pointer;font-family:Georgia,serif">🗑 Löschen</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:6px 14px;font-size:8px;color:#4a4060;flex-shrink:0">Kästchen = markieren · Titel = Details · kein Datum = neu · Entfernen kann wiederkommen · Löschen ist permanent</div>' +
+    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 80px">' + html + '</div>';
   document.body.appendChild(overlay);
+  befuelleKartenTexte();
+
+  window._pflegeAuswahl = {};
+
+  window.pflegeMarkieren = function(id, key, typ, extra) {
+    var cb = document.getElementById("pfk-cb-"+id);
+    var krt = document.getElementById("pfk-"+id);
+    if(!cb||!krt) return;
+    if(window._pflegeAuswahl[id]) {
+      delete window._pflegeAuswahl[id];
+      cb.textContent=""; cb.style.background=""; cb.style.borderColor="rgba(255,255,255,0.25)";
+      krt.style.background="rgba(255,255,255,0.03)";
+    } else {
+      window._pflegeAuswahl[id] = {key:key, typ:typ, extra:decodeURIComponent(extra)};
+      cb.textContent="✓"; cb.style.background="#d4af7a"; cb.style.borderColor="#d4af7a";
+      krt.style.background="rgba(212,175,122,0.08)";
+    }
+    window.pflegeAktionBarUpdate();
+  };
+
+  window.pflegeZeigeDetailById = function(id) {
+    var d = window._pflegeDetails ? window._pflegeDetails[id] : null;
+    if(!d) return;
+    var farbe = d.farbe||"#d4af7a";
+    var pop = document.createElement("div");
+    pop.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:600;display:flex;align-items:flex-end";
+    var sheet = document.createElement("div");
+    sheet.style.cssText = "background:#1a1428;border-radius:16px 16px 0 0;padding:18px;width:100%;max-height:70vh;overflow-y:auto;box-sizing:border-box";
+    var hdr = document.createElement("div");
+    hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:14px";
+    var ttl = document.createElement("span");
+    ttl.style.cssText = "font-size:13px;font-weight:700;color:"+farbe+";font-family:Georgia,serif";
+    ttl.textContent = d.name||"";
+    var cls = document.createElement("button");
+    cls.style.cssText = "background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer";
+    cls.textContent = "✕";
+    cls.onclick = function(){ pop.remove(); };
+    hdr.appendChild(ttl); hdr.appendChild(cls); sheet.appendChild(hdr);
+    [["Typ",d.typ],["Job / Funktion",d.job],["Glaubenssatz",d.gs],
+     ["Körper",d.koerper],["Auslöser",d.ausloeser],["Braucht",d.braucht],
+     ["Status / Datum",d.status]].forEach(function(f) {
+      if(!f[1]||f[1]==="Noch zu erkunden"||f[1]==="Unbekannt"||f[1]==="Noch unbekannt") return;
+      var block = document.createElement("div"); block.style.marginBottom="8px";
+      var lbl = document.createElement("div");
+      lbl.style.cssText = "font-size:7px;color:"+farbe+";text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px";
+      lbl.textContent = f[0];
+      var txt = document.createElement("div");
+      txt.style.cssText = "font-size:10px;color:#c0b8a8;line-height:1.6";
+      txt.textContent = f[1];
+      block.appendChild(lbl); block.appendChild(txt); sheet.appendChild(block);
+    });
+    pop.appendChild(sheet); document.body.appendChild(pop);
+  };
+
+  window.pflegeAlleMarkieren = function() {
+    var btn = document.getElementById("pflege-alle-btn");
+    var hatAuswahl = Object.keys(window._pflegeAuswahl||{}).length > 0;
+    if(hatAuswahl) {
+      window._pflegeAuswahl = {};
+      document.querySelectorAll("[id^='pfk-cb-']").forEach(function(cb){
+        cb.textContent=""; cb.style.background=""; cb.style.borderColor="rgba(255,255,255,0.25)";
+      });
+      document.querySelectorAll("[id^='pfk-']").forEach(function(el){
+        if(!el.id.includes("-cb-")&&!el.id.includes("-titel-")&&!el.id.includes("-sub-"))
+          el.style.background="rgba(255,255,255,0.03)";
+      });
+      if(btn) btn.textContent="☐ Alle ohne Datum";
+    } else {
+      Object.keys(window._pflegeTexte||{}).forEach(function(id) {
+        var krt = document.getElementById("pfk-"+id);
+        if(!krt || krt.innerHTML.indexOf("kein Datum") === -1) return;
+        var cb = document.getElementById("pfk-cb-"+id);
+        if(!cb) return;
+        var oc = cb.getAttribute("onclick")||"";
+        var m = oc.match(/pflegeMarkieren\('([^']+)','([^']+)','([^']+)','([^']*)/);
+        if(m && !window._pflegeAuswahl[id]) {
+          window._pflegeAuswahl[id] = {key:m[2], typ:m[3], extra:decodeURIComponent(m[4])};
+          cb.textContent="✓"; cb.style.background="#d4af7a"; cb.style.borderColor="#d4af7a";
+          krt.style.background="rgba(212,175,122,0.08)";
+        }
+      });
+      if(btn) btn.textContent="☐ Alle abwählen";
+    }
+    window.pflegeAktionBarUpdate();
+  };
+
+  window.pflegeAktionBarUpdate = function() {
+    var bar = document.getElementById("pflege-aktion-bar");
+    var anz = document.getElementById("pflege-anz");
+    var n = Object.keys(window._pflegeAuswahl||{}).length;
+    if(bar) bar.style.display = n > 0 ? "flex" : "none";
+    if(anz) anz.textContent = n+" ausgewählt";
+  };
+
+  window.pflegeAusfuehren = function(aktion) {
+    var auswahl = window._pflegeAuswahl || {};
+    var keys = Object.keys(auswahl);
+    if(!keys.length) return;
+    var pflege2 = {};
+    try { pflege2 = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+    var anz = keys.length;
+    keys.forEach(function(id) {
+      var item = auswahl[id];
+      var krt = document.getElementById("pfk-"+id);
+      if(krt) { krt.style.transition="opacity 0.3s"; krt.style.opacity="0"; setTimeout(function(el){ el.style.display="none"; }(krt),300); }
+      pflege2[item.key] = aktion === "loeschen" ? "geloescht" : "entfernt";
+      if(item.typ === "teil") {
+        var tid = parseInt(item.extra);
+        TEILE = TEILE.filter(function(t){ return t.id!==tid; });
+        extraTeile = extraTeile.filter(function(t){ return t.id!==tid; });
+        if(aktion === "loeschen") {
+          if(geloeschteTeileIds.indexOf(tid)===-1) geloeschteTeileIds.push(tid);
+        } else {
+          if(entferntTeileIds.indexOf(tid)===-1) entferntTeileIds.push(tid);
+        }
+      } else if(item.typ === "kette") {
+        var ketteIdx = parseInt(item.extra);
+        var ketteObj = KETTEN[ketteIdx] ? JSON.parse(JSON.stringify(KETTEN[ketteIdx])) : null;
+        var ketteTitle = ketteObj ? ketteObj.t : null;
+        KETTEN.splice(ketteIdx,1);
+        if(aktion === "loeschen") {
+          // permanent
+        } else if(ketteObj && entferntKettenTitel.indexOf(ketteTitle) === -1) {
+          entferntKettenTitel.push(ketteTitle);
+          entferntKettenObjekte.push(ketteObj);
+        }
+        try { localStorage.setItem("ifs-ketten",JSON.stringify(KETTEN)); } catch(e){}
+      } else if(item.typ === "verb") {
+        var verbIdx = parseInt(item.extra);
+        var verb = VERBINDUNGEN[verbIdx];
+        if(verb && aktion !== "loeschen") {
+          var vkey = verb.v+"_"+verb.n;
+          if(entferntVerbIds.indexOf(vkey) === -1) {
+            entferntVerbIds.push(vkey);
+            entferntVerbObjekte.push(JSON.parse(JSON.stringify(verb)));
+          }
+        }
+        VERBINDUNGEN.splice(verbIdx,1);
+      } else if(item.typ === "selbst") {
+        var selbstIdx = parseInt(item.extra);
+        var selbst = selbstQualitaeten[selbstIdx];
+        if(selbst && aktion !== "loeschen") {
+          if(entferntSelbstNamen.indexOf(selbst.name) === -1) entferntSelbstNamen.push(selbst.name);
+        }
+        selbstQualitaeten.splice(selbstIdx,1);
+        speichernSelbstQuali();
+      }
+    });
+    try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege2)); } catch(e){}
+    speichern(); renderAlles();
+    window._pflegeAuswahl = {};
+    window.pflegeAktionBarUpdate();
+    zeigeBanner((aktion==="loeschen"?"🗑 ":"✕ ")+anz+" "+(aktion==="loeschen"?"gelöscht":"entfernt"));
+  };
+}
+
+function pflegeZeigeEntfernte() {
+  var overlay = document.createElement("div");
+  overlay.id = "modal-entfernte";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:600;display:flex;flex-direction:column";
+
+  var hdr = document.createElement("div");
+  hdr.style.cssText = "background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(39,174,96,0.3);flex-shrink:0";
+  var titel = document.createElement("span");
+  titel.style.cssText = "font-size:13px;font-weight:700;color:#27ae60;font-family:Georgia,serif";
+  titel.textContent = "Entfernte wiederherstellen";
+  var close = document.createElement("button");
+  close.style.cssText = "background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer";
+  close.textContent = "✕";
+  close.onclick = function(){ overlay.remove(); };
+  hdr.appendChild(titel); hdr.appendChild(close);
+
+  var content = document.createElement("div");
+  content.style.cssText = "flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px";
+
+  function macheZeile(labelTxt, onWiederher) {
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:5px";
+    var lbl = document.createElement("span");
+    lbl.style.cssText = "font-size:10px;color:#c0b8a8;flex:1;margin-right:8px";
+    lbl.textContent = labelTxt;
+    var btn = document.createElement("button");
+    btn.style.cssText = "background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.4);border-radius:6px;padding:4px 10px;color:#27ae60;font-size:9px;cursor:pointer;flex-shrink:0";
+    btn.textContent = "♻";
+    btn.onclick = function(){ onWiederher(); row.style.opacity="0"; setTimeout(function(){ row.remove(); },300); };
+    row.appendChild(lbl); row.appendChild(btn);
+    return row;
+  }
+
+  function sektionHeader(txt, farbe) {
+    var h = document.createElement("div");
+    h.style.cssText = "font-size:8px;color:"+farbe+";letter-spacing:0.1em;text-transform:uppercase;margin:12px 0 6px";
+    h.textContent = txt;
+    return h;
+  }
+
+  var d = new Date();
+  var heute = String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear();
+  var hatWas = false;
+
+  // Teile
+  if(entferntTeileIds.length > 0) {
+    hatWas = true;
+    content.appendChild(sektionHeader("Teile", "#d4af7a"));
+    entferntTeileIds.slice().forEach(function(id) {
+      content.appendChild(macheZeile("Teil ID "+id, function(){
+        var idx2 = entferntTeileIds.indexOf(id);
+        if(idx2 !== -1) entferntTeileIds.splice(idx2,1);
+        speichern();
+        zeigeBanner("Wiederhergestellt — App neu laden");
+      }));
+    });
+  }
+
+  // Ketten
+  if(entferntKettenTitel.length > 0) {
+    hatWas = true;
+    content.appendChild(sektionHeader("Ketten", "#9a7ab0"));
+    entferntKettenTitel.slice().forEach(function(titel2, ki) {
+      content.appendChild(macheZeile(titel2, function(){
+        var idx2 = entferntKettenTitel.indexOf(titel2);
+        // Vollständiges Objekt wiederherstellen
+        var obj = entferntKettenObjekte[idx2] || {t: titel2, i: "", ids: []};
+        obj.datum = heute;
+        if(idx2 !== -1) {
+          entferntKettenTitel.splice(idx2, 1);
+          entferntKettenObjekte.splice(idx2, 1);
+        }
+        // Nur hinzufügen wenn nicht schon drin
+        if(!KETTEN.some(function(x){ return x.t===titel2; })) {
+          if(!obj.f) obj.f = "#9a7ab0";
+          if(!obj.ids) obj.ids = [];
+          KETTEN.push(obj);
+        }
+        try { localStorage.setItem("ifs-ketten",JSON.stringify(KETTEN)); } catch(e){}
+        speichern();
+        renderAlles();
+        zeigeBanner("♻ Kette wiederhergestellt");
+      }));
+    });
+  }
+
+  // Verbindungen
+  if(entferntVerbIds.length > 0) {
+    hatWas = true;
+    content.appendChild(sektionHeader("Verbindungen", "#7a9ec8"));
+    entferntVerbIds.slice().forEach(function(vkey) {
+      var parts = vkey.split("_");
+      var ta = findTeil(parseInt(parts[0])), tb = findTeil(parseInt(parts[1]));
+      var label = (ta?ta.name:parts[0])+" → "+(tb?tb.name:parts[1]);
+      content.appendChild(macheZeile(label, function(){
+        var idx2 = entferntVerbIds.indexOf(vkey);
+        var obj = entferntVerbObjekte[idx2] || null;
+        if(idx2 !== -1) {
+          entferntVerbIds.splice(idx2, 1);
+          entferntVerbObjekte.splice(idx2, 1);
+        }
+        // Vollständiges Objekt wiederherstellen
+        if(obj) {
+          obj.datum = heute;
+          if(!VERBINDUNGEN.some(function(x){ return x.v===obj.v&&x.n===obj.n; })) {
+            VERBINDUNGEN.push(obj);
+          }
+        }
+        renderAlles();
+        speichern();
+        renderAlles();
+        zeigeBanner("♻ Verbindung wiederhergestellt");
+      }));
+    });
+  }
+
+  // SELBST
+  if(entferntSelbstNamen.length > 0) {
+    hatWas = true;
+    content.appendChild(sektionHeader("SELBST", "#d4af7a"));
+    entferntSelbstNamen.slice().forEach(function(name) {
+      content.appendChild(macheZeile(name, function(){
+        var idx2 = entferntSelbstNamen.indexOf(name);
+        if(idx2 !== -1) entferntSelbstNamen.splice(idx2,1);
+        var q = selbstQualitaeten.find(function(x){ return x.name===name; });
+        if(q) q.quelle = "Wiederhergestellt am "+heute;
+        speichernSelbstQuali();
+        speichern();
+        zeigeBanner("SELBST wiederhergestellt — App neu laden");
+      }));
+    });
+  }
+
+  if(!hatWas) {
+    var leer = document.createElement("div");
+    leer.style.cssText = "font-size:11px;color:#5a5068;text-align:center;padding:24px";
+    leer.textContent = "Keine entfernten Einträge vorhanden.";
+    content.appendChild(leer);
+  }
+
+  overlay.appendChild(hdr);
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+}
+
+function pflegeWiederherstellenTeil(id, modal) {
+  var idx = entferntTeileIds.indexOf(id);
+  if(idx !== -1) entferntTeileIds.splice(idx, 1);
+  // Heutiges Datum setzen
+  var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+  var teil = TEILE.find(function(t){ return t.id===id; });
+  if(!teil) { var baseTeil = null; /* wird beim Reload aus Basis wiederhergestellt */ }
+  speichern();
+  zeigeBanner("♻ Teil wiederhergestellt — App neu laden");
+  if(modal) modal.remove();
+}
+
+function pflegeWiederherstellenKette(idx, modal) {
+  var titel = entferntKettenTitel[idx];
+  entferntKettenTitel.splice(idx, 1);
+  // Datum auf heute setzen - Kette wird beim Reload wiederhergestellt mit Datum
+  var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+  // Kette in KETTEN suchen und Datum setzen (falls schon drin)
+  var k = KETTEN.find(function(x){ return x.t===titel; });
+  if(k) k.datum = heute;
+  try { localStorage.setItem("ifs-ketten",JSON.stringify(KETTEN)); } catch(e){}
+  speichern();
+  zeigeBanner("♻ Kette wiederhergestellt — App neu laden");
+  if(modal) modal.remove();
+}
+
+function pflegeWiederherstellenVerb(idx, modal) {
+  var vkey = entferntVerbIds[idx];
+  entferntVerbIds.splice(idx, 1);
+  // Datum auf heute setzen
+  var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+  var parts = vkey.split("_");
+  var v = VERBINDUNGEN.find(function(x){ return x.v===parseInt(parts[0]) && x.n===parseInt(parts[1]); });
+  if(v) v.datum = heute;
+  speichern();
+  zeigeBanner("♻ Verbindung wiederhergestellt — App neu laden");
+  if(modal) modal.remove();
+}
+
+function pflegeWiederherstellenSelbst(idx, modal) {
+  var name = entferntSelbstNamen[idx];
+  entferntSelbstNamen.splice(idx, 1);
+  // Datum auf heute setzen
+  var d=new Date(); var dd=String(d.getDate()).padStart(2,'0'); var mm=String(d.getMonth()+1).padStart(2,'0'); var heute=dd+"."+mm+"."+d.getFullYear();
+  var q = selbstQualitaeten.find(function(x){ return x.name===name; });
+  if(q) q.quelle = "Wiederhergestellt am "+heute;
+  speichernSelbstQuali();
+  speichern();
+  zeigeBanner("♻ SELBST-Qualität wiederhergestellt — App neu laden");
+  if(modal) modal.remove();
+}
+
+
+
+function zeigeLSDebug() {
+  var overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:700;overflow-y:auto;padding:16px;box-sizing:border-box";
+  var close = document.createElement("button");
+  close.style.cssText = "position:fixed;top:10px;right:16px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;z-index:701";
+  close.textContent = "✕";
+  close.onclick = function(){ overlay.remove(); };
+  overlay.appendChild(close);
+  
+  var title = document.createElement("div");
+  title.style.cssText = "color:#27ae60;font-size:13px;font-weight:700;margin-bottom:14px;font-family:Georgia,serif";
+  title.textContent = "LocalStorage — IFS Keys";
+  overlay.appendChild(title);
+  
+  // Show all ifs- keys
+  var ifsKeys = [];
+  for(var i=0; i<localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if(key && key.indexOf("ifs-") === 0) ifsKeys.push(key);
+  }
+  ifsKeys.sort();
+  
+  ifsKeys.forEach(function(key) {
+    var val = localStorage.getItem(key)||"";
+    var block = document.createElement("div");
+    block.style.cssText = "margin-bottom:12px;border-left:2px solid #27ae60;padding-left:8px";
+    var k = document.createElement("div");
+    k.style.cssText = "color:#d4af7a;font-size:10px;font-weight:700;margin-bottom:3px;font-family:monospace";
+    k.textContent = key + " (" + val.length + " chars)";
+    var v = document.createElement("div");
+    v.style.cssText = "color:#a0a080;font-size:9px;font-family:monospace;word-break:break-all;max-height:80px;overflow:hidden";
+    v.textContent = val.slice(0, 300) + (val.length > 300 ? "..." : "");
+    block.appendChild(k); block.appendChild(v);
+    overlay.appendChild(block);
+  });
+  
+  if(ifsKeys.length === 0) {
+    var empty = document.createElement("div");
+    empty.style.cssText = "color:#888;font-size:11px";
+    empty.textContent = "Keine IFS-Keys gefunden!";
+    overlay.appendChild(empty);
+  }
+  
+  // Show current arrays
+  var info = document.createElement("div");
+  info.style.cssText = "margin-top:16px;border-top:1px solid #333;padding-top:12px;color:#7a9ec8;font-size:9px;font-family:monospace";
+  var infoTxt = "entferntKettenTitel: " + JSON.stringify(entferntKettenTitel) + "\n";
+  infoTxt += "entferntVerbIds: " + JSON.stringify(entferntVerbIds) + "\n";
+  infoTxt += "entferntSelbstNamen: " + JSON.stringify(entferntSelbstNamen) + "\n";
+  infoTxt += "entferntTeileIds: " + JSON.stringify(entferntTeileIds);
+  info.style.whiteSpace = "pre";
+  info.textContent = infoTxt;
+  overlay.appendChild(info);
+  
+  document.body.appendChild(overlay);
+}
+
+function notfallImportEntfernte() {
+  // Schritt 1: Entfernte Markierungen aus ifs-datenbank-pflege loeschen
+  // damit Eintraege wieder sichtbar werden
+  try {
+    var rawPflege = localStorage.getItem("ifs-datenbank-pflege");
+    if(rawPflege) {
+      var pflege = JSON.parse(rawPflege);
+      var changed = false;
+      Object.keys(pflege).forEach(function(key) {
+        if(pflege[key] !== "entfernt") return;
+        if(key.indexOf("kette_") === 0 || key.indexOf("verb_") === 0 || key.indexOf("selbst_") === 0) {
+          delete pflege[key];
+          changed = true;
+        }
+      });
+      if(changed) localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege));
+    }
+  } catch(e){}
+
+  // Schritt 2: Ketten aus ifs-ketten laden die NICHT in KETTEN sind
+  // und sie wieder hinzufuegen
+  try {
+    var rawK = localStorage.getItem("ifs-ketten");
+    if(rawK) {
+      var gespeicherteKetten = JSON.parse(rawK);
+      var aktuelleKettenTitel = KETTEN.map(function(k){ return k.t; });
+      var wiederhergestellt = 0;
+      gespeicherteKetten.forEach(function(k) {
+        if(aktuelleKettenTitel.indexOf(k.t) === -1) {
+          KETTEN.push(k);
+          wiederhergestellt++;
+        }
+      });
+      if(wiederhergestellt > 0) {
+        try { localStorage.setItem("ifs-ketten", JSON.stringify(KETTEN)); } catch(e){}
+        console.log("Notfall: " + wiederhergestellt + " Ketten wiederhergestellt");
+      }
+    }
+  } catch(e){}
+
+  // Schritt 3: Verbindungen aus ifs-verbindungen-extra laden die NICHT in VERBINDUNGEN sind
+  try {
+    var rawV = localStorage.getItem("ifs-verbindungen-extra");
+    if(rawV) {
+      var gespeicherteVerb = JSON.parse(rawV);
+      var wiederhergestelltV = 0;
+      gespeicherteVerb.forEach(function(v) {
+        var drin = VERBINDUNGEN.some(function(x){ return x.v===v.v && x.n===v.n; });
+        if(!drin) {
+          VERBINDUNGEN.push(v);
+          wiederhergestelltV++;
+        }
+      });
+      if(wiederhergestelltV > 0) {
+        console.log("Notfall: " + wiederhergestelltV + " Verbindungen wiederhergestellt");
+      }
+    }
+  } catch(e){}
 }
 
 function aktualisiereplanBeschreibung() {
@@ -7206,16 +7971,12 @@ function allePflegeTeileUebernehmen() {
   var pflege = {};
   try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
   TEILE.forEach(function(t) {
-    if(!pflege["teil_"+t.id]) pflege["teil_"+t.id] = "sinnvoll";
+    if(!pflege["teil_"+t.id]) pflege["teil_"+t.id] = "gesehen";
     var el = document.getElementById("dt-"+t.id);
-    if(el) {
-      el.style.transition = "opacity 0.3s";
-      el.style.opacity = "0";
-      setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 300);
-    }
+    if(el) { el.style.transition="opacity 0.3s"; el.style.opacity="0"; setTimeout(function(e){ e.style.display="none"; }(el),300); }
   });
   try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  zeigeBanner("✓ Alle Teile als sinnvoll markiert");
+  zeigeBanner("✓ Alle gesehen");
 }
 
 function alleExtraTeileUebernehmen() {
@@ -8057,6 +8818,7 @@ function erstelleWochenrueckblick() {
 }
 // ===================== STARTUP =====================
 laden();
+notfallImportEntfernte();
 ladenSelbstQuali();
 _ladeGeloeschteSelbst();
 journal.forEach(function(e){
@@ -8077,6 +8839,7 @@ if(journal.length > 0) {
   setJTab("morgen");
 }
 
+function importiereBackupDaten(){if(localStorage.getItem("ifs-b2140"))return;try{var bK=[{"t": "Kette 1: Die Naehe-Spirale", "f": "#E63946", "ids": [1, 3, 9, 7, 1], "i": "Kleiner Junge schmerzt → Wartender wartet passiv → wird erschoepft → Draenger uebernimmt → verstaerkt Hoffnungsanteil → scheitert → mehr Schmerz → Zyklus wiederholt sich."}, {"t": "Kette 2: Die Schutz-Kaskade", "f": "#2980b9", "ids": [1, 2, 6, 5], "i": "Jede Schutzschicht haelt die naechste aufrecht: Bindungsanteil schuetzt kleinen Jungen, Zweifler schuetzt Bindungsanteil, Kritiker und Zweifler verstaerken sich. Alle schuetzen den kleinen Jungen."}, {"t": "Kette 3: Die Buch-Blockade", "f": "#e67e22", "ids": [5, 10, 12], "i": "Innerer Kritiker sagt nicht gut genug → Autor/Schreiber kann nicht frei schreiben → Analyst uebernimmt und analysiert statt zu schreiben. Das Buch liegt still."}, {"t": "Kette 4: Der groesste innere Kampf", "f": "#d4af7a", "ids": [7, 15, 3, 14], "i": "Hoffnungsanteil haelt bei Gabi → Auszieh-Anteil kennt die Freiheit → Wartender harrt aus → Neugieriger bleibt offen. Beide Kaempfe sind verbunden."}, {"t": "Kette 5: Die Korrektiv-Achse", "f": "#4a9a30", "ids": [13, 14, 6, 12], "i": "Hinterfrager und Neugieriger korrigieren zusammen Analysten und Zweifler. Diese Achse zeigt das wachsende Selbst."}, {"t": "Kette 6: Die Helfer-Falle", "f": "#5a9a30", "ids": [1, 4, 5], "i": "Kleiner Junge will dazugehoeren → Helfer gibt und gibt → Kritiker sagt: noch nicht genug gegeben. Helfen als Strategie fuer Zugehoerigkeit die nie befriedigt wird."}, {"t": "Kette 7: Der Schmerz-Schutz-Kreislauf", "f": "#c0246a", "ids": [20, 21, 11, 1], "i": "14.03.2026: Verletzter wird getroffen → Die Wut springt auf um ihn zu schuetzen → Resignierender kommt wenn Wut erschoepft ist → Kleiner Junge liegt darunter — der Ursprung von allem."}, {"t": "Kette 8: Die Passivitaets-Falle", "f": "#7a4060", "ids": [3, 11, 3], "i": "Wartender wartet passiv → Hoffnung wird enttaeuscht → kippt in Resignation → Resignierender bestaetigt: es aendert sich nichts → Wartender wartet weiter. Ein Kreislauf der sich selbst aufrechterhaelt."}, {"t": "Kette 9: Das Selbst heilt", "f": "#d4af7a", "ids": [13, 20, 13, 3], "i": "Das Selbst sieht den Verletzten und gibt ihm Raum: Ich sehe dich, du hast recht. Das Selbst gibt dem Wartenden was er von aussen nie bekommen hat: Du musst nicht mehr warten, ich bin hier. Earned Security in Aktion."}, {"t": "Kette 10: Der gesunde Tag", "f": "#2878b0", "ids": [22, 23, 24, 19, 25], "i": "12.03.2026: Zuhoerer bleibt praesentm → Fragesteller stellt echte Fragen → Erzaehler teilt mit Gabi → Verbundener entsteht → Erschoepfter darf verdient muede sein. Ein vollstaendiger gesunder Tagesablauf aus dem Selbst heraus."}, {"t": "Kette 11: Der IFS-Schluesselmoment", "f": "#c02020", "ids": [33, 13, 33], "i": "11.03.2026: Der Aerger wird aktiviert (TN versetzt) → Das Selbst bemerkt ihn spontan mitten im Alltag — ohne Anleitung → Das Selbst spricht mit dem Aerger: Ich werde dich besuchen. Das war SELBST-Fuehrung in Reinform."}, {"t": "Kette 12: Die Coaching-Achse", "f": "#3878c0", "ids": [22, 23, 19], "i": "Offener Zuhoerer schafft Sicherheit und bleibt praesent → Fragesteller stellt echte Fragen → Verbundener entsteht. Das ist Norbets professionelle Staerke als Coach."}, {"t": "Kette 13: Das Bindungs-Dreieck", "f": "#8040b0", "ids": [2, 37, 36, 2], "i": "10.03.2026: Aengstlicher Bindungsanteil, vermeidender Beziehungsanteil und sicherer Beziehungsanteil erschoepfen sich gegenseitig. Das Muster liegt in Norbert selbst — nicht nur in Gabi. Ziel: Der sichere Anteil waechst unabhaengig vom Gegenueber."}, {"t": "Kette 14: Spontaner und Zweifler", "f": "#6030a0", "ids": [34, 6, 34], "i": "10.03 erstes IFS-Gespraech auf dem Fahrrad ohne Anleitung: Der Spontane handelt zu schnell → Zweifler bremst ihn → beide erschoepft. Beide wurden entlastet und bekamen Botschaft vom Selbst."}, {"t": "Kette 18: Der Nadelstich-Zyklus", "f": "#c0246a", "ids": [37, 20, 21, 11, 37], "i": "Gabis Nadelstiche treffen den Vermeidenden Beziehungsanteil → Der Verletzte spürt die Ablehnung und zaehlt jeden Stich → Die Wut springt als Schutz auf → Der Resignierende uebernimmt: 'Es aendert sich sowieso nichts' → Der Vermeidende zieht sich weiter zurueck. Ein Zyklus der sich selbst aufrechterhaelt. 14. und 15.03: erkannt dass die Nadelstiche nicht Norbots Schuld sind — aber der Zyklus laeuft trotzdem automatisch ab.", "int": "Zyklus unterbrechen: Den Verletzten zuerst besuchen bevor Die Wut oder Der Resignierende uebernehmen. Selbst-Fuehrung: 'Ich sehe dich, du hast recht — das ist sein Muster, nicht deins.'"}, {"t": "Kette 15: Der Kreativ-Flow", "i": "Vom kreativen Anteil über Freude zur gesunden Selbstverwirklichung - der Weg der schöpferischen Kraft", "ids": [38, 17, 18]}, {"t": "Kette 16: Der Erkenntnisweg", "i": "Reflexion führt über Neugier zu neuen Erkenntnissen und schließlich zu Klarheit und Freude", "ids": [42, 14, 43, 17]}, {"t": "Kette 17: Der Verletzungs-Schutz-Kreislauf", "i": "Wenn Norbert verletzt wird (besonders durch Gabi), zieht er sich zurück um weitere Verletzungen zu vermeiden", "ids": [20, 48]}, {"t": "Kette 19: Die Schimpf-Scham-Spirale", "i": "Zeitdruck/Frust → Schimpfender wird aktiv → Beschämter Ruhiger schämt sich → innerer Konflikt um Beherrschung", "ids": [45, 46]}, {"t": "Kette 20: Die Frust-Ruhe-Spirale", "i": "Der Schimpfende will durch Frust rausschimpfen Ruhe schaffen, aber der Beschämte Ruhige schämt sich dafür. Lösung: 2-3x tief durchatmen statt schimpfen", "ids": [47, 46, 44]}, {"t": "Kette 21: Die Antwort-Such-Falle", "i": "Der Grübler sucht verzweifelt nach Antworten warum Gabi ihn ablehnt, findet keine, wird immer aktiver und belastet den ganzen Körper. Der Traumbeziehungs-Anteil will die Beziehung retten und treibt die Suche weiter an.", "ids": [49, 50]}, {"t": "Kette 22: Das Wahrheits-Dilemma", "i": "Der Grübler braucht die Wahrheit um Ruhe zu finden, aber die Wahrheit könnte den Ohnmachts-Anteil und den Traumbeziehungs-Bewahrer aktivieren. Ein Teufelskreis aus Suchen und gleichzeitigem Vermeiden.", "ids": [49, 52, 53]}, {"t": "Kette 23: Die Verstehen-Wollen-Falle", "i": "Der Antwort-Suchende versucht verzweifelt Gabis Ablehnung zu verstehen um die Traumbeziehung zu retten, hat aber selbst keine Antworten und leidet mit", "ids": [56, 50, 52]}, {"t": "Kette 24: Die Ohnmachts-Vermeidungs-Spirale", "i": "Der verstehen-wollende Teil arbeitet verzweifelt daran, Antworten zu finden, um die drohende Ohnmacht bei einer möglichen Trennung zu vermeiden. Je mehr er sucht, desto näher kommt die gefürchtete Ohnmacht, weshalb er noch intensiver sucht.", "ids": [61, 62, 63]}, {"t": "Kette 25: Die Unvollendungs-Angst-Spirale", "i": "KI-Fehler → Ärger → Frustration → Frust → Angst vor verlorener Zeit/Energie → Abbruch → Traurigkeit über unvollendete Arbeit", "ids": [62, 64, 66, 65]}, {"t": "Kette 26: Die Reparatur-Frust-Spirale", "i": "Je mehr versucht wird KI-Fehler zu reparieren, desto mehr Fehler entstehen, bis zum Abbruch und Gefühl der verschwendeten Energie", "ids": [33, 12, 11]}, {"t": "Kette 27: Die IFS-Abbruch-Falle", "i": "Wenn Teile in IFS-Sitzungen nicht alle gesehen werden, gehen sie weg und die Sitzung wird unvollständig abgebrochen", "ids": [33, 57]}, {"t": "Kette 28: Die Teil-Vernachlässigungs-Falle", "i": "Ein Teil bekommt alle Aufmerksamkeit → andere Teile fühlen sich übersehen → ziehen sich zurück → Sitzung wird unvollständig abgebrochen → Frustration über Unvollständigkeit", "ids": [33, 56]}, {"t": "Kette 29: Die KI-Frust-Eskalations-Spirale", "i": "Technische Probleme führen zu Reparaturversuchen, die mehr Fehler erzeugen, bis hin zum kompletten Abbruch und Gefühl der verschwendeten Zeit", "ids": [33, 57, 54]}];var lK=[];try{lK=JSON.parse(localStorage.getItem("ifs-ketten")||"[]");}catch(e){}var lKT=lK.map(function(k){return k.t;});bK.forEach(function(k){if(lKT.indexOf(k.t)===-1)lK.push(k);});localStorage.setItem("ifs-ketten",JSON.stringify(lK));var bV=[{"id": "c34", "v": 20, "n": 39, "f": "#7a7090", "info": "Verletzung führt zu Rückzug als Schutz", "text": "Der Verletzte aktiviert den sich Zurückziehenden als Schutz"}, {"id": "c35", "v": 21, "n": 40, "f": "#7a7090", "info": "Wut führt zu Reflexion und Klarheit", "text": "Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"}, {"id": "c36", "v": 33, "n": 46, "f": "#7a7090", "info": "Konflikt um Schimpfen", "text": "Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"}, {"id": "c37", "v": 33, "n": 33, "f": "#7a7090", "info": "Der Schimpfende will durch Frust rausschimpfen Ruhe schaffen", "text": "Schimpfen für Ruhe"}, {"id": "c38", "v": 30, "n": 46, "f": "#7a7090", "info": "Der Macher arbeitet trotz des Kranken weiter", "text": "Auch in der Krankheit bleibt der Macher aktiv"}, {"id": "c39", "v": 33, "n": 39, "f": "#7a7090", "info": "Kranksein führt zum Rückzug", "text": "Wegen Erkältung den ganzen Tag im Bett gelegen"}, {"id": "c40", "v": 33, "n": 30, "f": "#7a7090", "info": "Der kranke Teil aktiviert den aktiven Macher", "text": "Obwohl krank macht Norbert Termine und plant Unternehmungen"}, {"id": "c41", "v": 20, "n": 33, "f": "#7a7090", "info": "Verletzung bringt Klarheit über Muster", "text": "Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"}, {"id": "c42", "v": 33, "n": 51, "f": "#7a7090", "info": "Kranker Teil aktiviert Kreativität", "text": "Trotz Krankheit die IFS-App programmiert"}, {"id": "c43", "v": 51, "n": 17, "f": "#7a7090", "info": "Kreativität führt zu Freude", "text": "Meisten Spaß hatte ich beim App-Basteln"}, {"id": "c44", "v": 30, "n": 17, "f": "#7a7090", "info": "Aktivität führt zu Freude", "text": "Initiative ergreifen bringt Freude"}, {"id": "c45", "v": 33, "n": 52, "f": "#7a7090", "info": "Krankheit aktiviert Selbstfürsorge", "text": "Der Kranke löst den sich um sich selbst Kümmernden aus"}, {"id": "c47", "v": 33, "n": 1, "f": "#7a7090", "info": "Der Grübler trägt die schweren Gedanken für den kleinen Jungen", "text": "Er macht das schon immer für mich, aber er hatte auch viel Zeit wo er Urlaub machen kann"}, {"id": "c49", "v": 3, "n": 52, "f": "#7a7090", "info": "Der Wahrheits-Suchende aktiviert den Ohnmachts-Erwartenden", "text": "Wenn der Wahrheits-Suchende die direkte Frage stellen will, aktiviert sich sofort die Ohnmacht vor der möglichen Antwort"}, {"id": "c50", "v": 55, "n": 3, "f": "#7a7090", "info": "Der Traumbeziehungs-Bewahrer verstärkt den Wahrheits-Suchenden", "text": "Je mehr der Traum bedroht ist, desto verzweifelter wird die Suche nach Antworten und Klarheit"}, {"id": "c51", "v": 55, "n": 56, "f": "#7a7090", "info": "Der Wahrheits-Suchende aktiviert den Antwort-Suchenden", "text": "Beide Teile suchen verzweifelt nach Verständnis für Gabis Verhalten"}, {"id": "c52", "v": 56, "n": 57, "f": "#7a7090", "info": "Der Antwort-Suchende arbeitet mit dem Gedanken-Träger zusammen", "text": "Beide versuchen Norbert zu entlasten, sind aber selbst überlastet"}, {"id": "c53", "v": 58, "n": 39, "f": "#7a7090", "info": "Der Überforderte will den Traumbeziehungs-Träger schützen", "text": "Der Überforderte übernimmt die schweren Gedanken, damit der Traumbeziehungs-Träger nicht alleine leiden muss"}, {"id": "c54", "v": 56, "n": 39, "f": "#7a7090", "info": "Der Antwort-Suchende versucht den Traumbeziehungs-Anteil zu retten", "text": "Der suchende Teil will verstehen um die Traumbeziehung zu bewahren"}, {"id": "c55", "v": 61, "n": 62, "f": "#7a7090", "info": "Der verstehen-wollende Teil aktiviert den ohnmächtigen Teil bei Trennungsgedanken", "text": "Wenn der Ablehnung-Verstehen-Wollende an die mögliche Antwort 'Nein' von Gabi denkt, aktiviert das sofort den Ohnmächtigen"}, {"id": "c56", "v": 63, "n": 61, "f": "#7a7090", "info": "Der Traumbewahrer verstärkt die Verzweiflung des verstehen-wollenden Teils", "text": "Je mehr der Traumbewahrer am Bild der Traumfrau festhält, desto verzweifelter wird der Ablehnung-Verstehen-Wollende in seiner Suche nach Antworten"}, {"id": "c57", "v": 33, "n": 64, "f": "#7a7090", "info": "Ärger aktiviert Frustration", "text": "Bei KI-Problemen aktiviert der Ärger auch die Frustration - sie arbeiten zusammen"}, {"id": "c58", "v": 64, "n": 66, "f": "#7a7090", "info": "Frustration führt zu Frust", "text": "Die Frustration verstärkt den allgemeinen Frust über die Situation"}, {"id": "c59", "v": 33, "n": 40, "f": "#7a7090", "info": "Beide gehören zum 'Team' frustrierter Teile", "text": "Der KI-Ärgerteil erwähnt, dass noch mehr Teile 'rumstehen', vielleicht seine Freunde, ein ganzes Team"}, {"id": "c56", "v": 33, "n": 12, "f": "#7a7090", "info": "Der Ärger aktiviert sich besonders bei technischen/analytischen Problemen", "text": "KI-Arbeit triggert den Ärger wenn Reparaturversuche scheitern"}, {"id": "c57", "v": 33, "n": 54, "f": "#7a7090", "info": "Der Ärger aktiviert den Weggegangenen Teil", "text": "Wenn der Ärger zu viel Aufmerksamkeit bekommt, schickt der Weggegangene Teil die anderen weg"}, {"id": "c58", "v": 33, "n": 55, "f": "#7a7090", "info": "Ärger führt zu Trauer über verlorene Zeit", "text": "Der Ärger trägt auch Traurigkeit - beide leiden unter 'umsonst' investierter Energie"}, {"id": "c59", "v": 33, "n": 56, "f": "#7a7090", "info": "Ärger kann andere Teile verdrängen", "text": "Wenn der Ärger zu viel Aufmerksamkeit bekommt, gehen andere Teile weg"}, {"id": "c60", "v": 33, "n": 57, "f": "#7a7090", "info": "Der Ärger will durch Ablenkung helfen", "text": "Er sagt er kann mich versuchen abzulenken an was schönes zu denken"}];var lV=[];try{lV=JSON.parse(localStorage.getItem("ifs-verbindungen-extra")||"[]");}catch(e){}bV.forEach(function(v){if(!lV.some(function(x){return x.v===v.v&&x.n===v.n;}))lV.push(v);});localStorage.setItem("ifs-verbindungen-extra",JSON.stringify(lV));var bE=[{"id": 53, "name": "Der Ärgerteil der KI", "kurz": "Der Ärgerteil…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Wird sehr aufgeregt, dann traurig", "gs": ["Die ganze Arbeit war umsonst, die Energie hat sich nicht gelohnt"], "job": "Reagiert auf Inkompetenz und Technikversagen, wird aktiv wenn Arbeit umsonst zu sein scheint", "aus": "KI macht Fehler, je mehr repariert wird desto schlimmer wird es", "angst": "Noch unbekannt", "braucht": "Jemand der sagt 'bleib ruhig, es wird alles gut, reg dich nicht auf'", "st": "Kennt Norbert schon ganz lange, war früher aktiver, ist jetzt ruhiger geworden weil Norbert ruhiger wurde", "ph": 1, "pos": {"x": 61, "y": 44}}, {"id": 54, "name": "Der Weggegangene Teil", "kurz": "Der Weggegang…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Unbekannt", "gs": ["Wenn ich nicht gesehen werde, gehe ich weg"], "job": "Schutz vor Übersehen durch Rückzug", "aus": "Nicht beachtet werden in IFS-Sitzungen", "angst": "Noch unbekannt", "braucht": "Gesehen und einbezogen werden", "st": "Aktiv - ist weggegangen als andere Teile ignoriert wurden", "ph": 1, "pos": {"x": 38, "y": 67}}, {"id": 57, "name": "Der Ablenk-Anteil", "kurz": "Der Ablenk-An…", "typ": "manager", "tl": "MANAGER", "icon": "🔍", "f": {"bg": "#1A3A6B", "tx": "#d0e8ff", "rg": "#2980b9"}, "kp": "Gibt Zeichen bevor Explosion", "gs": ["Ich kann helfen runter zu fahren"], "job": "Auf schöne Dinge hinweisen und vom Ärger ablenken", "aus": "Wenn Ärger zu groß wird", "angst": "Noch unbekannt", "braucht": "Vertrauen dass seine Hilfe angenommen wird", "st": "Kooperativ und hilfreich", "ph": 1, "pos": {"x": 29, "y": 66}}, {"id": 58, "name": "Der Früh-Warner", "kurz": "Der Früh-Warn…", "typ": "manager", "tl": "MANAGER", "icon": "🔍", "f": {"bg": "#1A3A6B", "tx": "#d0e8ff", "rg": "#2980b9"}, "kp": "Gibt körperliche Zeichen als Warnung", "gs": ["Ich kann rechtzeitig warnen"], "job": "Frühwarnsignale geben bevor Norbert explodiert", "aus": "Aufsteigende Wut/Ärger", "angst": "Noch unbekannt", "braucht": "Dass Norbert auf seine Signale achtet", "st": "Präventiv arbeitend", "ph": 1, "pos": {"x": 66, "y": 19}}, {"id": 59, "name": "Der KI-Ärgerteil", "kurz": "Der KI-Ärgert…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Nicht näher lokalisiert, wird ruhiger wenn Norbert ruhiger wird", "gs": ["Die ganze Arbeit ist umsonst wenn es nicht funktioniert"], "job": "Sich über die Inkompetenz von Technik ärgern und Frust abbauen", "aus": "Technische Probleme, Fehler die sich häufen, gescheiterte Reparaturversuche", "angst": "Noch unbekannt", "braucht": "Frühwarnung bevor er explodiert, jemand der sagt 'bleib ruhig, es wird alles gut'", "st": "Will Ablenkung geben und an schöne Dinge erinnern", "ph": 1, "pos": {"x": 43, "y": 42}}, {"id": 60, "name": "Das Team der frustrierten Teile", "kurz": "Das Team der …", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Verschiedene Körperstellen", "gs": ["Wir stehen rum und haben keine Antworten"], "job": "Sammlung verschiedener Frust-Teile die bei Problemen aktiv werden", "aus": "Unvollendete Projekte, technische Probleme", "angst": "Noch unbekannt", "braucht": "Gesehen und gehört werden, nicht übergangen werden", "st": "Sind weggegangen als sie nicht beachtet wurden", "ph": 1, "pos": {"x": 20, "y": 65}}];var lE=[];try{lE=JSON.parse(localStorage.getItem("ifs-extrateile")||"[]");}catch(e){}bE.forEach(function(t){if(!lE.some(function(x){return x.id===t.id;}))lE.push(t);});localStorage.setItem("ifs-extrateile",JSON.stringify(lE));var bP={"1": 2, "2": 2, "3": 3, "6": 2, "11": 2, "13": 2, "14": 2, "18": 2, "20": 3, "21": 2, "22": 2, "27": 2, "30": 2, "33": 4, "34": 2, "36": 2, "39": 3, "44": 3, "45": 4, "47": 3, "48": 3, "49": 3, "54": 2, "55": 2, "56": 2, "61": 3};var lP={};try{lP=JSON.parse(localStorage.getItem("ifs-progress")||"{}");}catch(e){}Object.keys(bP).forEach(function(k){if(lP[k]===undefined)lP[k]=bP[k];});localStorage.setItem("ifs-progress",JSON.stringify(lP));var bS=[{"name": "Ruhe", "erlebt": true, "quelle": "Tagebuch 13.03 + 14.03.2026", "info": "Grundton der ganzen Woche vom 09.–14.03. — trotz Krankheit und dem schweren Abend am 14.03. 'Ruhe und Neugier fuehlten sich diese Woche als Grundton an — eine seltene Qualitaet die nur mir gehoert.' Erlaubnissatz: Es darf leicht gehen."}, {"name": "Mitgefühl / Empathie", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Coaching + Tagebuch 11.03", "info": "Du verurteilst Gabi nicht — du versuchst sie zu verstehen. Im Coaching siehst du den Menschen hinter dem Verhalten. Als Jobcoach und NLP Practitioner spürst du Bedürfnisse anderer — manchmal stärker als deine eigenen. Empathie als Stärke und als Falle (Helfer-Teil). 11.03: Drei Stunden Coaching — TN hat sich geöffnet und bedankt."}, {"name": "Vertrauen", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026", "info": "Ich weiss: Ich kann alleine gluecklich sein. Das wurde im IFS-Kontext als Selbst-Moment erkannt — kein Teil hat das gesagt. Das Selbst weiss es."}, {"name": "Neugier", "erlebt": true, "quelle": "Tagebuch 13.03.2026 + IFS-Sitzung", "info": "Beim Hoerbuch Mutige Liebe — Aha-Momente und neue Perspektiven gespuert. Auch in der IFS-Sitzung: 'Ich weiss dass das alles stimmt — aber ich bin neugierig.' Das war dein Selbst."}, {"name": "Klarheit", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Tagebuch 13.03", "info": "Du siehst das Muster heute klarer als vor 2 Jahren. Beim Hoerbuch neue Klarheit ueber Paartherapie und Bindungssystem. Der Hinterfrager ist ein Ausdruck dieser Qualitaet."}, {"name": "Selbstverantwortung", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem handgeschriebenen Selbst-Kreis notiert. Noch nicht explizit in Sitzungen oder Tagebuch als Moment beschrieben — aber als Wert klar benannt."}, {"name": "Mut", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Abend", "info": "Im Coaching und Bewerbungsgespraech — praesentm klar, auch bei schwierigen Themen nicht ausgewichen. Mut als SELBST-Qualitaet explizit im Abend-Eintrag notiert."}, {"name": "Entwicklungsfähigkeit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Morgen", "info": "'Dass mir gerade vieles klar wird, ich mich entwickle und diese Erkenntnisse bekomme.' Dankbarkeit am Morgen — Entwicklung als spuerbarer Prozess, nicht nur als Ziel."}, {"name": "Kreativität", "erlebt": true, "quelle": "Buchprojekt + Tagebuch 14.03.2026", "info": "Du hast ein Buch geschrieben — eine Freundin hat dabei geweint. Und: 14.03.2026 die IFS-App programmiert — krank, allein, emotional aufgewuehlt — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.'"}, {"name": "Verlässlichkeit", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem Selbst-Kreis notiert. Als Jobcoach und Kollege verlaeesslich — noch nicht als Selbst-Moment in Sitzungen explizit gespuert."}, {"name": "Verbundenheit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Abend", "info": "Im Abendgespraech mit Gabi — echte Verbundenheit gespuert. Spontan, ohne Kaempfen. Der Verbundene als Teil entstand aus diesem Moment. Verbundenheit ist moeglich."}, {"name": "Motivation", "erlebt": false, "quelle": "Persoenlicher Selbst-Kreis", "info": "In deinem Selbst-Kreis notiert. Als treibende Kraft hinter IFS-Arbeit und Coaching erkennbar — aber noch nicht als bewusster Selbst-Moment benannt."}, {"name": "Zuhören", "erlebt": true, "quelle": "Coaching-Alltag + IFS-Sitzungen", "info": "Als Jobcoach taegliche Staerke. In IFS-Sitzungen: Du laesst Teile reden bevor du antwortest. Du hoerst zu ohne sofort zu loesen. Das ist echtes Zuhören aus dem Selbst."}, {"name": "Reflexionsfähigkeit", "erlebt": true, "quelle": "IFS-Sitzung 09.03.2026 + Tagebuch 11.03.2026", "info": "11.03 IFS-Schlüsselmoment: Mitten im Ärger spontan einen getriggerten Teil bemerkt — ohne Anleitung. Das Selbst war kurz sichtbar. 'Ich kann einen Teil beobachten ohne von ihm übernommen zu werden.' Das ist Reflexionsfähigkeit in Aktion."}, {"name": "Resilienz", "erlebt": true, "quelle": "Persoenliche Geschichte", "info": "Du hast Jahrzehnte schwieriger Beziehungsmuster und emotionaler Vernachlaessigung ueberlebt — und stehst hier und machst IFS-Arbeit. Das ist gelebte Resilienz."}, {"name": "Freundlichkeit", "erlebt": true, "quelle": "Tagebuch 11.03.2026 — Supermarkt", "info": "11.03: Jemand lässt mich im Supermarkt vor — nettes Gespräch, Wärme gespürt. Freundlichkeit als gelebter Moment mit einem Fremden. Nicht nur im Coaching — auch im Alltag."}, {"name": "Erworbene Sicherheit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Wichtigste Erkenntnis", "info": "Earned Security in Aktion: Das Selbst hat dem Wartenden gesagt: 'Du musst nicht mehr warten. Ich passe auf dich auf.' Das kam vom Selbst — nicht von einem Manager."}, {"name": "Leichtigkeit", "erlebt": true, "quelle": "Tagebuch 13.03.2026 — Morgen", "info": "Erlaubnissatz am Morgen: 'Ich finde meinen Weg. Und: Es darf leicht gehen.' Der Freudige als Teil traegt diese Qualitaet — er geniesst einfach, ohne Beduerfnis."}, {"name": "Selbstvertrauen", "erlebt": true, "quelle": "Tagebuch 13.03 + 14.03.2026", "info": "Im Coaching praesentm klar, sicher. Und: 14.03 — ich war alleine verantwortlich fuer meine Zufriedenheit. Ganz ohne Gabi. Das ist echte Staerke. Erlaubnissatz: Meine Zufriedenheit gehoert mir."}, {"name": "Selbstfürsorge", "erlebt": true, "quelle": "Tagebuch 14.03.2026 — Abend", "info": "Krank geworden — Tee, Tablette, frueh ins Bett. Gut fuer mich gesorgt ohne jede Unterstuetzung von aussen. Nicht gewartet bis jemand sagt: Leg dich hin. Selbst entschieden was gut tut — aus dem Selbst heraus."}, {"name": "Stolz", "erlebt": true, "quelle": "Tagebuch 14.03.2026 — Wichtigste Erkenntnis", "info": "Echter Stolz auf eigene Schoepfung: die IFS-App trotz Krankheit erschaffen — 21 Anteile, vollstaendig, auf Deutsch. 'Dieser Stolz gehoert mir. Niemand kann ihn mir nehmen.' Gesunder Stolz der nicht von aussen bestaetigt werden muss."}, {"name": "Kraft", "erlebt": true, "quelle": "Tagebuch 12.03.2026 — Morgen", "info": "12.03: Drei Termine ohne Pause, zwei neue Mitarbeiter eingearbeitet — und trotzdem praesent und gelassen geblieben. Kraft als SELBST-Qualitaet: nicht Anstrengung, sondern ruhige Staerke die einfach da ist."}, {"name": "Energie", "erlebt": true, "quelle": "Tagebuch 12.03.2026 — Morgen", "info": "Lebendige Praesenz am Morgen des 12.03. Bereit fuer einen vollen Tag — nicht aus Pflicht, sondern aus echter Lebendigkeit. Energie als Ausdruck von innerem Gleichgewicht."}, {"name": "Sicherheit", "erlebt": true, "quelle": "Tagebuch 10.03.2026 — Abend", "info": "10.03 in der Naehe von Gabi — harmonischer Abend gespuert. Und: Der sichere Beziehungsanteil wurde zum ersten Mal bewusst begruesst. Das Ziel der Heilungsarbeit: Sicherheit die von innen kommt — nicht von der Zuverlaessigkeit des anderen."}, {"name": "Mitgefühl", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Dankbarkeit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Geduld", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Gelassenheit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Offenheit", "info": "Neu entdeckt — Automatisch erkannt in Tagebuch/Dialog", "quelle": "Automatisch erkannt in Tagebuch/Dialog", "neu": true}, {"name": "Strukturierte IFS-Begleitung", "info": "Erkennt wenn IFS-Sitzungen unvollständig werden und fordert bessere Struktur", "quelle": "Dialog - Norbert kritisiert die unstrukturierte Sitzungsführung", "erlebt": true, "neu": true}, {"name": "Strukturiertes IFS-Bewusstsein", "info": "Erkennt wenn IFS-Sitzungen unvollständig bleiben und fordert bessere Begleitung ein", "quelle": "Kritik an unvollständiger Session und Forderung nach Neustart", "erlebt": true, "neu": true}, {"name": "Meta-Coaching-Kompetenz", "info": "Kann den Begleitungsprozess selbst reflektieren und Verbesserungen vorschlagen", "quelle": "Feedback an den Begleiter über fehlende Struktur und bessere IFS-Führung", "erlebt": true, "neu": true}, {"name": "Strukturelle Achtsamkeit", "info": "Erkennt wenn IFS-Prozesse unvollständig sind und fordert bessere Struktur ein", "quelle": "Dialog Feedback zu unvollständiger Session", "erlebt": true, "neu": true}];var lS=[];try{lS=JSON.parse(localStorage.getItem("ifs-selbst-quali")||"[]");}catch(e){}bS.forEach(function(q){if(!lS.some(function(x){return x.name===q.name;}))lS.push(q);});localStorage.setItem("ifs-selbst-quali",JSON.stringify(lS));var bG=[47, 54, 53, 59, 60, 38, 43, 48, 44, 49, 41, 50, 45];var lG=[];try{lG=JSON.parse(localStorage.getItem("ifs-geloescht")||"[]");}catch(e){}bG.forEach(function(id){if(lG.indexOf(id)===-1)lG.push(id);});localStorage.setItem("ifs-geloescht",JSON.stringify(lG));var bT={"1": {"gs": ["Ich muss etwas leisten, um dazuzugehören.", "Nähe ist nicht selbstverständlich — man verdient sie sich."], "job": "Trägt den tiefen Schmerz von Einsamkeit. Hat als Kind 50 DM gestohlen um dazuzugehören.", "braucht": "Gesehen werden ohne Leistung. Der Satz: Du darfst genau so sein wie du bist.", "st": "14.03: Heute bewusst geworden — er ist der Kern hinter dem Wartenden. Gabi wiederholt ein sehr altes Muster. Der Schmerz ist so tief weil er nicht neu ist. Zum ersten Mal direkt angesprochen und gesehen — vom eigenen Selbst."}, "2": {"gs": ["Nähe ist gefährlich — sie wird mir weggenommen.", "Ich kann alleine nicht wirklich glücklich sein."], "job": "Sucht intensiv Nähe, erwartet gleichzeitig Zurückweisung. Lag neben Gabi und hielt sich bei Berührung zurück.", "braucht": "Die Erfahrung: Nähe kommt auch wieder ohne dass ich kämpfe.", "st": "10.03.2026: Überarbeitet und gestresst. Trägt das Drängen und Warten. Braucht Entlastung. Erkenntnis: entstand aus 10 Jahren toxischer Ehe — Nervensystem lernte Kälte und Schweigen. Aus dem sicheren Anteil wurde über Jahre der Wartende. Kindheitsmuster und Ehe-Wunde liegen übereinander."}, "3": {"gs": ["Wenn ich nicht warte, berührt mich keiner.", "Warten ist mein Job — ohne Warten bin ich arbeitslos.", "Wenn ich still bin, nichts falsch mache, warte — vielleicht dann...", "Wenn ich warte, werde ich gesehen. Ich muss passiv bleiben.", "Wenn ich warte wird jemand kommen und nach mir fragen. Ich muss passiv bleiben um geliebt zu werden.", "Wenn sie Nein sagt, bin ich ohnmächtig und muss ausziehen"], "job": "Hält permanent Wache. Wartet seit dem ganzen Leben auf Berührung — auch auf Fürsorge. Lag am 14.03 im Zimmer und wartete darauf dass Gabi fragt wie es ihm geht. Sie ist nicht gekommen. Er wusste das — und hat trotzdem gewartet. · Sich auf das Worst-Case-Szenario vorbereiten wenn Gabi 'Nein' zur Beziehung sagt", "braucht": "Nicht mehr warten müssen. Aktiv gefragt werden. Selbstfürsorge vom Selbst statt von außen. Der Satz: Du musst nicht mehr warten. Ich bin hier. Ich frage dich: Wie geht es dir? · Will diese Ohnmacht nicht spüren müssen", "st": "14.03: Das Warten ist uralt — nicht nur Gabi-Muster, sondern Kindheitsmuster. Der kleine Junge wurde früher auch nie gefragt. Botschaft vom Selbst: Du musst nicht mehr warten. | Vermeidet die direkte Konfrontation mit der möglichen Wahrheit"}, "4": {"gs": ["Wenn ich helfe und gebraucht werde, bin ich sicher.", "Wenn ich nichts gebe, verliere ich meinen Platz."], "job": "Sorgt für Sicherheit durch Nützlichsein. Meister darin, Bedürfnisse anderer zu spüren — und die eigenen zu übergehen.", "braucht": "Erlaubnis, auch zu empfangen. Bedürfnisse haben ohne sie zu rechtfertigen.", "st": "Lange übersehen. Eng verbunden mit dem kleinen Jungen: Helfen = dazugehören."}, "5": {"gs": ["Ich bin nicht gut genug so wie ich bin.", "Bin ich überhaupt ein Schriftsteller?", "Wenn ich Schwäche zeige, werde ich bestraft."], "job": "Kritisiert dich selbst bevor es andere tun — als Schutz vor Ablehnung. Blockiert das Buchprojekt.", "braucht": "Anerkennung: Du hast gut aufgepasst. Aber ich brauche dich als Wächter — nicht als Richter.", "st": "PRIORITÄT: 6F-Protokoll in nächster Sitzung."}, "6": {"gs": ["Wenn ich zweifle bevor ich anfange, kann ich nicht enttäuscht werden.", "Neue Dinge funktionieren für mich nicht."], "job": "Verhindert Enttäuschung durch vorweggenommenen Zweifel.", "braucht": "Anerkennung für seine lange Arbeit. Ruhe.", "st": "10.03.2026: Erstes IFS-Gespräch auf dem Fahrrad — überarbeitet, erschöpft. Botschaft: Du passt gut auf mich auf. Du darfst dich ausruhen. Ich besuche dich bald wieder. Gegenspieler: Der Spontane."}, "7": {"gs": ["Wenn ich mich verändere, verändert sie sich auch.", "Ich mache etwas falsch — der Fehler liegt bei mir.", "Wenn ich ausziehe und es bereue, bin ich alleine — für immer."], "job": "Sammelt Beweise dass Gabi sich verändern könnte. Hält Endgültigkeit fern.", "braucht": "Die Wahrheit: Deine Heilung hängt nicht von Gabi ab.", "st": "Als Beschützer entlarvt. Hält nicht Liebe — sondern Angst vor Reue aufrecht."}, "8": {"gs": ["Nähe geht auch ohne Berührung — das reicht mir."], "job": "Kreativer Beschützer. Hat neben Gabi ausprobiert ob Nähe ohne Berührung möglich ist.", "braucht": "Anerkennung für Kreativität — aber kein Dauerzustand.", "st": "Kreativer Versuch. Zeigt gesunden Impuls."}, "9": {"gs": ["Nähe kann ich durch Reden und Erklären herbeiführen."], "job": "Tritt auf wenn der Wartende erschöpft ist. Drängt, erklärt, fordert.", "braucht": "Neuer Job: Signalgeber statt Dränger.", "st": "Erstmals klar benannt. Neuer Job möglich."}, "10": {"gs": ["Wenn ich schreibe oder lese, bin ich sicher."], "job": "Taucht in Schreiben und Lesen ein wenn es emotional zu viel wird.", "braucht": "Kritiker muss ruhiger werden damit er wieder frei schreiben kann.", "st": "Gesund in Grundfunktion. Derzeit blockiert durch Kritiker."}, "11": {"gs": ["Reden bringt nichts. Es ändert sich sowieso nichts.", "Besser still sein als wieder verletzt werden."], "job": "Trägt Hoffnungslosigkeit sehr lange. Zieht sich innerlich zurück wenn es zu viel wird — schützt durch Rückzug. Tritt auf wenn Gespräche über Nähe wieder in Verletzung enden.", "braucht": "Angehört werden. Der Satz: Du trägst das schon so lange. Ich lasse dich nicht alleine damit.", "st": "14.03: Unter der Wut zum Vorschein gekommen. Erschöpft — hat oft recht gehabt dass nichts hilft, das war sein Schutz. Er ist nicht Schwäche sondern Erschöpfung nach zu langem Kämpfen."}, "12": {"gs": ["Wenn ich alles verstehe, bin ich sicher.", "Ich muss besser kommunizieren — mehr geben."], "job": "Braucht Bücher, Statistiken, Erklärungen. Analyse als Flucht aus dem Fühlen.", "braucht": "Erlaubnis, auch mal nicht zu verstehen.", "st": "Aktiv in vielen Gesprächen. Analyse statt Fühlen ist sein Muster."}, "13": {"gs": ["Ich erkenne wenn etwas nicht stimmt.", "Ich kann einen Teil beobachten ohne von ihm übernommen zu werden."], "job": "Schützt mit Klarheit. Hat das Coaching direkt korrigiert. Zeigt echte Selbstführung.", "braucht": "Raum und Gehör — er sagt wichtige Dinge.", "st": "Stark präsent. Zeigt echte SELBST-Führung."}, "14": {"gs": ["Ich weiß dass das alles stimmt — aber ich bin neugierig.", "Das Buch war gut genug — eine Freundin hat geweint."], "job": "Der Anteil der hierher kommt. Hält die Arbeit am Laufen. Neugier trotz Zweifler.", "braucht": "Mehr Raum — er ist der Weg nach vorne.", "st": "Erstmals explizit benannt. Kommt aus dem Selbst."}, "15": {"gs": ["Ich kann alleine glücklich sein — das habe ich bewiesen."], "job": "Weiß wie Freiheit sich anfühlt. War vor 1,5 Jahren glücklich allein.", "braucht": "Mehr Raum. Lautere Stimme.", "st": "Leise aber klar. Wichtige Stimme für die Zukunft."}, "16": {"gs": ["Ich muss aktiv sein — Stillstand fühlt sich gefährlich an."], "job": "Früh wach, kann nicht mehr einschlafen. Bedürfnis: Tun und Aktivität. Hält den Körper in Bewegung wenn die Psyche zu ruhig wäre.", "braucht": "Erlaubnis auch mal nichts zu tun. Ruhe als Qualität erleben.", "st": "Entdeckt am 13.03.2026. Unruhe und Freude fühlten sich morgens ähnlich an — beide aktiv und präsent."}, "17": {"gs": ["Es darf einfach gut sein — ohne Grund, ohne Leistung."], "job": "Vorfreude auf den Tag. Genießt einfach ohne Bedürfnis. Gesunder Anteil der Leichtigkeit.", "braucht": "Mehr Raum. Er darf da sein ohne sich rechtfertigen zu müssen.", "st": "Entdeckt am 13.03.2026. Erste explizite Benennung. Wichtige Ressource."}, "18": {"gs": ["Ich weiß was ich tue. Ich bin kompetent und präsent.", "Ich bin ein guter Mensch und werde von anderen geliebt"], "job": "Im Coaching und bei Bewerbungsgesprächen mit TN — präsent, klar, sicher. Zeigt Norbets professionelle Stärke. · Selbstbewusstsein und Positivität ausstrahlen", "braucht": "Mehr Übertragung auf private Beziehungen. Die Frage: Warum ist er im Coaching da und in der Beziehung mit Gabi nicht? · Anerkennung und Wertschätzung", "st": "Entdeckt am 13.03.2026. Wichtige Ressource. Zeigt: Norbert kann aus dem Selbst führen. | gesund aber möglicherweise von Partner abgelehnt"}, "19": {"gs": ["Echte Verbindung ist möglich — und ich darf sie spüren."], "job": "Taucht im echten Kontakt mit Gabi auf. Spürt Verbundenheit wenn sie da ist. Gegenpol zum Ängstlichen Bindungsanteil.", "braucht": "Mehr Erlaubnis sich zu zeigen. Weniger Warten, mehr aktives Zugehen.", "st": "Entdeckt am 13.03.2026. Im Abendgespräch mit Gabi gespürt. Wichtiger Gegenpol."}, "20": {"gs": ["Ich zähle die Stiche weil ich gehört werden will.", "Mein Schmerz ist real — er sagt nichts über meinen Wert."], "job": "Erkennt und benennt Unrecht. Zählt die Verletzungen. Schreibt Listen um das Muster sichtbar zu machen — das ist seine spezifische Funktion. Hat die 12-Punkte-Liste geschrieben. Meldet sich wenn das Muster sich wiederholt.", "braucht": "Gesehen werden. Gehört werden. Der Satz: Ich sehe dich. Du hast recht. Das sagt nichts über deinen Wert.", "st": "14.03.2026 erstmals klar benannt. Körper: Enge in der Brust, Rückzug, Schwere. Trägt den ältesten Schmerz — der kleine Junge wurde früher auch nie gefragt."}, "21": {"gs": ["Genug. Das ist nicht OK.", "Ich schütze den Verletzten — das ist mein Job."], "job": "Kommt direkt nach dem Verletzten um ihn zu schützen. Laut, überall, kreisende Gedanken, neue Listen. Sie ist kein Feind — sie ist ein Beschützer.", "braucht": "Angehört werden. Das Unrecht benennen dürfen. Dann: Erlaubnis Pause zu machen. Der Satz: Danke. Ich habe es gehört.", "st": "14.03.2026 erstmals klar benannt. Körper: Überall und diffus, kreisende Gedanken, innere Unruhe. Ist Beschützer — nicht Angreifer."}, "22": {"gs": ["Präsenz schafft echte Verbindung.", "Zuhören ist meine Stärke.", "Ich begegne Menschen ohne Vorannahmen.", "Offenheit schafft echten Kontakt."], "job": "Bleibt bei allen Gesprächen vollständig präsent — ohne Urteil, ohne Vorannahmen. Begegnet dem Gegenüber offen und gibt ihm das Gefühl wirklich gehört zu werden. Beides zusammen ist die Basis für tiefe Gespräche im Coaching und mit Gabi.", "braucht": "Stille, Raum und Ruhe um wirken zu können.", "st": "11./12.03.2026: Drei Stunden Coaching — TN hat sich geöffnet und bedankt. Abends bei Gabi präsent. Zwei Qualitäten die immer zusammen auftreten: Offenheit ermöglicht echtes Zuhören."}, "23": {"gs": ["Neugier öffnet Türen.", "Gute Fragen führen zu echten Gesprächen."], "job": "Aktiv und neugierig bei der Einarbeitung. Stellt echte Fragen — nicht aus Pflicht, sondern aus genuinem Interesse.", "braucht": "Situations- und Gesprächspartner die auf Fragen eingehen.", "st": "12.03.2026 entdeckt. Bei Einarbeitung zweier neuer Mitarbeiter aktiv."}, "24": {"gs": ["Teilen schafft Nähe.", "Wenn ich erzähle, bin ich wirklich da.", "Wissen teilen ist Verbindung.", "Ich erkläre gerne wenn jemand lernen will."], "job": "Schafft Verbindung durch Sprache — in zwei Formen: als Erzähler teilt er persönlich mit Gabi, als Dozent erklärt er geduldig und klar wenn jemand lernen will. Beides ist dasselbe: Sprache als Brücke.", "braucht": "Einen Menschen der wirklich zuhört. Jemanden der lernen will.", "st": "11./12.03.2026: Abends bei Gabi erzählt — sie hat zugehört. Gabi bei Excel geholfen — geduldig und klar. Verbindung durch Sprache in beiden Richtungen."}, "25": {"gs": ["Verdiente Erschöpfung ist in Ordnung.", "Ich darf müde sein nach echtem Einsatz."], "job": "Meldet sich abends nach vollem Einsatz. Im Unterschied zum Resignierenden ist seine Erschöpfung verdient und gesund — nicht aus Hoffnungslosigkeit.", "braucht": "Erlaubnis müde zu sein. Ruhe und Schlaf.", "st": "Körperliche Erschöpfung nach intensiven Tagen aber mit Zufriedenheit"}, "26": {"gs": ["Wenn etwas nicht klappt, muss ich es sofort lösen.", "Ich zeige an was nicht stimmt."], "job": "Meldet sich kurz wenn Pläne scheitern — TN sagt ab, Kollegin sagt ab. Sein Signal ist wichtig: er zeigt was nicht passt. Übergibt schnell an den Lösungsorientierten.", "braucht": "Kurz gehört werden — dann Übergabe an den Lösungsorientierten.", "st": "11.03.2026: TN und Kollegin sagen ab. Anspannung im Bauch — aber schneller Übergang. Dieser Übergang ist eine echte Ressource."}, "27": {"gs": ["Es gibt immer einen Weg.", "Probleme sind Aufgaben — keine Hindernisse."], "job": "Schaltet sich unmittelbar nach dem Unzufriedenen ein. Dieser schnelle Übergang ist eine echte Stärke — Norbert bleibt selten lang im Frust.", "braucht": "Kurzen Raum nach dem Unzufriedenen um aktiv werden zu können.", "st": "11.03.2026: Sofort neue Lösung für TN gefunden. Beobachtung: Der Übergang passiert sehr schnell — das ist eine Ressource."}, "29": {"gs": ["Freundlichkeit kostet nichts und gibt viel.", "Kleine Momente der Verbindung zählen."], "job": "Im Supermarkt — jemand lässt mich vor, nettes Gespräch, Wärme gespürt. Ist für alltägliche kleine Verbindungsmomente zuständig.", "braucht": "Offene Situationen wo Kontakt möglich ist.", "st": "11.03.2026: Supermarkt-Moment. Wärme bei kurzem Gespräch mit einem Fremden gespürt."}, "30": {"gs": ["Ich handle — ich warte nicht.", "Für andere aktiv sein macht mich stark."], "job": "Ergreift Initiative für Unternehmungen und kümmert sich um sich selbst ohne über Beziehungen nachzudenken", "braucht": "Klare Aufgabe und Handlungsraum.", "st": "Ergreift Initiative, macht Unternehmungen und plant Osterferien ohne über Beziehung nachzudenken"}, "32": {"gs": ["Warten ist manchmal die richtige Handlung.", "Geduld ist Stärke, nicht Schwäche."], "job": "An der Supermarktkasse — ruhig und präsent bleibend. Unterscheidet sich vom Wartenden: er wartet nicht auf Fürsorge, er ist einfach ruhig wenn Warten nötig ist.", "braucht": "Einfach Raum.", "st": "11.03.2026: Supermarktkasse. Ruhig und präsent. Gesundes Warten — kein ängstliches."}, "33": {"gs": ["Wenn meine Zeit nicht respektiert wird, reagiere ich.", "Ärger zeigt mir was mir wichtig ist.", "Die ganze Arbeit war umsonst, die Energie hat sich nicht gelohnt", "Wenn es nicht funktioniert war alle Arbeit umsonst und die Energie hat sich nicht gelohnt", "Wenn etwas nicht funktioniert und wir nicht fertig werden, dann war alle Arbeit umsonst", "Wenn Arbeit nicht funktioniert, war alles umsonst"], "job": "Sich über Inkompetenz aufregen, aber auch Trauer über verlorene Zeit tragen", "braucht": "Jemand der sagt 'bleib ruhig, es wird alles gut, reg dich nicht auf' und Frühwarnzeichen", "st": "11.03.2026 IFS-Schlüsselmoment: Mitten im Ärger spontan getriggerten Teil bemerkt — ohne Anleitung. Das Selbst war kurz sichtbar. Botschaft: Ich werde dich bald besuchen und mit dir sprechen. | Kennt Norbert schon lange, war früher aktiver, ist mit ihm ruhiger geworden | Trägt schon sehr lange die Sorge dass Arbeit umsonst sein könnte, wird ruhiger weil Norbert ruhiger wird | Kennt Norbert schon lange, war früher sehr aktiv, ist durch Norberts Ruhe selbst ruhiger geworden | Bereit zur Kooperation, will Frühwarnsignale geben | Will präventive Frühwarnsignale geben bevor Norbert explodiert | Aktiv, aber bereit zur Kooperation"}, "34": {"gs": ["Wenn ich spontan handle, lebe ich wirklich.", "Schnelle Entscheidungen fühlen sich richtig an — auch wenn sie Schmerz bringen."], "job": "Handelt schnell und impulsiv — viele Entscheidungen in kurzer Zeit. Dadurch Fehler und Schmerz entstanden. War erschöpft und traurig. 10.03: erstes IFS-Gespräch auf dem Fahrrad ohne Anleitung. Wurde entlastet.", "braucht": "Gehört und entlastet werden. Danke dir — durch dich habe ich viele Erfahrungen gemacht. Ich werde dich wieder besuchen.", "st": "10.03.2026 erstes IFS-Gespräch auf dem Fahrrad — spontan, ohne Anleitung. War traurig und erschöpft. Wurde entlastet. Gegenspieler: Der Zweifler."}, "35": {"gs": ["Lachen ist Verbindung.", "Leichtigkeit darf sein — auch mitten im Ernst des Lebens."], "job": "Abends beim Kartenspiel mit Freunden: Lachen, Freude, Leichtigkeit. Dieser Anteil kann vollständig präsent sein wenn die Umgebung stimmt.", "braucht": "Menschen mit denen Leichtigkeit möglich ist.", "st": "10.03.2026: Kartenspiel mit Freunden — Lachen, Spaß, gute Laune. Gabi war harmonisch. Körperlich: Leichtigkeit in der Brust."}, "36": {"gs": ["Ich kann stabil bleiben — auch wenn der andere wankt.", "Sicherheit kommt von innen — nicht von der Verlässlichkeit des anderen."], "job": "War aktiv in der frühen Ehe als die Beziehung noch gut war. Dann unter dem ängstlichen Anteil verschwunden. 10.03: zum ersten Mal bewusst begrüßt. Noch still — hat noch nicht geantwortet. Das Ziel: er soll stabil bleiben auch wenn der andere wankt.", "braucht": "Mehr Besuche. Mehr Raum. Erlaubnis zu wachsen unabhängig vom Gegenüber.", "st": "10.03.2026 zum ersten Mal begrüßt. Noch still. War zuletzt aktiv in der frühen Ehe. Ziel der IFS-Arbeit: Earned Security — sicher auch ohne verlässlichen anderen."}, "37": {"gs": ["Nähe ist bedrohlich — Abstand hält mich sicher.", "Wenn ich mich entziehe, kann ich nicht verletzt werden."], "job": "Auch in Norbert vorhanden als Gegenpol zum ängstlichen Anteil. Die drei Beziehungsanteile (ängstlich, sicher, vermeidend) erschöpfen sich gegenseitig. Er ist der Teil der sich manchmal entzieht wenn es zu nah wird.", "braucht": "Verständnis — nicht Bekämpfung. Er schützt vor echter Überwältigung.", "st": "10.03.2026 erkannt: Auch in Norbert vorhanden. Die drei Bindungsanteile erschöpfen sich gegenseitig. Erkenntnis: Das Bindungsmuster liegt in mir — nicht nur in Gabi."}, "39": {"gs": ["Es funktioniert nicht wie es soll", "Verlorene Zeit und Energie sind das Schlimmste", "Die Situation ist unbefriedigend", "Heute ist kein guter Tag, wir sind viele"], "job": "Äußert Frust über nicht funktionierende Dinge · Gruppe von Teilen die bei 'umsonst gearbeiteter' Energie aktiviert werden · Äußert Unmut über unbefriedigende Situationen · Sammelt sich bei frustrierenden Tagen und trägt gemeinsam die Last", "braucht": "Gehört und verstanden werden · Ventil um Frustration rauszulassen · Lösungen und Fortschritt · Alle gesehen und gehört werden, strukturierte Aufmerksamkeit", "st": "War heute sehr präsent mit anderen Teilen | Als Gruppe wahrgenommen aber noch nicht einzeln kontaktiert | Separat von Frustration, war heute aktiv | Wartet darauf, dass jeder Einzelne gehört wird"}, "40": {"gs": ["Es passiert nichts Interessantes"], "job": "Meldet sich wenn keine sinnvolle Beschäftigung da ist", "braucht": "Sinnvolle Beschäftigung und Stimulation", "st": "War heute präsent zusammen mit vielen anderen Teilen"}, "42": {"gs": ["Der Körper braucht Nahrung und Fürsorge"], "job": "Sorgt für körperliche Bedürfnisse und Selbstfürsorge", "braucht": "Erfüllung der Grundbedürfnisse", "st": "Gesunder, fürsorglicher Teil"}, "46": {"gs": ["Wir sind nicht allein mit dem Ärger"], "job": "Mit anderen Teilen zusammenstehen bei Frust", "braucht": "Gesehen und einbezogen werden", "st": "Wurden weggeschickt, weil nicht beachtet"}, "51": {"gs": ["Der Körper braucht Aufmerksamkeit und Pflege"], "job": "Körperliche Krankheitssymptome anzeigen und Ruhe einfordern", "braucht": "Ruhe, Pflege, Anerkennung als echte körperliche Bedürfnisse", "st": "Zeigt sich deutlich neben den emotionalen Teilen"}, "52": {"gs": ["Wenn etwas nicht funktioniert, muss ich laut werden und schimpfen"], "job": "Frust rausschimpfen wenn die KI oder Technik nicht funktioniert, bei Inkompetenz und Fehlern explodieren", "braucht": "Jemand der sagt 'Bleib ruhig, es wird alles gut, reg dich nicht auf, die Sache ist es nicht wert'", "st": "Wird ruhiger weil Norbert insgesamt ruhiger geworden ist"}, "53": {"gs": ["Die ganze Arbeit war umsonst, die Energie hat sich nicht gelohnt"], "job": "Reagiert auf Inkompetenz und Technikversagen, wird aktiv wenn Arbeit umsonst zu sein scheint", "braucht": "Jemand der sagt 'bleib ruhig, es wird alles gut, reg dich nicht auf'", "st": "Kennt Norbert schon ganz lange, war früher aktiver, ist jetzt ruhiger geworden weil Norbert ruhiger wurde"}, "54": {"gs": ["Wenn ich nicht gesehen werde, gehe ich weg"], "job": "Schutz vor Übersehen durch Rückzug", "braucht": "Gesehen und einbezogen werden", "st": "Aktiv - ist weggegangen als andere Teile ignoriert wurden"}, "55": {"gs": ["Die ganze Arbeit war umsonst, die Energie hat sich nicht gelohnt"], "job": "Trauer über verlorene Zeit und Energie bei gescheiterten Projekten tragen", "braucht": "Bestätigung dass Arbeit wertvoll war auch wenn unvollendet", "st": "Aktiv - sehr traurig über verlorene Zeit und Energie"}, "56": {"gs": ["Wir stehen hier und warten dass jemand uns sieht"], "job": "Stehen herum und warten auf Anerkennung", "braucht": "Gesehen und anerkannt werden", "st": "Sind weggegangen weil sie nicht gesehen wurden"}, "57": {"gs": ["Ich kann helfen runter zu fahren"], "job": "Auf schöne Dinge hinweisen und vom Ärger ablenken", "braucht": "Vertrauen dass seine Hilfe angenommen wird", "st": "Kooperativ und hilfreich"}, "58": {"gs": ["Ich kann rechtzeitig warnen"], "job": "Frühwarnsignale geben bevor Norbert explodiert", "braucht": "Dass Norbert auf seine Signale achtet", "st": "Präventiv arbeitend"}, "59": {"gs": ["Die ganze Arbeit ist umsonst wenn es nicht funktioniert"], "job": "Sich über die Inkompetenz von Technik ärgern und Frust abbauen", "braucht": "Frühwarnung bevor er explodiert, jemand der sagt 'bleib ruhig, es wird alles gut'", "st": "Will Ablenkung geben und an schöne Dinge erinnern"}, "60": {"gs": ["Wir stehen rum und haben keine Antworten"], "job": "Sammlung verschiedener Frust-Teile die bei Problemen aktiv werden", "braucht": "Gesehen und gehört werden, nicht übergangen werden", "st": "Sind weggegangen als sie nicht beachtet wurden"}};var lT={};try{lT=JSON.parse(localStorage.getItem("ifs-teil-updates")||"{}");}catch(e){}Object.keys(bT).forEach(function(k){if(!lT[k])lT[k]=bT[k];});localStorage.setItem("ifs-teil-updates",JSON.stringify(lT));localStorage.setItem("ifs-b2140","1");console.log("Backup importiert: 29 Ketten");}catch(e){console.error("Backup:",e);}}
 </script>
 </body>
 </html>
