@@ -5763,14 +5763,9 @@ function importiereChat() {
     text = text.replace(/```json\n?/g,"").replace(/```\n?/g,"").trim();
     var start = text.indexOf("{"), end = text.lastIndexOf("}");
     if(start !== -1 && end !== -1) text = text.slice(start, end+1);
-    if(!text || text.length < 5) { zeigeUpdateFehler("Analyse-Fehler: Keine Antwort erhalten. Bitte nochmal versuchen."); return; }
-    text = text.replace(/"((?:[^"\\]|\\.)*)"/g, function(m,i){ return '"'+i.replace(/\n/g,' ').replace(/\r/g,' ').replace(/\t/g,' ')+'"'; });
     var result;
     try { result = JSON.parse(text); }
-    catch(e) {
-      try { result = JSON.parse(text.replace(/[\x00-\x1F\x7F]/g," ")); }
-      catch(e2) { zeigeUpdateFehler("Analyse-Fehler: "+e.message); return; }
-    }
+    catch(e) { zeigeUpdateFehler("Analyse-Fehler: "+e.message); return; }
     document.getElementById("update-modal-titel").textContent = "⬆ Chat-Import — Vorschau";
     zeigeUpdateVorschau(result);
   })
@@ -5852,17 +5847,11 @@ function starteUpdate() {
     var start = text.indexOf("{");
     var end = text.lastIndexOf("}");
     if(start !== -1 && end !== -1) text = text.slice(start, end+1);
-    if(!text || text.length < 5) {
-      // Keine JSON-Antwort — Claude hat wahrscheinlich nichts gefunden
-      zeigeUpdateVorschau({neue_teile:[],updates_teile:[],phasen_updates:[],neue_verbindungen:[],neue_ketten:[],neue_selbst_qualitaeten:[],zusammenfassung:"Keine neuen Erkenntnisse gefunden."});
-      return;
-    }
-    text = text.replace(/"((?:[^"\\]|\\.)*)"/g, function(m,i){ return '"'+i.replace(/\n/g,' ').replace(/\r/g,' ').replace(/\t/g,' ')+'"'; });
     var result;
     try { result = JSON.parse(text); }
     catch(e) {
-      try { result = JSON.parse(text.replace(/[\x00-\x1F\x7F]/g," ")); }
-      catch(e2) { zeigeUpdateFehler("Analyse-Fehler: Bitte nochmal versuchen. ("+e.message+")"); return; }
+      zeigeUpdateFehler("Analyse-Fehler: Bitte nochmal versuchen. ("+e.message+")");
+      return;
     }
     zeigeUpdateVorschau(result);
   })
