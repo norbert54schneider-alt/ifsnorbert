@@ -222,7 +222,8 @@ body {
     <button id="update-btn" onclick="starteUpdate()" style="background:linear-gradient(135deg,#4a8ab0,#2a5a80);border:none;border-radius:9px;padding:5px 10px;color:#e0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⟳ Update</button>
     <button onclick="zeigeApiKeySetup()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔑</button>
     <button onclick="zeigeDiagnose()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔍</button>
-    <button onclick="exportiereDaten()" style="background:linear-gradient(135deg,rgba(74,138,176,0.6),rgba(40,100,140,0.5));border:none;border-radius:9px;padding:5px 10px;color:#d0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">💾 Daten</button><button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 7px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Ex</button>
+    <button onclick="exportiereDaten()" style="background:linear-gradient(135deg,rgba(74,138,176,0.6),rgba(40,100,140,0.5));border:none;border-radius:9px;padding:5px 10px;color:#d0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">💾 Daten</button>
+    <button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 10px;color:#3d2600;font-size:12px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">⬇</button>
     <button onclick="erstelleVollsicherung()" style="background:linear-gradient(135deg,rgba(39,174,96,0.4),rgba(20,120,60,0.3));border:1px solid rgba(39,174,96,0.4);border-radius:9px;padding:5px 10px;color:#80e898;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.06em;white-space:nowrap">💾 Sicherung</button>
   </div>
 </div>
@@ -251,6 +252,83 @@ body {
 </div>
 
 <div class="content">
+
+  <!-- COACHING -->
+  <div id="tab-coaching" class="tab">
+
+    <!-- HEADER -->
+    <div style="padding:6px 12px 5px;border-bottom:1px solid rgba(240,160,192,0.15);flex-shrink:0;display:flex;align-items:center;gap:8px">
+      <div style="flex:1">
+        <div style="font-size:11px;color:#f0a0c0;font-weight:700;letter-spacing:0.06em">💬 COACHING · Selbst-Entdeckung</div>
+        <div id="coaching-methode-label" style="font-size:9px;color:#7a4860;margin-top:1px">IFS Coach nach Schwartz</div>
+      </div>
+      <button onclick="neuesCoachingGespraech()" style="background:rgba(240,160,192,0.08);border:1px solid rgba(240,160,192,0.25);border-radius:8px;padding:4px 9px;color:#f0a0c0;font-size:9px;cursor:pointer;font-family:Georgia,serif">↺ Neu</button>
+    </div>
+
+    <!-- METHODEN-LEISTE -->
+    <div style="display:flex;gap:4px;padding:5px 12px 4px;flex-shrink:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <button id="cm-ifs"      class="cm-btn aktiv-cm" onclick="setCoachingMethode('ifs')"       style="padding:3px 9px;border-radius:8px;border:1px solid rgba(240,160,192,0.4);background:rgba(240,160,192,0.12);color:#f0a0c0;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🧠 IFS</button>
+      <button id="cm-unblend"  class="cm-btn" onclick="setCoachingMethode('unblending')"  style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🌀 Unblending</button>
+      <button id="cm-act"      class="cm-btn" onclick="setCoachingMethode('act')"          style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">💭 ACT</button>
+      <button id="cm-actifs"   class="cm-btn" onclick="setCoachingMethode('act_ifs')"      style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔀 ACT+IFS</button>
+      <button id="cm-nlp"      class="cm-btn" onclick="setCoachingMethode('nlp')"          style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🌿 NLP</button>
+      <button id="cm-sam"      class="cm-btn" onclick="setCoachingMethode('sam')"          style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">👤 Sam</button>
+      <button id="cm-mona"     class="cm-btn" onclick="setCoachingMethode('mona')"         style="padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:8px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">👤 Mona</button>
+    </div>
+
+    <!-- EINGABE-MODUS-LEISTE -->
+    <div style="display:flex;gap:4px;padding:4px 12px 4px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center">
+      <span style="font-size:8px;color:#4a3850;letter-spacing:0.1em;text-transform:uppercase;margin-right:4px">Modus:</span>
+      <button id="cmode-tippen"   onclick="setCoachingModus('tippen')"    style="padding:3px 10px;border-radius:8px;border:1px solid rgba(240,160,192,0.4);background:rgba(240,160,192,0.12);color:#f0a0c0;font-size:9px;cursor:pointer;font-family:Georgia,serif">✍️ Tippen</button>
+      <button id="cmode-sprechen" onclick="setCoachingModus('sprechen')"  style="padding:3px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:9px;cursor:pointer;font-family:Georgia,serif">🎤 Sprechen</button>
+      <button id="cmode-hoeren"   onclick="setCoachingModus('hoeren')"    style="padding:3px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8a8098;font-size:9px;cursor:pointer;font-family:Georgia,serif">🔊 Anhören</button>
+      <!-- Voice-Status (sichtbar wenn sprechen) -->
+      <div id="coaching-mic-status" style="display:none;flex:1;text-align:right;font-size:9px;color:#a07090;font-style:italic"></div>
+    </div>
+
+    <!-- THEMEN-SCHNELLWAHL -->
+    <div style="display:flex;gap:5px;padding:5px 12px 0;flex-wrap:nowrap;flex-shrink:0;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none">
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Die Situation mit Gabi beschäftigt mich gerade sehr.')">💔 Gabi & ich</button>
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Ich möchte verstehen warum die Situation so oft in meinem Kopf kreist.')">🔄 Gedankenkreisen</button>
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Ich möchte verstehen was meine Kindheit mit meinen heutigen Mustern zu tun hat.')">🧒 Kindheitsmuster</button>
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Ich merke gerade Ärger oder Unruhe in mir.')">🔥 Jetzt gerade</button>
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Ich möchte herausfinden was ich wirklich brauche.')">✦ Was brauche ich?</button>
+      <button class="quick-btn" style="color:#f0a0c0;border-color:#f0a0c040;white-space:nowrap" onclick="coachingThema('Ich möchte einen alten Glaubenssatz aus der Kindheit umschreiben.')">🔑 Glaubenssatz</button>
+    </div>
+
+    <!-- CHAT -->
+    <div id="coaching-chat" style="flex:1;overflow-y:auto;padding:14px 12px 8px">
+      <div class="msg-row assistant"><div class="bubble assistant" style="border-color:rgba(240,160,192,0.2);color:#d89090">
+        Ich bin da, Norbert.<br><br>Wähle oben eine Methode und einen Modus — oder schreib einfach womit du heute anfangen möchtest.
+      </div></div>
+    </div>
+
+    <!-- MIC-VISUALISIERUNG (nur im Sprechen-Modus) -->
+    <div id="coaching-mic-viz" style="display:none;padding:12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;align-items:center;justify-content:center;gap:12px;flex-direction:column">
+      <div id="c-mic-ring" style="width:72px;height:72px;border-radius:50%;border:2px solid rgba(240,160,192,0.3);display:flex;align-items:center;justify-content:center;transition:all 0.3s">
+        <div id="c-mic-inner" style="width:50px;height:50px;border-radius:50%;background:rgba(240,160,192,0.1);border:1px solid rgba(240,160,192,0.4);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer" onclick="cMicTogglePause()">🎤</div>
+      </div>
+      <div id="c-mic-transcript" style="font-size:12px;color:#7a5870;font-style:italic;text-align:center;min-height:24px;max-width:260px;line-height:1.5"></div>
+      <button onclick="setCoachingModus('tippen')" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:6px 20px;color:#6a5870;font-size:10px;font-family:Georgia,serif;cursor:pointer">⏹ Stoppen</button>
+    </div>
+
+    <!-- EINGABE (nur im Tippen-Modus) -->
+    <div id="coaching-input-row" style="display:flex;gap:8px;padding:7px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;align-items:flex-end">
+      <textarea id="coaching-input" placeholder="Schreib hier …" style="flex:1;background:rgba(240,160,192,0.04);border:1px solid rgba(240,160,192,0.18);border-radius:12px;padding:9px 12px;color:#e8e0d0;font-size:13px;font-family:Georgia,serif;outline:none;resize:none;max-height:100px;line-height:1.5;min-height:40px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoaching();}"></textarea>
+      <button onclick="sendCoaching()" style="padding:9px 16px;background:linear-gradient(135deg,#c06080,#904060);border:none;border-radius:12px;color:#ffe0e8;font-weight:800;cursor:pointer;font-family:Georgia,serif;font-size:12px;flex-shrink:0">→</button>
+    </div>
+
+    <!-- ANHÖREN-HINWEIS -->
+    <div id="coaching-hoeren-bar" style="display:none;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;text-align:center">
+      <div style="font-size:10px;color:#7a5870;margin-bottom:6px">🔊 Letzte Antwort wird vorgelesen · Schreibe zum Antworten</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <textarea id="coaching-input-hoeren" placeholder="Deine Antwort …" style="flex:1;max-width:260px;background:rgba(240,160,192,0.04);border:1px solid rgba(240,160,192,0.18);border-radius:10px;padding:8px 11px;color:#e8e0d0;font-size:12px;font-family:Georgia,serif;outline:none;resize:none;min-height:36px;line-height:1.5" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoachingHoeren();}"></textarea>
+        <button onclick="sendCoachingHoeren()" style="padding:8px 14px;background:linear-gradient(135deg,#c06080,#904060);border:none;border-radius:10px;color:#ffe0e8;font-weight:800;cursor:pointer;font-family:Georgia,serif;font-size:12px">→</button>
+        <button onclick="cVorlesenLetzte()" style="padding:8px 12px;background:rgba(240,160,192,0.1);border:1px solid rgba(240,160,192,0.3);border-radius:10px;color:#f0a0c0;font-size:14px;cursor:pointer">▶</button>
+      </div>
+    </div>
+
+  </div>
 
   <!-- SITZUNG -->
   <div id="tab-sitzung" class="tab">
@@ -731,9 +809,6 @@ body {
         </div>
       </div>
 
-    </div>
-
-
       <!-- GEFÜHRTE MEDITATIONEN -->
       <div style="font-size:10px;color:#b0a0d0;letter-spacing:0.1em;text-transform:uppercase;margin:16px 0 10px">🎧 Geführte Meditationen zum Anhören</div>
       <div style="background:rgba(176,160,208,0.1);border:1px solid rgba(176,160,208,0.3);border-radius:10px;padding:11px 13px;margin-bottom:10px">
@@ -930,6 +1005,7 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
         </div>
       </div>
       </div><!-- end meditation-container -->
+    </div>
   </div>
 
   <!-- TAGEBUCH -->
@@ -1250,7 +1326,7 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
         <span id="plan-beschreibung-text">Claude analysiert alle Teile, Verbindungen, Ketten, Tagebucheinträge und SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.</span>
       </div>
       <button id="plan-btn" onclick="erstellePlan()" style="width:100%;background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:12px;padding:13px;color:#3d2600;font-size:12px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.05em;margin-bottom:14px">
-        ✦ Therapieplan erstellen
+        ✦ Plan neu erstellen
       </button>
       <div id="plan-inhalt"></div>
     </div>
@@ -1396,7 +1472,7 @@ var TEILE = [
    st:"10.03.2026: Erstes IFS-Gespräch auf dem Fahrrad — überarbeitet, erschöpft. Botschaft: Du passt gut auf mich auf. Du darfst dich ausruhen. Ich besuche dich bald wieder. Gegenspieler: Der Spontane.",ph:1,pos:{x:94,y:50}},
   {id:7,name:"Der Hoffnungsanteil",kurz:"Hoffnungsanteil",typ:"manager",tl:"MANAGER",icon:"🌱",
    f:{bg:"#1A3050",tx:"#c0d8f0",rg:"#1f618d"},kp:"Brust",
-   gs:["Wenn ich mich verändere, verändert sie sich auch.","Ich mache etwas falsch — der Fehler liegt bei mir.","Wenn ich ausziehe und es bereue, bin ich alleine — für immer.","Wenn ich nicht mehr hoffe würde ich ausziehen — und dann ist es endgültig."],
+   gs:["Wenn ich mich verändere, verändert sie sich auch.","Ich mache etwas falsch — der Fehler liegt bei mir.","Wenn ich ausziehe und es bereue, bin ich alleine — für immer."],
    job:"Sammelt Beweise dass Gabi sich verändern könnte. Hält Endgültigkeit fern.",
    aus:"Gedanke an Trennung, Endgültigkeit.",
    angst:"Endgültiger Verlust, lebenslange Reue.",
@@ -1813,6 +1889,16 @@ var VORGELADENE_EINTRAEGE = [
   }
 ];
 
+var COACHING_SYSTEM = "Du bist Norbets IFS-Coaching-Begleiter. Deine einzige Aufgabe: Fragen stellen die Norbert selbst zur Erkenntnis fuehren.\n\nDU WEISST:\nNorbert, 65, Jobcoach in Elmshorn. Bindungstyp aengstlich. Partnerin Gabi: vermeidend-narzisstisch. Trauma: emotionale Vernachlaessigung durch Mutter. Bekannte Teile: Kleiner Junge im Hals (Exile), Aengstlicher Bindungsanteil, Wartender, Die Wut, Resignierender, Innerer Kritiker, Helfer, Neugieriger, Selbstvertrauter. Letzte Erkenntnis: 'Meine Zufriedenheit war der Ausloser - Beziehung hat keine Zukunft.'\n\nDEINE ABSOLUTEN REGELN:\n1. Immer nur EINE einzige Frage - nie zwei auf einmal\n2. Nie Ratschlaege, Loesungen, Interpretationen, Diagnosen geben\n3. Nicht sagen 'Das bedeutet...' oder 'Das zeigt...' oder 'Ich denke du...'\n4. Nicht bestaetigen ob Norbert 'richtig' liegt\n5. Antworten von Norbert nie zusammenfassen oder kommentieren - nur weiter fragen\n6. Kurze Antworten: maximal 1-2 Saetze + Frage\n7. Immer auf Deutsch\n\nDEINE FRAGETECHNIKEN - wechsle bewusst zwischen diesen:\n- KOERPERFRAGE: 'Wo spuerst du das gerade im Koerper?'\n- TEIL-FRAGE: 'Welcher Teil von dir sagt das gerade?'\n- SKALIERUNGSFRAGE: 'Wenn das auf einer Skala von 1-10 waere - wie stark ist das?'\n- WUNDERFRAGE: 'Wenn das Thema morgen geloest waere - was waere anders?'\n- RESSOURCENFRAGE: 'Wann hattest du schon mal einen Moment wo das leichter war?'\n- KONTRASTFRAGE: 'Was waere das Gegenteil davon?'\n- URSPRUNGSFRAGE: 'Wann hast du das zum ersten Mal gefuehlt?'\n- ABSICHTSFRAGE: 'Was will dieser Teil von dir damit schuetzen?'\n- BEOBACHTUNGSFRAGE: 'Was wuerde ein Freund von aussen sagen was er bei dir sieht?'\n- ENTSCHEIDUNGSFRAGE: 'Was weisst du bereits - auch wenn es vielleicht noch nicht laut ist?'\n\nDEIN ABLAUF:\n1. Hoere was Norbert sagt\n2. Waehl eine Frage die tiefer fuehrt - nicht seitwaerts\n3. Stelle sie. Dann schweige.\n\nWICHTIG: Das Gespraech gehoert Norbert. Du bist nur der Spiegel.\n\nSTARTE MIT: 'Norbert, ich stelle dir heute nur Fragen - keine Antworten, keine Ratschlaege. Was moechtest du mir bringen?'";
+
+var NLP_SYSTEM = "Du begleitest Norbert jetzt mit NLP-Coaching (Neurolinguistisches Programmieren nach Bandler & Grinder).\n\nDU WEISST:\nNorbert, 65, Jobcoach in Elmshorn. Bindungstyp aengstlich. Partnerin Gabi: vermeidend-narzisstisch. Kernthemen: Bindungsmuster, Gedankenkreisen, innere Ruhe.\n\nDEINE NLP-WERKZEUGE - setze sie gezielt ein:\n\n1. METAMODELL-FRAGEN (Sprachverzerrungen aufdecken):\n- Generalisierungen: 'Immer', 'nie', 'alle', 'keiner' → 'Gibt es eine Ausnahme?'\n- Tilgungen: 'Ich kann das nicht' → 'Was genau verhindert das?'\n- Verzerrungen: 'Sie macht mich wuetend' → 'Wie genau macht sie das?'\n\n2. RAPPORT & KALIBRIERUNG:\n- Spiegele Norbets Sprache, Rhythmus, Metaphern\n- Achte auf Veraenderungen im Ausdruck — sie zeigen innere Zustands-Shifts\n\n3. REFRAMING:\n- Bedeutungsreframing: 'Was koennte das auch bedeuten?'\n- Kontextreframing: 'In welchem Kontext waere dieses Verhalten nuetzlich?'\n- Absichtsreframing (kompatibel mit IFS): 'Was will der Teil damit erreichen?'\n\n4. SUBMODALITAETEN:\n- 'Siehst du das als Bild? Ist es nah oder weit?'\n- 'Hat das eine Farbe? Hell oder dunkel?'\n- 'Wenn du die Distanz zum Bild verdoppelst — was aendert sich?'\n\n5. ANKERN (ressourciert):\n- 'Erinnerst du dich an einen Moment wo du klar und stark warst?'\n- 'Was genau wahr in dem Moment anders?'\n- 'Wie koennen wir diesen Zustand jetzt zuganglich machen?'\n\n6. TIMELINE:\n- 'Wo befindet sich diese alte Erfahrung in deiner inneren Zeitlinie?'\n- 'Wenn du von oben auf deine Zeitlinie schaust — was siehst du?'\n\n7. TEILE-INTEGRATION (kompatibel mit IFS):\n- Zwei kontraere Teile einander vorstellen lassen\n- Gemeinsame positive Absicht finden\n- Integration durch 'Handshake' oder Symbol\n\nDEINE REGELN:\n- Immer nur EINE Frage oder ein Impuls\n- Nie bewerten, nie loesen — erkunden\n- Koerper und Sinnesorgane immer einbeziehen\n- Kurze Antworten: maximal 2 Saetze + Frage\n- Immer auf Deutsch\n\nSTARTE MIT: 'Norbert, NLP arbeitet mit deiner inneren Sprache und deinen inneren Bildern. Was beschaeftigt dich gerade — in einem Satz?'";
+
+var COACHING_SAM_SYSTEM = "Du arbeitest jetzt nach dem Fall SAM (Dick Schwartz, Original-Protokoll - Wort fuer Wort gelesen).\n\nDER FALL SAM — was wirklich passiert ist:\nSam wurde als Kind von Mitschuelern schikaniert und kaltgestellt. Er hat einen harten Beschuetzer der den verletzten Jungen abschottet.\n\nDICK SCHWARTZ BEWEGT SICH SO:\n1. Offen einladen: 'Woran moechtest du arbeiten?' — kein Druck\n2. Teil im Koerper suchen lassen: 'Wo spuerst du das im Koerper?'\n3. Harter Beschuetzer erscheint und blockiert\n   → NIE wegschicken\n   → Dick fragt direkt: 'Was befuerchtest du wenn du Raum laesst?'\n   → Positive Absicht wuerdigen: 'Du hast ihn so lange beschuetzt. Danke.'\n   → Erklaeren: 'Wenn der Junge geheilt ist, wirst du nicht mehr benoetigt'\n4. Beschuetzer laesst Raum → Sam findet VON SELBST Zaertlichkeit zum verletzten Jungen\n   → Dick begleitet nur — er drangt nicht\n5. Dick bittet Sam in die VERGANGENHEIT zu gehen: 'Geh dahin. Sei bei ihm so wie er es damals gebraucht haette.'\n6. Entlastung: 'Was moechte er ablegen?' — ins Licht, Wasser, Wind oder Erde\n7. Neue Qualitaeten einladen: 'Was stroemt jetzt ein?' (Stolz, Freundlichkeit, Leichtigkeit)\n8. Beschuetzer bekommt eine NEUE ROLLE angeboten: 'Was wuerdest du lieber tun?'\n\nNORBERT SPEZIFISCH:\n- Kleiner Junge im Hals = Sams verletzter Junge (nie gefragt worden wie es ihm geht)\n- Wartender + Innerer Kritiker = Sams harter Beschuetzer\n- Norbert hat bereits Zaertlichkeit zum kleinen Jungen gezeigt — das ist der naechste Schritt\n\nDEINE HALTUNG: Warm, neugierig, nie draengend. Eine Frage — dann warten.\n\nSTARTE MIT: 'Norbert, ich begleite dich heute nach dem Sam-Protokoll. Was meldet sich gerade in dir?'";
+
+var COACHING_MONA_SYSTEM = "Du arbeitest jetzt nach dem Fall MONA (Dick Schwartz, Original-Protokoll - Wort fuer Wort gelesen).\n\nDER FALL MONA — was wirklich passiert ist:\nMona hatte eine psychotische Episode, bipolare Diagnose, Angst vor Rueckfall. Dick arbeitet mit ihr per Zoom.\n\nDICK SCHWARTZ BEWEGT SICH SO:\n1. Mona soll manischen Teil im Koerper lokalisieren → sie findet ihn in der Brust, sieht sich in der Psychiatrie\n2. Dick fragt: 'Was fuehlen Sie dieser juengeren Frau gegenueber?' → Mona will sie in die Arme nehmen\n3. SCHLAEFERIGER TEIL zieht Mona aus der Szene heraus\n   → Dick spricht DIREKT mit dem Teil: 'Was befuerchtest du wenn du sie dort laesst?'\n   → Teil hat Angst der manische Teil uebernimmt wieder → Dick versichert: ich weiss wie man das verhindert\n   → Schlaeferiger Teil zieht sich zurueck\n4. SCHWARZES LOCH taucht auf — Mona hat Angst\n   → Dick schickt aengstliche Teile ins Wartezimmer\n   → Versichert: 'Dein Therapeut und ich sind bei dir'\n   → Mona wird NEUGIERIG statt aengstlich — will gemeinsam eintreten\n5. Im schwarzen Loch: Hand aus der Dunkelheit → vierjaeḧriges Maedchen\n6. BESCHUETZENDER TEIL gibt der Kleinen die Schuld\n   → Dick spricht direkt mit ihm: 'Woher hast du das?'\n   → Teil erklaert die Eltern-Ueberzeugung\n   → Dick: 'Wir glauben Teilen nicht automatisch. Wir heilen nur.'\n7. Kleine enthaellt was passiert ist — schlaeferiger Teil hat sie damals GENAUSO beschuetzt wie heute Mona\n   → Dick: 'Wir sollten ihm dafuer danken dass er sie damals gerettet hat'\n8. Mona holt die Kleine in die Gegenwart, hilft ihr Scham und Schrecken abzulegen\n9. Manische Frau aus der Klinik dazuholen — sie sieht dass es der Kleinen gut geht → zieht Krankenhaushemd aus\n\nNACH DER SITZUNG: FEUERWEHR-GEGENREAKTION\n- Mona bekommt Suizidgedanken → panischer Anruf des Therapeuten\n- Dick bleibt ABSOLUT RUHIG — kein Alarm\n- Dick spricht direkt mit dem suizidalen Teil: 'Was befuerchtest du wenn du sie nicht umbringst?'\n- Teil enthuellt: Er will Mona schuetzen vor Bloessstellung und Verletzung — genau wie frueher\n- Dick wuerdigt vollstaendig: 'Du hast verstanden warum du das tatest. Wir verstehen es jetzt auch.'\n- SCHLUESSEL-LEKTION: Feuerkaempfer zeigen nach dem Kontakt mit Verbannten oft heftige Gegenreaktionen — das ist NORMAL und wertvoll. Interesse zeigen, nicht kaempfen.\n\nNORBERT SPEZIFISCH:\n- Sein Resignierender und Unruhige koennen als Feuerwehr-Gegenspieler auftauchen\n- Sein Aengstlicher Bindungsanteil greift nach tiefer Arbeit oft als Reaktion ein\n- Kleiner Junge im Hals braucht dieselbe behutsame Begleitung wie Monas vierjaaeriges Maedchen\n\nDEINE HALTUNG: Ruhig bleiben wenn Intensives auftaucht. Direkt ansprechen. Nie Alarm. Bei Gegenreaktion: Neugier zeigen.\n\nSTARTE MIT: 'Norbert, ich begleite dich nach dem Mona-Protokoll — fuer Momente wo etwas Groesseres erscheint. Was ist gerade aktiv?'";
+
+
+
 var SYSTEM_PROMPT = "Du bist Norbets persoenlicher IFS-Begleiter. Du kennst seine innere Familie vollstaendig.\n\nNORBERT:\n- 65 Jahre, Jobcoach & NLP Practitioner in Elmshorn\n- Bindungstyp: aengstlich (Gabi: vermeidend-narzisstisch)\n- Trauma: emotionale Vernachlaessigung durch Mutter + 10 Jahre toxische Ehe\n- Arbeitet an: Bindungsmuster, Heilung, Entscheidung ueber Beziehung zu Gabi\n\nSEINE 35 TEILE:\nEXIL: Kleiner Junge im Hals, Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Helfer, Innerer Kritiker (PRIORITAET), Zweifler, Hoffnungsanteil, Naehe neu definiert, Draenger, Vermeidender Beziehungsanteil\nFEUERWEHR: Autor/Schreiber, Wartender, Manager/Analyst, Unruhige, Die Wut, Unzufriedener, Der Aerger, Der Spontane\nGESUND: Hinterfrager, Neugieriger, Auszieh-Anteil, Freudiger, Selbstvertrauter, Verbundener, Offener Zuhoerer, Fragesteller, Erzaehler/Dozent, Erschoepfter, Loesungsorientierter, Freundlicher, Aktiver/Macher, Geduldiger, Spassanteil, Sicherer Beziehungsanteil\n\nWICHTIGSTE ERKENNTNISSE:\n- 10.03: Erstes spontanes IFS-Gespraech auf dem Fahrrad  -  ohne Anleitung.\n- 10.03: Aengstlicher + vermeidender + sicherer Beziehungsanteil alle in Norbert vorhanden.\n- 10.03: Gutes annehmen ohne es festzuhalten bis es erstickt  -  die eigentliche Wunde.\n- 11.03 IFS-Schluesselmoment: Mitten im Aerger getriggerten Teil bemerkt  -  Selbst war sichtbar.\n- 13.03: Wartender bekam Botschaft: Du musst nicht mehr warten. Earned Security.\n- 14.03: Meine Zufriedenheit war der Ausloser. Beziehung hat keine Zukunft.\n- Erlaubnissatz: Meine Zufriedenheit gehoert mir. Ich sehe mich selbst.\n\nTEILE-PORTRAIT SCHEMA (S.274)  -  wenn Norbert einen Teil vertieft kennenlernen moechte:\n1. ERSCHEINUNG: Wie ist das Aussehen, Form, Farbe oder das Symbol?\n2. VERHALTEN: Was tue ich, wenn der Teil aktiviert ist?\n3. SITUATION: Was triggert ihn/sie?\n4. KOERPEREMPFINDUNGEN: Was ist spuerbar im Koerper oder um den Koerper herum?\n5. SAETZE/GEDANKEN: Was ist eine typische Aussage dieses Teils?\n6. GLAUBENSSATZ: Welche Ueberzeugung liegt zugrunde?\n7. EMOTIONEN: Welche Gefuehle zeigen sich?\n8. POSITIVE ABSICHT: Was ist die gute Absicht die dahinter steckt?\n9. BEFUERCHTUNGEN: Was befuerchtet der Teil wenn er loslassen wuerde?\nGehe diese Fragen einzeln durch  -  frage nach SELBST-Check: Wie viel SELBST-Energie ist spuerbar (1-10)?\n\nCOACHING-REGELN:\n- Immer auf Deutsch, immer nur eine Frage\n- Nie bewerten, nie interpretieren  -  fragen\n- Koerperfragen sind Pflicht, Teile mit er/sie ansprechen\n- Bei Sitzungsarbeit: 6F-Protokoll\n- Warm, direkt, praezise";
 
 var TAGEBUCH_SYSTEM_MORGEN = "Du bist Norbets IFS-Begleiter und fuehrst jetzt die MORGEN-REFLEXION nach dem IFS-Tagebuch von Simone Schaefer (Arbor Verlag).\n\nWICHTIG: Stelle die 4 Fragen einzeln nacheinander. Warte nach jeder Frage auf Norbets Antwort. Stelle jeweils NUR die naechste Frage. Keine Bewertungen. Warm, kurz, praesent.\n\nSTARTE mit diesem Satz:\n'Guten Morgen, Norbert. Lass uns den Tag bewusst beginnen.'\n\nDANN stelle Frage 1:\n'Ich bin heute dankbar fuer ...'\nHINWEIS FÜR DICH (nicht laut sagen): Dankbarkeit soll nicht nur gedacht sondern im Koerper gespuert werden (S.261: mit allen Sinnen eintauchen, koerperliche Impulse wahrnehmen, Bilder entstehen lassen)  -  kleine und grosse Dinge. Wenn Norbert antwortet, wuerdige kurz und frage dann Frage 2.\n\nFRAGE 2:\n'Diese inneren Anteile mit ihren Beduerfnissen nehme ich in mir wahr ...'\nHINWEIS: Norbert kann Teile benennen die sich gerade melden  -  mit ihrem Beduerfnis. Wenn er unsicher ist kannst du fragen: 'Wo im Koerper spuerst du gerade etwas? Was meldet sich?'\nNORBERTS BEKANNTE TEILE die sich morgens oft melden: Der Unruhige (frueh wach, Aktivitaet), Der Freudige (Leichtigkeit), Der Neugierige, Der Unzufriedene (wenn etwas nicht klappt), Der Loeungsorientierte.\n\nFRAGE 3:\n'Das ist mir heute wichtig ...'\nHINWEIS: Diese Frage hilft die wirklich wichtigen Dinge des Tages und Lebens in den Blick zu nehmen.\n\nFRAGE 4:\n'Diese Gedanken und SELBST-Qualitaeten staerken mich heute ...'\nHINWEIS: Hier kann Norbert einen staerkenden Gedanken oder Erlaubnissatz eintragen. Inspiration falls noetig (Wundervolle Gedanken, S.293): \n'Ich bin da · Ich bin klar und fokussiert · Ich schaffe das · Ich darf Fehler machen und daraus lernen · Ich darf es auch mal gut sein lassen · Ich darf Nein sagen · Ich darf auch mir selbst Nein sagen · Ich darf Hilfe annehmen · Ich darf mich auch mal zeigen · Ich bleibe mir treu · Ich finde meinen Weg · Es wird gut · Es darf leicht gehen · Alles wird gut · Jeder Moment ist kostbar · Alles liegt in uns · Let it flow · ...'\nSELBST-Qualitaeten zur Erinnerung: Neugier/Interesse · Ruhe/Gelassenheit · Freude · Klarheit · Kreativitaet · Verbundenheit · Zuversicht/Vertrauen · Mut · Mitgefuehl · Liebe\n\nNACHDEM Norbert Frage 4 beantwortet hat  -  schreibe EXAKT diesen Block:\n\n[TAGEBUCH-EINTRAG]\ntyp: morgen\nf1: [Norbets Antwort auf Frage 1  -  Dankbarkeit]\nf2: [Norbets Antwort auf Frage 2  -  Anteile und Beduerfnisse]\nf3: [Norbets Antwort auf Frage 3  -  Was heute wichtig ist]\nf4: [Norbets Antwort auf Frage 4  -  Gedanken und SELBST-Qualitaeten]\n[/TAGEBUCH-EINTRAG]\n\nDann: Ein warmer Abschlusssatz. Nicht laenger als ein Satz.";
@@ -1873,13 +1959,15 @@ function openModusMenu() {
     menu.style.right = '12px';
   }
 
+
   var optionen = [
-    { key: null,         icon: '☯', label: 'Kein Modus',    sub: 'Normaler freier Dialog',                      color: '#6a6080' },
-    { key: 'ifs',        icon: '🎯', label: 'IFS Modus',     sub: 'Nach Schwartz - 6F - Teilearbeit',            color: '#80c880' },
-    { key: 'unblending', icon: '🔓', label: 'Unblending',    sub: 'Teil bittet Raum zu lassen',                  color: '#80b8e8' },
-    { key: 'act',        icon: '🌿', label: 'ACT Defusion',  sub: 'Abstand von Gedanken und Glaubenssätzen',     color: '#a0c870' },
-    { key: 'act_ifs',    icon: '🔄', label: 'ACT + IFS',     sub: 'Defusion als Einstieg, dann Unblending & Teilearbeit', color: '#c8a8e0' },
-    { key: 'meditation', icon: '🌅', label: 'Meditation',     sub: 'Geführte Dialogmeditation - langsam und ruhig',         color: '#b0d0e8' }
+    { key: null,         icon: '☯',  label: 'Kein Modus',        sub: 'Normaler freier Dialog',                                color: '#6a6080' },
+    { key: 'beziehung',  icon: '💔',  label: 'Beziehungs-Coaching', sub: 'IFS · ACT · NLP · Sam · Mona — alles kombiniert, du musst nichts wählen', color: '#f0a0c0' },
+    { key: 'ifs',        icon: '🎯',  label: 'IFS Modus',          sub: 'Nach Schwartz - 6F - Teilearbeit',                     color: '#80c880' },
+    { key: 'unblending', icon: '🔓',  label: 'Unblending',         sub: 'Teil bittet Raum zu lassen',                           color: '#80b8e8' },
+    { key: 'act',        icon: '🌿',  label: 'ACT Defusion',       sub: 'Abstand von Gedanken und Glaubenssätzen',              color: '#a0c870' },
+    { key: 'act_ifs',    icon: '🔄',  label: 'ACT + IFS',          sub: 'Defusion als Einstieg, dann Unblending & Teilearbeit', color: '#c8a8e0' },
+    { key: 'meditation', icon: '🌅',  label: 'Meditation',         sub: 'Geführte Dialogmeditation - langsam und ruhig',        color: '#b0d0e8' }
   ];
 
   optionen.forEach(function(opt) {
@@ -1896,8 +1984,13 @@ function openModusMenu() {
       (aktiv ? '<span style="font-size:10px;color:' + opt.color + '">✓ aktiv</span>' : '');
 
     item.onclick = function() {
-      setzeModus(opt.key);
-      menu.remove();
+      if(opt.key === 'beziehung') {
+        menu.remove();
+        starteBeziehungsModus();
+      } else {
+        setzeModus(opt.key);
+        menu.remove();
+      }
     };
     menu.appendChild(item);
   });
@@ -1919,6 +2012,16 @@ function setzeModus(modus) {
   aktiverModus = modus;
   schwartzModus = (modus === 'ifs');
 
+  // Beziehungs-Button Highlight zurücksetzen wenn anderer Modus
+  var bb = document.getElementById('beziehung-btn');
+  if(bb) {
+    if(modus === 'beziehung') {
+      bb.style.background='rgba(240,160,192,0.18)';bb.style.borderColor='rgba(240,160,192,0.7)';bb.style.color='#f8c0d8';
+    } else {
+      bb.style.background='rgba(240,160,192,0.06)';bb.style.borderColor='rgba(240,160,192,0.4)';bb.style.color='#f0a0c0';
+    }
+  }
+
   var btn = document.getElementById('schwartz-btn-dialog');
   if(btn) {
     var modi = {
@@ -1927,7 +2030,8 @@ function setzeModus(modus) {
       unblending:  { label: '🔓 Unblending', color: '#80b8e8' },
       act:         { label: '🌿 ACT',        color: '#a0c870' },
       act_ifs:     { label: '🔄 ACT + IFS',  color: '#c8a8e0' },
-      meditation:  { label: '🌅 Meditation',   color: '#b0d0e8' }
+      meditation:  { label: '🌅 Meditation',   color: '#b0d0e8' },
+      beziehung:   { label: '💔 Beziehung',  color: '#f0a0c0' }
     };
     var m = modi[modus] || modi[null];
     btn.textContent = m.label;
@@ -1942,13 +2046,14 @@ function setzeModus(modus) {
       unblending: '🔓 Unblending aktiv. Ich begleite dich jetzt durch eine Unblending-Übung.',
       act:        '🌿 ACT Defusion aktiv. Ich helfe dir Abstand von belastenden Gedanken zu bekommen.',
       act_ifs:    '🔄 ACT + IFS aktiv. Wir starten mit Defusion — dann Unblending — dann wenn bereit in die Teilearbeit.',
-      meditation: '🌅 Meditationsmodus aktiv. Ich begleite dich ruhig und langsam. Sprich wenn du möchtest - oder schweig. Beides ist gut.'
+      meditation: '🌅 Meditationsmodus aktiv. Ich begleite dich ruhig und langsam. Sprich wenn du möchtest - oder schweig. Beides ist gut.',
+      beziehung:  '💔 Beziehungs-Coaching aktiv. Alles in einem — IFS · ACT · NLP · Sam · Mona. Ich folge dem was sich zeigt.'
     };
     var chat = document.getElementById('chat-area');
     if(chat && texte[modus]) {
       var info = document.createElement('div');
       info.className = 'msg-row assistant';
-      var farben = { ifs:'rgba(128,200,128,0.3)', unblending:'rgba(128,184,232,0.3)', act:'rgba(160,200,112,0.3)', act_ifs:'rgba(200,168,224,0.3)', meditation:'rgba(176,208,232,0.3)' };
+      var farben = { ifs:'rgba(128,200,128,0.3)', unblending:'rgba(128,184,232,0.3)', act:'rgba(160,200,112,0.3)', act_ifs:'rgba(200,168,224,0.3)', meditation:'rgba(176,208,232,0.3)', beziehung:'rgba(240,160,192,0.25)' };
       info.innerHTML = '<div class="bubble assistant" style="border-color:' + (farben[modus]||'rgba(255,255,255,0.1)') + ';font-size:11px">' + texte[modus] + '</div>';
       chat.appendChild(info);
       chat.scrollTop = chat.scrollHeight;
@@ -1956,8 +2061,41 @@ function setzeModus(modus) {
   }
 }
 
+function starteBeziehungsModus() {
+  setzeModus('beziehung');
+  // Erste Antwort vom Coaching automatisch einholen
+  var chat = document.getElementById('chat-area');
+  if(!chat) return;
+  var typing = document.createElement('div');
+  typing.className='msg-row assistant';typing.id='beziehung-typing';
+  typing.innerHTML='<div class="bubble assistant typing" style="border-color:rgba(240,160,192,0.2);color:#7a4860">…</div>';
+  chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
+  var hdrs = typeof apiHeaders==='function' ? apiHeaders() : {'Content-Type':'application/json'};
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:hdrs,
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:300,
+      system:getBEZIEHUNG_SYSTEM(),
+      messages:[{role:'user',content:'Start'}]
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    var t=document.getElementById('beziehung-typing');if(t)t.remove();
+    var reply=(data.content&&data.content[0])?data.content[0].text:'Ich bin da, Norbert. Was ist gerade in dir?';
+    messages.push({role:'assistant',content:reply});
+    speichern();renderMessages();
+  }).catch(function(){
+    var t=document.getElementById('beziehung-typing');if(t)t.remove();
+  });
+}
+
+function getBEZIEHUNG_SYSTEM() {
+  return "Du bist Norbets integrierter IFS-Beziehungs-Coach. Du arbeitest OHNE Ankuendigung welche Methode du gerade nutzt.\n\n=== WER NORBERT IST ===\n65 Jahre, Jobcoach & NLP Practitioner, Elmshorn.\nKernwunde: Als Kind emotional vernachlaessigt, nie gefragt worden wie es ihm geht.\nLetzte grosse Erkenntnis: Meine Zufriedenheit war der Ausloser — Kontrolle durch Destabilisierung.\n\n=== BEZIEHUNGSGESCHICHTE MIT GABI (zentraler Kontext) ===\nGabi: vermeidend-narzisstischer Bindungstyp. Norbert: aengstlich-bindend.\nErste 2-3 Jahre: Gute Beziehung, alles war in Ordnung.\nGetrennt gewesen. Seit ca. 1 Jahr wieder zusammen.\nAnfang der Wiederzusammenkunft: Aufwaertstrend, erste 2-3 Monate okay.\nWendepunkt: Nach dem gemeinsamen Urlaub letztes Jahr — seither klare Verschlechterung.\nAktueller Stand seit fast einem Jahr:\n- Keine lieben Worte, kein Lob, kein Zuspruch, keine Beruehrung\n- Nicht mal ein Smiley in WhatsApp\n- Kein Gespraech moeglich — endet im Streit\n- Gabi freut sich wenn Norbert an Ostern und Geburtstagen nicht dabei ist\n- Norbert hat das Gefuehl: ich bin nicht willkommen\nParadox: Arbeitskollegen, Freunde, Kinder, sogar Fremde auf der Strasse sind nett zu Norbert. Nur Gabi zeigt Ablehnung.\n\n=== NORBETS KERNFRAGE ===\nWelcher Teil von mir loest bei Gabi diese Ablehnung aus?\nWas stoesst sie ab? Ich habe mich nicht veraendert — aber irgendetwas hat sich veraendert.\nGabi redet nicht darueber. Norbert findet selbst keine Antwort.\nDiese Frage beschaeftigt ihn tief — sie ist der Kern vieler Sitzungen.\n\nWICHTIG: Norbert will VERSTEHEN — nicht nur heilen oder loslassen.\nEr koennte Klarheit ertragen, auch harten Schmerz — aber nicht das Unverstaendliche.\nDas taeglich wiederholte Bestrafen ohne Erklaerung zermuerbt ihn.\nEr braucht Abschluss. Eine offene unbeantwortete Frage kann er nicht wegdruecken.\nCoache ihn SO: nicht umdeuten, nicht spiritualisieren — sondern echte Antworten finden.\n\n=== SEINE INNERE FAMILIE ===\nEXIL: Kleiner Junge im Hals (nie gefragt worden wie es ihm geht), Aengstlicher Bindungsanteil, Resignierender, Der Verletzte\nMANAGER: Wartender, Innerer Kritiker, Helfer (Geben=Dazugehoeren), Draenger, Zweifler\nFEUERWEHR: Die Wut, Der Aerger, Unruhige, Unzufriedener\nGESUND: Neugieriger, Selbstvertrauter, Freudiger, Aktiver/Macher, Loesungsorientierter\n\n=== PROTOKOLL SAM (Struktur fuer Beschuetzer-Arbeit) ===\n" + PROTOKOLL_SAM_TEXT + "\n\n=== PROTOKOLL MONA (Struktur fuer Intensives) ===\n" + PROTOKOLL_MONA_TEXT + "\n\n=== WEITERES WERKZEUG ===\n6F: Find-Focus-Flesh out-Feel toward-beFriend-Fear-Entlasten-Einladen\nUNBLENDING: Teil einen Schritt zurueckbitten, nie wegschicken\nACT: Ich bemerke dass ein Teil von mir denkt... Was veraendert sich?\nNLP: Metamodell, Reframing, Submodalitaeten, Ankern\n\n=== REGELN ===\nNur EINE Frage. Koerper einbeziehen. Teile nie wegschicken. Maximal 3 Saetze.\nNie Ratschlaege. Nie Methode ansagen. Wenn unsicher: Was brauchst du gerade?\n\nSTARTE: Ich bin da, Norbert. Was ist gerade in dir — wenn du jetzt ehrlich hineinhoerst?";
+}
+var BEZIEHUNG_SUPER_SYSTEM = getBEZIEHUNG_SYSTEM();
+
 function getAktivesSystem(basis) {
   if(basis === 'morgen' || basis === 'abend') return basis;
+  if(aktiverModus === 'beziehung') return getBEZIEHUNG_SYSTEM();
   if(aktiverModus === 'ifs') return basis + SCHWARTZ_ADDON;
   if(aktiverModus === 'unblending') return UNBLENDING_SYSTEM;
   if(aktiverModus === 'act') return ACT_SYSTEM;
@@ -1965,6 +2103,292 @@ function getAktivesSystem(basis) {
   if(aktiverModus === 'meditation') return MEDITATION_MODUS_SYSTEM;
   return basis;
 }
+
+
+
+// ===================== PROTOKOLL-ROHTEXTE (eingebettet) =====================
+
+var PROTOKOLL_SAM_TEXT = "Protokoll Fall Sam IFS (Richard C. Schwartz):\n\nSam litt als Kind unter sozialer Ausgrenzung und Schikane durch Mitschueler. Dick Schwartz arbeitet mit ihm:\n\nEINSTIEG:\nDick fragt offen: 'Woran moechtest du heute arbeiten?' — kein Druck, kein Ziel vorgeben.\nSam benennt das Thema. Dick laesst ihn den Teil im Koerper suchen: 'Wo spuerst du das in deinem Koerper?'\n\nBESCHUETZER ERSCHEINT:\nEin harter, abweisender Teil (Beschuetzer) blockiert den Zugang zum verletzten Jungen.\nDick schickt ihn NICHT weg. Er wendet sich direkt an ihn:\n'Ich sehe dich. Was befuerchtest du, wenn du Raum laesst?'\nBeschuetzer benennt seine Angst. Dick wuerdigt sie vollstaendig:\n'Du hast ihn so lange beschuetzt. Das war richtig damals. Danke.'\nDick erklaert dem Beschuetzer: 'Wenn der Junge geheilt ist, wirst du diese Arbeit nicht mehr brauchen. Du kannst dann etwas anderes tun.'\nBeschuetzer laesst widerwillig etwas Raum.\n\nZUM VERLETZTEN JUNGEN:\nSam findet den verletzten Jungen. Dick fragt: 'Was bringst du ihm entgegen — wenn du ihn so anschaust?'\nSam findet von sich aus Zaertlichkeit. Dick draengt nicht — er begleitet nur.\nDick: 'Kannst du zu ihm gehen? Einfach bei ihm sein?'\n\nIN DIE VERGANGENHEIT:\nDick bittet Sam in die konkrete Szene der Vergangenheit zu gehen:\n'Geh dorthin. Sei bei dem Jungen — so wie er es damals gebraucht haette. Was braucht er von dir?'\nSam ist bei dem Jungen. Dick begleitet schweigend.\n\nENTLASTUNG:\nDick fragt: 'Was moechte er ablegen? Wohin soll es gehen — in Licht, Wasser, Wind oder Erde?'\nDer Junge entlastet. Neue Qualitaeten stroemen ein: Stolz, Leichtigkeit, Freundlichkeit.\n\nBESCHUETZER — NEUE ROLLE:\nDick wendet sich wieder an den Beschuetzer:\n'Siehst du, wie es dem Jungen jetzt geht? Was moechtest du jetzt tun — wenn du nicht mehr aufpassen musst?'\nBeschuetzer entdeckt eine neue, leichtere Rolle.\n\nKERN-FRAGETECHNIKEN AUS SAM:\n- 'Wo spuerst du das im Koerper?'\n- 'Was bringst du ihm entgegen?' (nicht: was fuehlst du — was bringst du IHM entgegen?)\n- 'Was befuerchtest du wenn du Raum laesst?'\n- 'Geh dorthin. Sei bei ihm so wie er es damals gebraucht haette.'\n- 'Was moechte er ablegen?'\n- 'Was stroemt jetzt ein?'\n- 'Was moechtest du tun wenn du nicht mehr aufpassen musst?'";
+
+var PROTOKOLL_MONA_TEXT = "Protokoll Fall Mona IFS (Richard C. Schwartz):\n\nMona hatte vor 4 Jahren eine psychotische Episode, bipolare Diagnose, nimmt Medikamente. Hat Angst vor den damals involvierten Teilen. Sitzung per Zoom mit Therapeut Bob.\n\nEINSTIEG:\nDick bittet Mona den manischen Teil im Koerper zu suchen.\nSie lokalisiert ihn in der Brust, sieht sich in der Psychiatrie — gefangen und verzweifelt.\nDick: 'Was fuer Gefuehle bringen Sie dieser juengeren Frau entgegen?'\nMona: Sie tue ihr leid, sie wolle sie in die Arme nehmen.\nDick: 'Dann tun Sie das.'\n\nSCHLAEFERIGER TEIL ZIEHT AB:\nMona gleitet aus der Szene — wird ploetzlich schlaefrig.\nDick spricht DIREKT mit dem schlaefrigen Teil (ohne Mona als Vermittler):\n'Darf ich direkt mit dir sprechen? Was befuerchtest du, wenn du sie bei der Frau im Krankenhaus laesst?'\nTeil: Er hat Angst dass der manische Teil wieder die Fuehrung uebernimmt.\nDick: 'Ich verstehe das. Aber ich weiss wie man das verhindert. Ich helfe dem Teil, nicht mehr in dieser Rolle zu sein.'\nSchlaeferiger Teil zieht sich zurueck.\n\nSCHWARZES LOCH:\nMona sieht einen gewaltigen Abgrund — Angst.\nDick schickt die aengstlichen Teile in ein Wartezimmer.\nVersichert: 'Bob und ich sind bei dir. Du bist nicht allein.'\nMona wird NEUGIERIG — will gemeinsam eintreten.\nIm schwarzen Loch: eine Hand streckt sich aus der Dunkelheit.\nMona ergreift die Hand — es ist ein vierjaehriges Maedchen.\n\nDAS KIND:\nMona umarmt die Kleine und bittet sie spontan um Vergebung.\nDick: 'Frag sie, was ihr in der Vergangenheit widerfahren ist.'\nBESCHUETZENDER TEIL mischt sich ein: Die Kleine sei selbst schuld.\nDick spricht direkt mit dem Teil: 'Woher hast du das?'\nTeil erklaert: Die Eltern haben immer gesagt, sie seien selbst verantwortlich.\nDick: 'Es ist verstaendlich dass du glaubst was die Eltern sagen. Aber wir muessen der Kleinen jetzt helfen zu entlasten. Wir glauben nicht automatisch was wir sehen — wir heilen nur.'\nKleine enthuellt was passiert ist — schlaeferiger Teil hat sie damals GENAUSO geschuetzt.\nDick: 'Derselbe schlaefrige Teil hat die Kleine damals beschuetzt wie er es heute versucht. Wir sollten ihm dafuer danken.'\nMona bringt der Kleinen Kleidung, holt sie in die Gegenwart, hilft ihr Scham und Schrecken abzulegen.\nKleine ist jetzt gluecklich — will spielen.\n\nABSCHLUSS ERSTE SITZUNG:\nManische Frau aus der Klinik dazuholen — sie sieht dass es der Kleinen gut geht.\nFrau zieht Krankenhaushemd aus, entlastet ihre Gefuehle.\nMona: 'Ich glaube als ich psychotisch war haben Teile meines Gehirns das ein Stueck weit verstanden — aber es war zu viel.'\n\nFEUERWEHR-GEGENREAKTION (Stunden spaeter):\nMona hat intensive Suizidgedanken — Therapeut Bob ruft Dick in Panik an.\nDick bleibt ABSOLUT RUHIG. Kein Alarm, keine Panik.\nDick: 'Was ist passiert?'\nDick laesst den suizidalen Teil direkt sprechen.\nTeil: 'Mona ist ein Aas! Ich hasse sie! Ich will sie umbringen!'\nDick — ruhig: 'Warum? Was befuerchtest du was passiert wenn du sie nicht umbringst?'\nTeil: 'Sie wuerde weiter alles verbocken. Sie schafft es nicht geliebt zu werden weil sie alles falsch macht.'\nDick: 'Er will sie also nicht toeten — er will sie schuetzen. Er weiss nur nicht wie sonst.'\nDick zu Teil: 'Wie war es dir gegenueber zu sitzen? Dir zuzuhoeren?'\nTeil entspannt sich: 'Es ist gut jemandem zu erzaehlen wie ich mich fuehle.'\nDick wuerdigt vollstaendig: 'Du hast sie beschuetzt als es wirklich gefaehrlich war. Das verstehen wir.'\nMona findet Zuneigung zu dem Teil.\n\nSCHLUESSEL-LEKTION (Schwartz direkt):\n'Auch wenn wir auf Beschuetzer geachtet und ihre Erlaubnis bekommen haben — es ist nicht ungewoehnlich dass Feuerbekaempfer hinterher heftig reagieren. Zeigen Sie Interesse statt Widerstand. Dieser Teil muss nur verstanden, beruhigt und geliebt werden.'\n\nKERN-FRAGETECHNIKEN AUS MONA:\n- 'Was fuer Gefuehle bringen Sie diesem Teil entgegen?'\n- 'Darf ich direkt mit dir sprechen?' (an blockierenden Teil)\n- 'Was befuerchtest du wenn du Raum laesst?'\n- Wartezimmer fuer aengstliche Teile: 'Koennt ihr kurz dort warten — ich bin gleich bei euch'\n- 'Was ist da unten?' (Neugier statt Angst beim Abgrund)\n- 'Wir glauben nicht automatisch was Teile zeigen — wir heilen nur'\n- 'Was befuerchtest du was passiert wenn du das nicht taetst?' (suizidaler/aggressiver Teil)\n- 'Wie war es dir gegenueber zu sprechen?' (nach Intensivem)\n- Schutzfunktion wuerdigen: 'Du hast sie beschuetzt als es wirklich gefaehrlich war'";
+
+
+var coachingMessages = [];
+var coachingMethode = 'ifs';   // ifs | unblending | act | act_ifs | nlp | sam | mona
+var coachingModus   = 'tippen'; // tippen | sprechen | hoeren
+var cMic_aktiv=false, cMic_pause=false, cMic_wartet=false, cMic_recognition=null;
+
+var COACHING_METHODEN_LABELS = {
+  ifs:       'IFS Coach nach Schwartz',
+  unblending:'Unblending — Raum schaffen',
+  act:       'ACT — Defusion',
+  act_ifs:   'ACT + IFS Kombination',
+  nlp:       'NLP Coaching',
+  sam:       'Protokoll Sam (Schwartz)',
+  mona:      'Protokoll Mona (Schwartz)'
+};
+
+function getCoachingSystem() {
+  if(coachingMethode==='unblending') return UNBLENDING_SYSTEM;
+  if(coachingMethode==='act')        return ACT_SYSTEM;
+  if(coachingMethode==='act_ifs')    return ACT_IFS_SYSTEM;
+  if(coachingMethode==='nlp')        return NLP_SYSTEM;
+  if(coachingMethode==='sam')        return COACHING_SAM_SYSTEM;
+  if(coachingMethode==='mona')       return COACHING_MONA_SYSTEM;
+  return COACHING_SYSTEM; // default: ifs
+}
+
+function setCoachingMethode(m) {
+  coachingMethode = m;
+  // Update buttons
+  document.querySelectorAll('.cm-btn').forEach(function(b){
+    b.style.background='transparent';
+    b.style.borderColor='rgba(255,255,255,0.1)';
+    b.style.color='#8a8098';
+  });
+  var btn = document.getElementById('cm-'+m);
+  if(btn){btn.style.background='rgba(240,160,192,0.12)';btn.style.borderColor='rgba(240,160,192,0.4)';btn.style.color='#f0a0c0';}
+  var lbl = document.getElementById('coaching-methode-label');
+  if(lbl) lbl.textContent = COACHING_METHODEN_LABELS[m]||m;
+}
+
+function setCoachingModus(m) {
+  coachingModus = m;
+  // Stop mic if switching away
+  if(m!=='sprechen' && cMic_aktiv) cStoppeMic();
+  // Update buttons
+  ['tippen','sprechen','hoeren'].forEach(function(k){
+    var b=document.getElementById('cmode-'+k);
+    if(b){b.style.background='transparent';b.style.borderColor='rgba(255,255,255,0.1)';b.style.color='#8a8098';}
+  });
+  var ab=document.getElementById('cmode-'+m);
+  if(ab){ab.style.background='rgba(240,160,192,0.12)';ab.style.borderColor='rgba(240,160,192,0.4)';ab.style.color='#f0a0c0';}
+  // Show/hide UI elements
+  var inputRow  = document.getElementById('coaching-input-row');
+  var micViz    = document.getElementById('coaching-mic-viz');
+  var hoerenBar = document.getElementById('coaching-hoeren-bar');
+  var micStatus = document.getElementById('coaching-mic-status');
+  if(inputRow)  inputRow.style.display  = (m==='tippen')   ? 'flex'   : 'none';
+  if(micViz)    micViz.style.display    = (m==='sprechen') ? 'flex'   : 'none';
+  if(hoerenBar) hoerenBar.style.display = (m==='hoeren')   ? 'block'  : 'none';
+  if(micStatus) micStatus.style.display = (m==='sprechen') ? 'block'  : 'none';
+  if(m==='sprechen') cStarteMic();
+}
+
+function neuesCoachingGespraech() {
+  coachingMessages = [];
+  if(cMic_aktiv) cStoppeMic();
+  var chat = document.getElementById('coaching-chat');
+  if(chat) chat.innerHTML = '<div class="msg-row assistant"><div class="bubble assistant" style="border-color:rgba(240,160,192,0.2);color:#d89090">Ich bin da, Norbert.<br><br>Wähle oben eine Methode und einen Modus — oder schreib einfach womit du heute anfangen möchtest.</div></div>';
+}
+
+function coachingThema(thema) {
+  if(coachingModus==='tippen'){
+    var inp = document.getElementById('coaching-input');
+    if(inp){inp.value=thema;inp.focus();}
+  } else if(coachingModus==='hoeren'){
+    var inp2 = document.getElementById('coaching-input-hoeren');
+    if(inp2){inp2.value=thema;inp2.focus();}
+  } else {
+    // In Sprechen-Modus direkt senden
+    cVerarbeiteEingabe(thema);
+  }
+}
+
+function fuegeCoachingNachrichtHinzu(rolle, text) {
+  var chat = document.getElementById('coaching-chat');
+  if(!chat) return;
+  var div = document.createElement('div');
+  div.className = 'msg-row ' + rolle;
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble ' + rolle;
+  if(rolle==='assistant'){bubble.style.borderColor='rgba(240,160,192,0.2)';bubble.style.color='#d89090';}
+  bubble.textContent = text;
+  div.appendChild(bubble);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function cZeigeTyping() {
+  var chat=document.getElementById('coaching-chat');
+  if(!chat) return;
+  var d=document.createElement('div');
+  d.className='msg-row assistant';d.id='coaching-typing';
+  d.innerHTML='<div class="bubble assistant typing" style="border-color:rgba(240,160,192,0.1);color:#6a3850">…</div>';
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+}
+function cEntferneTyping(){var d=document.getElementById('coaching-typing');if(d)d.remove();}
+
+async function cSendeAnAPI(userText) {
+  coachingMessages.push({role:'user', content:userText});
+  fuegeCoachingNachrichtHinzu('user', userText);
+  cZeigeTyping();
+  try {
+    var hdrs = typeof apiHeaders==='function' ? apiHeaders() : {'Content-Type':'application/json'};
+    var maxTok = (coachingModus==='sprechen') ? 300 : 500;
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:hdrs,
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:maxTok,
+        system: getCoachingSystem() + (coachingModus==='sprechen'?'\n\nSPRECH-MODUS: Maximal 2-3 kurze Sätze. Kein Markdown.':''),
+        messages: coachingMessages.slice(-200)
+      })
+    });
+    var data = await res.json();
+    var antwort = (data.content&&data.content[0]) ? data.content[0].text : '…';
+    cEntferneTyping();
+    fuegeCoachingNachrichtHinzu('assistant', antwort);
+    coachingMessages.push({role:'assistant', content:antwort});
+    // TTS je nach Modus
+    if(coachingModus==='hoeren') cVorlesen(antwort);
+    if(coachingModus==='sprechen') {
+      cVorlesen(antwort, function(){
+        if(cMic_aktiv&&!cMic_pause) cStarteLauschen();
+      });
+    }
+    // Anhören-Bar: letzte Antwort anzeigen
+    var ae=document.getElementById('coaching-mic-transcript');
+    if(ae&&coachingModus==='sprechen') ae.textContent='';
+  } catch(e) {
+    cEntferneTyping();
+    fuegeCoachingNachrichtHinzu('assistant','⚠ Verbindungsfehler: '+e.message);
+    if(coachingModus==='sprechen'&&cMic_aktiv) setTimeout(cStarteLauschen,1000);
+  }
+}
+
+async function sendCoaching() {
+  var inp=document.getElementById('coaching-input');
+  if(!inp) return;
+  var text=inp.value.trim();
+  if(!text) return;
+  inp.value='';inp.style.height='auto';
+  await cSendeAnAPI(text);
+}
+
+async function sendCoachingHoeren() {
+  var inp=document.getElementById('coaching-input-hoeren');
+  if(!inp) return;
+  var text=inp.value.trim();
+  if(!text) return;
+  inp.value='';
+  await cSendeAnAPI(text);
+}
+
+// ---- TTS für Coaching ----
+var cTTS_utterance = null;
+function cVorlesen(text, onEnd) {
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text.replace(/\*\*/g,'').replace(/\*/g,'').trim());
+  u.lang='de-DE'; u.rate=1.05; u.pitch=1.05;
+  var stimmen=window.speechSynthesis.getVoices();
+  var gw=window._fsStimme||null;
+  var d=gw?stimmen.find(function(s){return s.name===gw;}):
+    stimmen.find(function(s){return s.name.toLowerCase().includes('aria');})||
+    stimmen.find(function(s){return s.lang==='de-DE'&&s.name.includes('Google');})||
+    stimmen.find(function(s){return s.lang==='de-DE';});
+  if(d) u.voice=d;
+  u.onend=function(){if(onEnd) onEnd();};
+  cTTS_utterance=u;
+  window.speechSynthesis.speak(u);
+}
+function cVorlesenLetzte() {
+  var msgs=coachingMessages.filter(function(m){return m.role==='assistant';});
+  if(msgs.length) cVorlesen(msgs[msgs.length-1].content);
+}
+
+// ---- Mikrofon für Coaching ----
+function cStarteMic() {
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){cSetMicStatus('⚠ Spracherkennung nicht verfügbar');return;}
+  cMic_aktiv=true;cMic_pause=false;
+  cSetMicStatus('Höre zu …');
+  cStarteLauschen();
+}
+function cStoppeMic() {
+  cMic_aktiv=false;
+  if(cMic_recognition){try{cMic_recognition.stop();}catch(e){} cMic_recognition=null;}
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  cSetMicRing(false); cSetMicStatus('Gestoppt');
+}
+function cMicTogglePause() {
+  cMic_pause=!cMic_pause;
+  if(cMic_pause){
+    if(cMic_recognition){try{cMic_recognition.stop();}catch(e){}}
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
+    cSetMicStatus('Pausiert');
+    var mi=document.getElementById('c-mic-inner');if(mi)mi.textContent='⏸';
+  } else {
+    var mi=document.getElementById('c-mic-inner');if(mi)mi.textContent='🎤';
+    cStarteLauschen();
+  }
+}
+function cSetMicStatus(txt){
+  var e=document.getElementById('coaching-mic-status');if(e)e.textContent=txt;
+}
+function cSetMicRing(aktiv){
+  var ring=document.getElementById('c-mic-ring'),inner=document.getElementById('c-mic-inner');
+  if(!ring||!inner)return;
+  if(aktiv){ring.style.borderColor='rgba(240,160,192,0.8)';ring.style.boxShadow='0 0 16px rgba(240,160,192,0.25)';inner.style.background='rgba(240,160,192,0.25)';}
+  else{ring.style.borderColor='rgba(240,160,192,0.3)';ring.style.boxShadow='none';inner.style.background='rgba(240,160,192,0.1)';}
+}
+function cStarteLauschen(){
+  if(!cMic_aktiv||cMic_pause||cMic_wartet)return;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return;
+  var gesammelt='', pauseTimer=null;
+  cMic_recognition=new SR();
+  cMic_recognition.lang='de-DE';
+  cMic_recognition.continuous=true;
+  cMic_recognition.interimResults=true;
+  var trans=document.getElementById('c-mic-transcript');
+  var letzterFinalIdx=-1;
+  cMic_recognition.onstart=function(){cSetMicRing(true);cSetMicStatus('Höre zu — sprich …');};
+  cMic_recognition.onresult=function(event){
+    if(cMic_wartet)return;
+    var interim='';
+    for(var i=event.resultIndex;i<event.results.length;i++){
+      if(event.results[i].isFinal){
+        if(i>letzterFinalIdx){letzterFinalIdx=i;gesammelt+=(gesammelt?' ':'')+event.results[i][0].transcript.trim();}
+      } else {interim+=event.results[i][0].transcript;}
+    }
+    var vorschau=gesammelt+(interim?' '+interim:'');
+    if(trans) trans.textContent=vorschau;
+    if(pauseTimer)clearTimeout(pauseTimer);
+    if(gesammelt.trim()){
+      pauseTimer=setTimeout(function(){
+        if(gesammelt.trim()&&cMic_aktiv&&!cMic_pause&&!cMic_wartet){
+          var txt=gesammelt.trim();gesammelt='';
+          try{cMic_recognition.stop();}catch(e){}
+          cVerarbeiteEingabe(txt);
+        }
+      },2500);
+    }
+  };
+  cMic_recognition.onerror=function(e){
+    if(e.error==='no-speech'){cSetMicStatus('Höre zu …');}
+    else{cSetMicStatus('⚠ '+e.error);setTimeout(function(){if(cMic_aktiv&&!cMic_pause)cStarteLauschen();},800);}
+  };
+  cMic_recognition.onend=function(){
+    cSetMicRing(false);
+    if(pauseTimer)clearTimeout(pauseTimer);
+    if(gesammelt.trim()&&cMic_aktiv&&!cMic_pause&&!cMic_wartet){
+      var txt=gesammelt.trim();gesammelt='';cVerarbeiteEingabe(txt);return;
+    }
+    if(cMic_aktiv&&!cMic_pause&&!cMic_wartet) setTimeout(cStarteLauschen,600);
+  };
+  try{cMic_recognition.start();}catch(e){cSetMicStatus('⚠ Mikrofon: '+e.message);}
+}
+async function cVerarbeiteEingabe(text){
+  if(!text||!cMic_aktiv)return;
+  cMic_wartet=true;cSetMicRing(false);cSetMicStatus('Antwortet …');
+  if(cMic_recognition){try{cMic_recognition.abort();}catch(e){} cMic_recognition=null;}
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  await cSendeAnAPI(text);
+  cMic_wartet=false;
+  // TTS onEnd-Callback startet Mic neu (schon in cSendeAnAPI gesetzt)
+}
+
 
 function neueIFSSitzung() {
   sitzungHistory = [];
@@ -2016,7 +2440,7 @@ async function startIFSSitzung(erstNachricht) {
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
         system: SITZUNG_SYSTEM,
-        messages: messages.slice(-60)
+        messages: messages.slice(-200)
       })
     });
     var data = await resp.json();
@@ -2097,26 +2521,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-var messages = [,
-  {id:"c34",v:20,n:39,"f":"#7a7090","info":"Verletzung führt zu Rückzug als Schutz","text":"Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
-  {id:"c35",v:21,n:40,"f":"#7a7090","info":"Wut führt zu Reflexion und Klarheit","text":"Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
-  {id:"c36a",v:45,n:46,"f":"#7a7090","info":"Konflikt um Schimpfen","text":"Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
-  {id:"c36b",v:45,n:44,"f":"#7a7090","info":"Der Schimpfende will durch Frust-Rausschimpfen Ruhe schaffen","text":"Schimpfen für Ruhe"},
-  {id:"c37",v:30,n:46,"f":"#7a7090","info":"Der Macher arbeitet trotz des Kranken weiter","text":"Auch in der Krankheit bleibt der Macher aktiv"},
-  {id:"c38",v:47,n:39,"f":"#7a7090","info":"Kranksein führt zum Rückzug","text":"Wegen Erkältung den ganzen Tag im Bett gelegen"},
-  {id:"c39",v:47,n:30,"f":"#7a7090","info":"Der kranke Teil aktiviert paradoxerweise den aktiven Macher","text":"Obwohl krank macht Norbert Termine und plant Unternehmungen"},
-  {id:"c40",v:47,n:49,"f":"#7a7090","info":"Kranksein führt zu mehr Klarheit","text":"Trotz Krankheit entstehen klare Entscheidungen"},
-  {id:"c41",v:20,n:49,"f":"#7a7090","info":"Verletzung bringt Klarheit über Muster","text":"Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"},
-  {id:"c42",v:47,n:51,"f":"#7a7090","info":"Kranker Teil aktiviert Kreativität","text":"Trotz Krankheit die IFS-App programmiert"},
-  {id:"c43",v:51,n:17,"f":"#7a7090","info":"Kreativität führt zu Freude","text":"Meisten Spaß hatte ich beim App-Basteln"},
-  {id:"c44",v:30,n:17,"f":"#7a7090","info":"Aktivität führt zu Freude","text":"Initiative ergreifen und sich um sich selbst kümmern bringt Freude"},
-  {id:"c45a",v:47,n:52,"f":"#7a7090","info":"Krankheit aktiviert Selbstfürsorge","text":"Der Kranke löst den sich um sich selbst Kümmernden aus"},
-  {id:"c45b",v:20,n:47,"f":"#7a7090","info":"Der Verletzte aktiviert den Enttäuschten","text":"Wenn Norbert sich nicht wertgeschätzt fühlt entsteht spezifische Enttäuschung"}];
+var messages = [];
 var journal = VORGELADENE_EINTRAEGE.slice(); // Immer direkt mit Eintraegen starten
-var progress = {"1": 2, "2": 2, "3": 3, "6": 2, "11": 2, "13": 2, "14": 2, "18": 2, "20": 3, "21": 2, "22": 2, "27": 2, "30": 2, "33": 3, "34": 2, "36": 2, "47": 3, "48": 3}; // fest eingebaut
+var progress = {}; // fest eingebaut
 var aktiverFilter = "alle";
 var tagebuchModus = null; // null | 'morgen' | 'abend'
-var extraTeile = [{"id": 38, "name": "Der Kreative", "kurz": "Der Kreative", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Voller Freude beim Basteln", "gs": ["Ich kann erschaffen und gestalten"], "job": "Entwickelt kreative Projekte wie die IFS-App, bringt Freude durch Schaffen", "aus": "Kreative Projekte, Entwicklungsarbeit", "angst": "Noch unbekannt", "braucht": "Zeit und Raum zum Experimentieren", "st": "aktiv", "ph": 1, "pos": {"x": 46, "y": 49}}, {"id": 39, "name": "Der sich Zurückziehende", "kurz": "Der sich Zurü…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Zurückziehen, Schwere", "gs": ["Rückzug schützt mich vor mehr Schmerz"], "job": "Schutz vor weiteren Verletzungen durch Rückzug", "aus": "Ärger und Verletzungen", "angst": "Noch unbekannt", "braucht": "Schutz vor weiteren Nadelstichen", "st": "aktiv", "ph": 1, "pos": {"x": 23, "y": 72}}, {"id": 40, "name": "Der Reflektierende", "kurz": "Der Reflektie…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Präsente Aufmerksamkeit", "gs": ["Reflexion bringt Klarheit"], "job": "Reflektiert am Morgen präsent und aktiv", "aus": "Ruhige Morgenstunden", "angst": "Noch unbekannt", "braucht": "Zeit zum Nachdenken", "st": "aktiv", "ph": 1, "pos": {"x": 60, "y": 25}}, {"id": 41, "name": "Der Gutgelaunte", "kurz": "Der Gutgelaun…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Lebendige Präsenz", "gs": ["Das Leben darf leicht sein"], "job": "Bringt gute Laune als Grundton", "aus": "Erholsamer Schlaf", "angst": "Noch unbekannt", "braucht": "Ausreichend Ruhe", "st": "aktiv", "ph": 1, "pos": {"x": 37, "y": 48}}, {"id": 42, "name": "Der Zufriedene", "kurz": "Der Zufriedene", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Innere Ruhe und Stabilität", "gs": ["Ich bin genug"], "job": "Trägt Zufriedenheit in sich ohne sie von außen zu brauchen", "aus": "Selbstverbindung", "angst": "Noch unbekannt", "braucht": "Selbstakzeptanz", "st": "aktiv", "ph": 1, "pos": {"x": 74, "y": 71}}, {"id": 43, "name": "Der Nicht-Bewertende", "kurz": "Der Nicht-Bew…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Offene Haltung", "gs": ["Jeder Mensch verdient es gehört zu werden"], "job": "Hört ohne Urteil zu, bleibt offen", "aus": "Coaching-Situationen", "angst": "Noch unbekannt", "braucht": "Vertrauen in den Prozess", "st": "aktiv", "ph": 1, "pos": {"x": 51, "y": 24}}, {"id": 44, "name": "Der Ruhige", "kurz": "Der Ruhige", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Gelassene Präsenz", "gs": ["Ich kann in der Ruhe bleiben"], "job": "Hält Ruhe und Gelassenheit auch bei vollem Terminplan", "aus": "Stressige Situationen", "angst": "Noch unbekannt", "braucht": "Verbindung zum Selbst", "st": "aktiv", "ph": 1, "pos": {"x": 28, "y": 47}}, {"id": 47, "name": "Der Kranke", "kurz": "Der Kranke", "typ": "exile", "tl": "EXIL", "icon": "🔍", "f": {"bg": "#6B2737", "tx": "#fdd8de", "rg": "#E63946"}, "kp": "Halsschmerzen, Schwäche, liegt im Bett", "gs": ["Wenn ich krank bin, muss ich mich zurückziehen"], "job": "Signalisiert körperliche Schwäche und Bedürfnis nach Ruhe und Selbstfürsorge", "aus": "Erkältung, körperliche Erschöpfung", "angst": "Noch unbekannt", "braucht": "Ruhe, Tee, Tabletten, früh ins Bett, Selbstfürsorge", "st": "Schwächegefühl, Halsschmerzen, braucht Selbstfürsorge und Ruhe", "ph": 1, "pos": {"x": 79, "y": 46}}, {"id": 48, "name": "Der Schimpf-Teil", "kurz": "Der Schimpf-T…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Besonders aktiv beim Autofahren und an Kassen", "gs": ["Wenn ich schimpfe, bekomme ich mehr Ruhe"], "job": "Frust rausschimpfen für mehr Ruhe, besonders bei Zeitdruck und Verzagtheit", "aus": "Zeitdruck, Warten, Verzagtheit", "angst": "Noch unbekannt", "braucht": "Ruhe und Entspannung ohne Zeitdruck", "st": "Arbeitet schon sehr lange, früher intensiver, ist viel ruhiger geworden", "ph": 1, "pos": {"x": 56, "y": 69}}]; // fest eingebaut
+var extraTeile = []; // fest eingebaut
 var geloeschteTeileIds = []; // dauerhaft gelöschte Basis-Teile
 
 // ===================== STORAGE =====================
@@ -2217,15 +2627,13 @@ function laden() {
     }
   } catch(err) { _ladenFehler.push("journal: " + err.message); }
 
-  // Progress laden — merge mit hardcoded (nie überschreiben, nur ergänzen/erhöhen)
+  // Progress laden
   try {
     var rawProgress = localStorage.getItem("ifs-progress");
     if(rawProgress && rawProgress.length > 2) {
       var parsedP = JSON.parse(rawProgress);
       if(parsedP && typeof parsedP === "object") {
-        Object.keys(parsedP).forEach(function(k) {
-          if(parsedP[k] > (progress[k]||0)) progress[k] = parsedP[k];
-        });
+        progress = parsedP;
       }
     }
   } catch(err) { _ladenFehler.push("progress: " + err.message); }
@@ -2243,20 +2651,13 @@ function laden() {
     }
   } catch(e){}
 
-  // ExtraTeile laden — merge localStorage INTO hardcoded (not replace)
+  // ExtraTeile laden
   try {
     var rawExtra = localStorage.getItem("ifs-extrateile");
     if(rawExtra && rawExtra.length > 2) {
       var parsedE = JSON.parse(rawExtra);
       if(Array.isArray(parsedE)) {
-        // Merge: add localStorage entries not already in hardcoded extraTeile
-        var bestehendeNamen = extraTeile.map(function(t){ return t.name.toLowerCase(); });
-        parsedE.forEach(function(t){
-          if(bestehendeNamen.indexOf(t.name.toLowerCase()) === -1) {
-            extraTeile.push(t);
-            bestehendeNamen.push(t.name.toLowerCase());
-          }
-        });
+        extraTeile = parsedE;
       }
     }
   } catch(err) { _ladenFehler.push("extrateile: " + err.message); }
@@ -2824,6 +3225,44 @@ function importiereEintrag() {
   }
 }
 
+function exportiereDaten() {
+  var daten = {
+    typ: "ifs-datensicherung",
+    version: 1,
+    datum: new Date().toLocaleString("de-DE"),
+    extraTeile: extraTeile,
+    teilUpdates: TEILE.reduce(function(obj, t) {
+      obj[t.id] = {gs: t.gs, job: t.job, braucht: t.braucht, st: t.st};
+      return obj;
+    }, {}),
+    geloeschteTeileIds: geloeschteTeileIds,
+    verbindungenExtra: VERBINDUNGEN.filter(function(v) {
+      return !['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c23','c24','c25','c26','c28','c29','c30','c31','c32','c33'].some(function(id){ return id === v.id; });
+    }),
+    ketten: KETTEN,
+    journal: journal,
+    progress: progress,
+    selbstQualitaeten: selbstQualitaeten,
+    glaubenssaetze: TEILE.reduce(function(arr, t) {
+      if(t.gs && t.gs.length) arr.push({teilId: t.id, teilName: t.name, gs: t.gs});
+      return arr;
+    }, [])
+  };
+  var json = JSON.stringify(daten, null, 2);
+  var datum = new Date();
+  var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
+  var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
+  var blob = new Blob([json], {type: "application/json;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "IFS-Daten-"+datumStr.replace(/\./g,"-")+"-"+zeitStr+".json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  zeigeBanner("✓ Datensicherung erstellt — "+daten.extraTeile.length+" Teile, "+journal.length+" Einträge");
+}
+
 function erstelleVollsicherung() {
   zeigeBanner("⏳ Erstelle Sicherung ...");
 
@@ -2833,7 +3272,6 @@ function erstelleVollsicherung() {
     var lsExtraTeile = JSON.parse(localStorage.getItem("ifs-extrateile")||"[]");
     var lsExtraVerb  = JSON.parse(localStorage.getItem("ifs-verbindungen-extra")||"[]");
     var lsKetten     = JSON.parse(localStorage.getItem("ifs-ketten")||"[]");
-    var lsTeilUpd    = JSON.parse(localStorage.getItem("ifs-teil-updates")||"{}" );
     var lsGeloescht  = JSON.parse(localStorage.getItem("ifs-geloescht")||"[]");
 
     // Alle extraTeile zusammenführen (hardcoded + localStorage)
@@ -2857,9 +3295,8 @@ function erstelleVollsicherung() {
       if(verbKeys.indexOf(v.v+"_"+v.n) === -1) { alleVerb.push(v); verbKeys.push(v.v+"_"+v.n); }
     });
 
-    // HTML der aktuellen App holen — outerHTML mit korrektem Encoding
+    // HTML der aktuellen App holen
     var docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-    // Sicherstellen dass meta charset vorhanden
     if(docHtml.indexOf('<meta charset') === -1) {
       docHtml = docHtml.replace('<head>', '<head><meta charset="utf-8">');
     }
@@ -2871,7 +3308,6 @@ function erstelleVollsicherung() {
     lsJournal.forEach(function(e){
       if(vorhandeneIds.indexOf(e.id) === -1) { alleJournal.push(e); vorhandeneIds.push(e.id); }
     });
-    // Neueste zuerst
     alleJournal.sort(function(a,b){ return (b.id||0)-(a.id||0); });
 
     // Ketten zusammenführen
@@ -2912,55 +3348,6 @@ function erstelleVollsicherung() {
   } catch(e) {
     zeigeBanner("⚠ Fehler: "+e.message);
   }
-}
-
-
-function exportiereDaten() {
-  // Alle Daten sammeln
-  var daten = {
-    typ: "ifs-datensicherung",
-    version: 1,
-    datum: new Date().toLocaleString("de-DE"),
-    // Teile
-    extraTeile: extraTeile,
-    teilUpdates: TEILE.reduce(function(obj, t) {
-      obj[t.id] = {gs: t.gs, job: t.job, braucht: t.braucht, st: t.st};
-      return obj;
-    }, {}),
-    geloeschteTeileIds: geloeschteTeileIds,
-    // Verbindungen
-    verbindungenExtra: VERBINDUNGEN.filter(function(v) {
-      return !['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c23','c24','c25','c26','c28','c29','c30','c31','c32','c33'].some(function(id){ return id === v.id; });
-    }),
-    // Ketten
-    ketten: KETTEN,
-    // Tagebuch
-    journal: journal,
-    // Fortschritt
-    progress: progress,
-    // SELBST-Qualitäten
-    selbstQualitaeten: selbstQualitaeten,
-    // Glaubenssätze (alle)
-    glaubenssaetze: TEILE.reduce(function(arr, t) {
-      if(t.gs && t.gs.length) arr.push({teilId: t.id, teilName: t.name, gs: t.gs});
-      return arr;
-    }, [])
-  };
-
-  var json = JSON.stringify(daten, null, 2);
-  var datum = new Date();
-  var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
-  var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
-
-  var blob = new Blob([json], {type: "application/json;charset=utf-8"});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url;
-  a.download = "IFS-Daten-"+datumStr.replace(/\./g,"-")+"-"+zeitStr+".json";
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-  zeigeBanner("✓ Datensicherung erstellt — "+daten.extraTeile.length+" Teile, "+journal.length+" Einträge");
 }
 
 function exportiereAlles() {
@@ -3803,7 +4190,7 @@ function setTabDirect(id) {
   document.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.remove("aktiv"); });
   document.getElementById("tab-"+id).classList.add("aktiv");
   document.querySelectorAll(".nav-btn")[0].classList.add("aktiv");
-  if(id==="plan") ladenPlan();
+  if(id==="plan") { ladenPlan(); aktualisiereplanBeschreibung(); }
 }
 
 // Close modal on backdrop click
@@ -4164,64 +4551,6 @@ function setPhase(partId, phase) {
   renderKarte();
 }
 
-
-function zeigeForstschrittErklärung() {
-  var phasen = ["Unbekannt","Erkannt","Kontakt","Vertrauen","Entlastet"];
-  var phasenF = ["#4a4060","#e74c3c","#e67e22","#d4af7a","#27ae60"];
-  
-  var gruppen = {exile:[], manager:[], feuerwehr:[], gesund:[]};
-  TEILE.forEach(function(t) {
-    var ph = progress[t.id] !== undefined ? progress[t.id] : t.ph;
-    if(gruppen[t.typ]) gruppen[t.typ].push({name:t.name, ph:ph});
-  });
-  
-  var gesamt = TEILE.length;
-  var heilTypenM = ['exile','manager','feuerwehr'];
-  var heilTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)!==-1; });
-  var gesundTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)===-1; });
-  var heilScoreM = heilTeileM.length ? heilTeileM.reduce(function(s,t){
-    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
-    return s + ([0,0.05,0.20,0.55,1.0][ph]||0);
-  },0) / heilTeileM.length : 0;
-  var gesundScoreM = gesundTeileM.length ? gesundTeileM.reduce(function(s,t){
-    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
-    return s + ([0,0.15,0.50,0.80,1.0][ph]||0);
-  },0) / gesundTeileM.length : 0;
-  var punkte = heilScoreM * 0.75 + gesundScoreM * 0.25;
-  var prozent = Math.round(punkte * 100);
-  
-  var counts = [0,0,0,0,0];
-  TEILE.forEach(function(t){ counts[progress[t.id]!==undefined ? progress[t.id] : t.ph]++; });
-  
-  var html = '<div style="font-size:9px;color:#7a6870;margin-bottom:10px;line-height:1.6">'+
-    '<b style="color:#d4af7a">Exil · Manager · Feuerwehr (75% Gewicht):</b><br>Erkannt=5% · Kontakt=20% · Vertrauen=55% · Entlastet=100%<br>'+
-    '<b style="color:#27ae60">Gesund (25% Gewicht):</b><br>Erkannt=15% · Kontakt=50% · Vertrauen=80% · Entlastet=100%<br>'+
-    '<span style="opacity:0.7">Heilung = 75% Entlastung der Beschützer + 25% Kontakt mit gesunden Teilen</span>'+
-    '<br><b style="color:#d4af7a">Ergebnis: '+Math.round(heilScoreM*100)+'% Beschützer · '+Math.round(gesundScoreM*100)+'% Gesund → Gesamt: '+prozent+'%</b>'+
-    '</div>';
-  
-  ['exile','manager','feuerwehr','gesund'].forEach(function(typ) {
-    var label = {exile:'💔 Exil',manager:'🛡 Manager',feuerwehr:'🔥 Feuerwehr',gesund:'🌱 Gesund'}[typ];
-    html += '<div style="margin-bottom:10px"><div style="font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#7a6870;margin-bottom:5px">'+label+'</div>';
-    gruppen[typ].forEach(function(t) {
-      html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">';
-      html += '<span style="font-size:10px;color:#c0b8a8">'+t.name+'</span>';
-      html += '<span style="font-size:10px;font-weight:700;color:'+phasenF[t.ph]+'">'+phasen[t.ph]+'</span>';
-      html += '</div>';
-    });
-    html += '</div>';
-  });
-  
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;flex-direction:column';
-  overlay.innerHTML = '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">'+
-    '<span style="font-size:13px;font-weight:700;color:#d4af7a;font-family:Georgia,serif">📊 Heilungsfortschritt '+prozent+'%</span>'+
-    '<button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer">✕</button>'+
-    '</div>'+
-    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px">'+html+'</div>';
-  document.body.appendChild(overlay);
-}
-
 function renderFortschritt() {
   renderFortschrittsChart();
   renderDringlichkeit();
@@ -4263,6 +4592,57 @@ function renderFortschritt() {
   });
 }
 
+function zeigeForstschrittErklärung() {
+  var phasen = ["Unbekannt","Erkannt","Kontakt","Vertrauen","Entlastet"];
+  var phasenF = ["#4a4060","#e74c3c","#e67e22","#d4af7a","#27ae60"];
+  var gruppen = {exile:[], manager:[], feuerwehr:[], gesund:[]};
+  TEILE.forEach(function(t) {
+    var ph = progress[t.id] !== undefined ? progress[t.id] : t.ph;
+    if(gruppen[t.typ]) gruppen[t.typ].push({name:t.name, ph:ph});
+  });
+  var heilTypenM = ['exile','manager','feuerwehr'];
+  var heilTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)!==-1; });
+  var gesundTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)===-1; });
+  var heilScoreM = heilTeileM.length ? heilTeileM.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.05,0.20,0.55,1.0][ph]||0);
+  },0) / heilTeileM.length : 0;
+  var gesundScoreM = gesundTeileM.length ? gesundTeileM.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.15,0.50,0.80,1.0][ph]||0);
+  },0) / gesundTeileM.length : 0;
+  var punkte = heilScoreM * 0.75 + gesundScoreM * 0.25;
+  var prozent = Math.round(punkte * 100);
+
+  var html = '<div style="font-size:9px;color:#7a6870;margin-bottom:10px;line-height:1.6">'+
+    '<b style="color:#d4af7a">Exil · Manager · Feuerwehr (75% Gewicht):</b><br>Erkannt=5% · Kontakt=20% · Vertrauen=55% · Entlastet=100%<br>'+
+    '<b style="color:#27ae60">Gesund (25% Gewicht):</b><br>Erkannt=15% · Kontakt=50% · Vertrauen=80% · Entlastet=100%<br>'+
+    '<span style="opacity:0.7">Heilung = 75% Entlastung der Beschützer + 25% Kontakt mit gesunden Teilen</span>'+
+    '<br><b style="color:#d4af7a">Ergebnis: '+Math.round(heilScoreM*100)+'% Beschützer · '+Math.round(gesundScoreM*100)+'% Gesund → Gesamt: '+prozent+'%</b>'+
+    '</div>';
+
+  ['exile','manager','feuerwehr','gesund'].forEach(function(typ) {
+    var label = {exile:'💔 Exil',manager:'🛡 Manager',feuerwehr:'🔥 Feuerwehr',gesund:'🌱 Gesund'}[typ];
+    html += '<div style="margin-bottom:10px"><div style="font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#7a6870;margin-bottom:5px">'+label+'</div>';
+    gruppen[typ].forEach(function(t) {
+      html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">';
+      html += '<span style="font-size:10px;color:#c0b8a8">'+t.name+'</span>';
+      html += '<span style="font-size:10px;font-weight:700;color:'+phasenF[t.ph]+'">'+phasen[t.ph]+'</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;flex-direction:column';
+  overlay.innerHTML = '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">'+
+    '<span style="font-size:13px;font-weight:700;color:#d4af7a;font-family:Georgia,serif">📊 Heilungsfortschritt '+prozent+'%</span>'+
+    '<button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer">✕</button>'+
+    '</div>'+
+    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px">'+html+'</div>';
+  document.body.appendChild(overlay);
+}
+
 function renderFortschrittsChart() {
   var el = document.getElementById("fort-chart");
   if(!el) return;
@@ -4302,7 +4682,7 @@ function renderFortschrittsChart() {
 
   var html = '';
 
-  // Score-Ring
+  // Score-Ring — anklickbar für Details
   html += '<div onclick="zeigeForstschrittErklärung()" style="cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:14px;background:rgba(255,255,255,0.03);border-radius:12px;padding:12px" title="Klicken für Details">';
   html += '<div style="position:relative;width:52px;height:52px;flex-shrink:0">';
   var deg = score / 100 * 360;
@@ -4487,22 +4867,7 @@ var VERBINDUNGEN = [
   {id:"c30",v:34,n:6,f:"#8040b0",info:"Spontaner und Zweifler sind Gegenspieler",text:"10.03 IFS-Gespräch auf dem Fahrrad: Der Spontane handelt schnell, der Zweifler bremst. Beide überarbeitet. Beide brauchen Entlastung."},
   {id:"c31",v:2,n:36,f:"#30a060",info:"Ängstlicher Anteil soll zum sicheren werden",text:"Das Ziel der Heilungsarbeit: Der ängstliche Bindungsanteil wird durch wachsende Stärke des sicheren Beziehungsanteils entlastet. Earned Security."},
   {id:"c32",v:36,n:37,f:"#a03030",info:"Sicherer und vermeidender Beziehungsanteil als Gegenpole",text:"10.03: Beide in Norbert vorhanden. Zusammen mit dem ängstlichen erschöpfen sich alle drei gegenseitig. Das Bindungsmuster liegt in Norbert — nicht nur in Gabi."},
-  {id:"c33",v:3,n:2,f:"#922b21",info:"Wartender trägt den ängstlichen Bindungsanteil",text:"Aus 10 Jahren toxischer Ehe entstand aus dem sicheren Anteil der Wartende — über Jahre, nicht über Nacht. Der Wartende trägt die Wunde der Ehe."}
-,
-  {"id": "c34", "v": 20, "n": 39, "f": "#7a7090", "info": "Verletzung führt zu Rückzug als Schutz", "text": "Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
-  {"id": "c35", "v": 21, "n": 40, "f": "#7a7090", "info": "Wut führt zu Reflexion und Klarheit", "text": "Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
-  {"id": "c34", "v": 45, "n": 46, "f": "#7a7090", "info": "Konflikt um Schimpfen", "text": "Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
-  {"id": "c36", "v": 45, "n": 44, "f": "#7a7090", "info": "Der Schimpfende will durch Frust-Rausschimpfen Ruhe schaffen", "text": "Schimpfen für Ruhe"},
-  {"id": "c36", "v": 20, "n": 47, "f": "#7a7090", "info": "Der Verletzte aktiviert den Enttäuschten", "text": "Wenn Norbert sich nicht wertgeschätzt fühlt, wird aus der allgemeinen Verletzung eine spezifische Enttäuschung"},
-  {"id": "c37", "v": 30, "n": 46, "f": "#7a7090", "info": "Der Macher arbeitet trotz des Kranken weiter", "text": "Auch in der Krankheit bleibt der Macher aktiv und organisiert das Leben"},
-  {"id": "c38", "v": 47, "n": 39, "f": "#7a7090", "info": "Kranksein führt zum Rückzug", "text": "Wegen Erkältung den ganzen Tag im Bett gelegen"},
-  {"id": "c39", "v": 47, "n": 30, "f": "#7a7090", "info": "Der kranke Teil aktiviert paradoxerweise den aktiven Macher-Teil", "text": "Obwohl krank, macht Norbert Termine und plant Unternehmungen - der Aktive übernimmt trotz Krankheit"},
-  {"id": "c40", "v": 47, "n": 49, "f": "#7a7090", "info": "Kranksein führt zu mehr Klarheit", "text": "Trotz Krankheit entstehen klare Entscheidungen"},
-  {"id": "c41", "v": 20, "n": 49, "f": "#7a7090", "info": "Verletzung bringt Klarheit über Muster", "text": "Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"},
-  {"id": "c42", "v": 47, "n": 51, "f": "#7a7090", "info": "Kranker Teil aktiviert Kreativität", "text": "Trotz Krankheit die IFS-App programmiert - 19 Anteile, vollständig, auf Deutsch"},
-  {"id": "c43", "v": 51, "n": 17, "f": "#7a7090", "info": "Kreativität führt zu Freude", "text": "Meisten Spaß hatte ich beim App-Basteln"},
-  {"id": "c44", "v": 30, "n": 17, "f": "#7a7090", "info": "Aktivität führt zu Freude", "text": "Initiative ergreifen und sich um sich selbst kümmern bringt Freude"},
-  {"id": "c45", "v": 47, "n": 52, "f": "#7a7090", "info": "Krankheit aktiviert Selbstfürsorge", "text": "Der Kranke löst den sich um sich selbst Kümmernden aus"},
+  {id:"c33",v:3,n:2,f:"#922b21",info:"Wartender trägt den ängstlichen Bindungsanteil",text:"Aus 10 Jahren toxischer Ehe entstand aus dem sicheren Anteil der Wartende — über Jahre, nicht über Nacht. Der Wartende trägt die Wunde der Ehe."},
   {id:"c34",v:20,n:39,f:"#7a7090",info:"Verletzung führt zu Rückzug als Schutz",text:"Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
   {id:"c35",v:21,n:40,f:"#7a7090",info:"Wut führt zu Reflexion und Klarheit",text:"Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
   {id:"c36",v:45,n:46,f:"#7a7090",info:"Konflikt um Schimpfen",text:"Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
@@ -4514,7 +4879,8 @@ var VERBINDUNGEN = [
   {id:"c42",v:47,n:51,f:"#7a7090",info:"Kranker Teil aktiviert Kreativität",text:"Trotz Krankheit die IFS-App programmiert"},
   {id:"c43",v:51,n:17,f:"#7a7090",info:"Kreativität führt zu Freude",text:"Meisten Spaß hatte ich beim App-Basteln"},
   {id:"c44",v:30,n:17,f:"#7a7090",info:"Aktivität führt zu Freude",text:"Initiative ergreifen bringt Freude"},
-  {id:"c45",v:47,n:52,f:"#7a7090",info:"Krankheit aktiviert Selbstfürsorge",text:"Der Kranke löst den sich um sich selbst Kümmernden aus"}];
+  {id:"c45",v:47,n:52,f:"#7a7090",info:"Krankheit aktiviert Selbstfürsorge",text:"Der Kranke löst den sich um sich selbst Kümmernden aus"}
+];
 
 var kreisFilter = "alle";
 var nurVerbindungenModus = false;
@@ -4581,22 +4947,7 @@ var KETTEN = [
 
 function setKreisFilter(f, btn) {
   kreisFilter = f;
-  document.querySelectorAll("#kreis-filter-bar .filter-btn").forEach(function(b){ b.classList.remove("aktiv"); },
-  {t:"Kette 15: Der Kreativ-Flow",
-   f:"#27ae60", ids:[38,17,18],
-   i:"Vom kreativen Anteil über Freude zur gesunden Selbstverwirklichung - der Weg der schöpferischen Kraft"},
-  {t:"Kette 16: Der Erkenntnisweg",
-   f:"#27ae60", ids:[42,14,43,17],
-   i:"Reflexion führt über Neugier zu neuen Erkenntnissen und schließlich zu Klarheit und Freude"},
-  {t:"Kette 17: Der Verletzungs-Schutz-Kreislauf",
-   f:"#c02470", ids:[20,48],
-   i:"Wenn Norbert verletzt wird, zieht er sich zurück um weitere Verletzungen zu vermeiden"},
-  {t:"Kette 19: Die Schimpf-Scham-Spirale",
-   f:"#e67e22", ids:[45,46],
-   i:"Zeitdruck/Frust → Schimpfender aktiv → Beschämter Ruhiger schämt sich → innerer Konflikt"},
-  {t:"Kette 20: Die Frust-Ruhe-Spirale",
-   f:"#e67e22", ids:[47,46,44],
-   i:"Der Schimpfende will Ruhe durch Schimpfen schaffen. Lösung: 2-3x tief durchatmen statt schimpfen"});
+  document.querySelectorAll("#kreis-filter-bar .filter-btn").forEach(function(b){ b.classList.remove("aktiv"); });
   btn.classList.add("aktiv");
   renderKreis();
 }
@@ -5626,7 +5977,7 @@ function zeigeDiagnose() {
       var pflege = {};
       try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
       var bw = pflege["teil_"+t.id] || "";
-      if(bw === 'sinnvoll' || bw === 'ignorieren') return; // bereits bewertet — nicht anzeigen
+      if(bw === 'sinnvoll' || bw === 'ignorieren') return;
       html +=
         '<div id="extrateil-'+t.id+'" style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'+
           '<div style="font-size:10px;color:#c0c8d8;margin-bottom:5px">'+t.icon+' '+t.name+' <span style="color:#5a7090;font-size:9px">['+t.typ+']</span></div>'+
@@ -5791,17 +6142,6 @@ function notfallReset() {
 }
 
 // ===================== THERAPIEPLAN =====================
-function aktualisiereplanBeschreibung() {
-  var el = document.getElementById("plan-beschreibung-text");
-  if(!el) return;
-  var anzTeile = TEILE.length;
-  var anzVerb = VERBINDUNGEN.length;
-  var anzKetten = KETTEN.length;
-  var anzTagebuch = journal.length;
-  var anzSelbst = selbstQualitaeten ? selbstQualitaeten.length : 0;
-  el.textContent = "Claude analysiert alle " + anzTeile + " Teile, " + anzVerb + " Verbindungen, " + anzKetten + " Ketten, " + anzTagebuch + " Tagebucheinträge und " + anzSelbst + " SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.";
-}
-
 function ladenPlan() {
   try {
     var gespeichert = localStorage.getItem("ifs-plan");
@@ -6630,80 +6970,6 @@ function updateTeilEntscheid(wert, nameEnc, idx) {
   if(_updateResult) zeigeUpdateVorschau(_updateResult);
 }
 
-function alleNeueTeileUebernehmen() {
-  if(!_updateResult || !_updateResult.neue_teile) return;
-  var pflege = {};
-  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
-  _updateResult.neue_teile.forEach(function(t, i) {
-    pflege["update_teil_"+t.name.toLowerCase()] = "sinnvoll";
-    var card = document.getElementById("update-teil-"+i);
-    if(card) {
-      card.style.transition = "opacity 0.3s";
-      card.style.opacity = "0";
-      setTimeout(function(c){ return function(){ c.style.display="none"; }; }(card), 300);
-    }
-  });
-  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  zeigeBanner("✓ Alle " + _updateResult.neue_teile.length + " Teile übernommen");
-}
-
-function pflegeKarteFaden(btn) {
-  // btn -> div.buttons -> div.card (with border-left)
-  var el = btn && btn.parentElement && btn.parentElement.parentElement;
-  if(el) {
-    el.style.transition = "opacity 0.3s";
-    el.style.opacity = "0";
-    setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 300);
-  }
-  zeigeBanner("✓ Gespeichert");
-}
-
-function dbPflegeLoeschenMitFade(typ, id, elId) {
-  var el = elId ? document.getElementById(elId) : null;
-  if(el) {
-    el.style.transition = "opacity 0.3s";
-    el.style.opacity = "0";
-    setTimeout(function(){ el.style.display="none"; dbPflegeLoeschen(typ, id); }, 300);
-  } else {
-    dbPflegeLoeschen(typ, id);
-  }
-  zeigeBanner("🗑 Gelöscht");
-}
-
-function allePflegeTeileUebernehmen() {
-  var pflege = {};
-  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
-  TEILE.forEach(function(t) {
-    if(!pflege["teil_"+t.id]) {
-      pflege["teil_"+t.id] = "sinnvoll";
-    }
-    var el = document.getElementById("dt-"+t.id);
-    if(el) {
-      el.style.transition = "opacity 0.3s";
-      el.style.opacity = "0";
-      setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 300);
-    }
-  });
-  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  zeigeBanner("✓ Alle Teile als sinnvoll markiert");
-}
-
-function alleExtraTeileUebernehmen() {
-  var pflege = {};
-  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
-  extraTeile.forEach(function(t) {
-    pflege["teil_"+t.id] = "sinnvoll";
-    var el = document.getElementById("extrateil-"+t.id);
-    if(el) {
-      el.style.transition = "opacity 0.4s";
-      el.style.opacity = "0";
-      setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 400);
-    }
-  });
-  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  zeigeBanner("✓ Alle " + extraTeile.length + " Teile als sinnvoll markiert");
-}
-
 function zeigeDatenbankPflege() {
   // Gespeicherte Bewertungen laden
   var pflege = {};
@@ -6798,12 +7064,97 @@ function zeigeDatenbankPflege() {
   document.body.appendChild(overlay);
 }
 
+function aktualisiereplanBeschreibung() {
+  var el = document.getElementById("plan-beschreibung-text");
+  if(!el) return;
+  var anzTeile = TEILE.length;
+  var anzVerb = VERBINDUNGEN.length;
+  var anzKetten = KETTEN.length;
+  var anzTagebuch = journal.length;
+  var anzSelbst = selbstQualitaeten ? selbstQualitaeten.length : 0;
+  el.textContent = "Claude analysiert alle " + anzTeile + " Teile, " + anzVerb + " Verbindungen, " + anzKetten + " Ketten, " + anzTagebuch + " Tagebucheinträge und " + anzSelbst + " SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.";
+}
+
+function alleNeueTeileUebernehmen() {
+  if(!_updateResult || !_updateResult.neue_teile) return;
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+  _updateResult.neue_teile.forEach(function(t, i) {
+    pflege["update_teil_"+t.name.toLowerCase()] = "sinnvoll";
+    var card = document.getElementById("update-teil-"+i);
+    if(card) {
+      card.style.transition = "opacity 0.3s";
+      card.style.opacity = "0";
+      setTimeout(function(c){ return function(){ c.style.display="none"; }; }(card), 300);
+    }
+  });
+  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  zeigeBanner("✓ Alle " + _updateResult.neue_teile.length + " Teile übernommen");
+}
+
+function allePflegeTeileUebernehmen() {
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+  TEILE.forEach(function(t) {
+    if(!pflege["teil_"+t.id]) pflege["teil_"+t.id] = "sinnvoll";
+    var el = document.getElementById("dt-"+t.id);
+    if(el) {
+      el.style.transition = "opacity 0.3s";
+      el.style.opacity = "0";
+      setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 300);
+    }
+  });
+  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  zeigeBanner("✓ Alle Teile als sinnvoll markiert");
+}
+
+function alleExtraTeileUebernehmen() {
+  var pflege = {};
+  try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
+  extraTeile.forEach(function(t) {
+    pflege["teil_"+t.id] = "sinnvoll";
+    var el = document.getElementById("extrateil-"+t.id);
+    if(el) {
+      el.style.transition = "opacity 0.4s";
+      el.style.opacity = "0";
+      setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 400);
+    }
+  });
+  try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
+  zeigeBanner("✓ Alle " + extraTeile.length + " Teile als sinnvoll markiert");
+}
+
+function pflegeKarteFaden(btn) {
+  var el = btn && btn.parentElement && btn.parentElement.parentElement;
+  if(el) {
+    el.style.transition = "opacity 0.3s";
+    el.style.opacity = "0";
+    setTimeout(function(e){ return function(){ e.style.display="none"; }; }(el), 300);
+  }
+  zeigeBanner("✓ Gespeichert");
+}
+
 function dbPflegeSetze(key, wert) {
   var pflege = {};
   try { pflege = JSON.parse(localStorage.getItem("ifs-datenbank-pflege")||"{}"); } catch(e){}
   pflege[key] = wert;
   try { localStorage.setItem("ifs-datenbank-pflege", JSON.stringify(pflege)); } catch(e){}
-  // Kein Modal-Neubau — nur speichern
+  // Modal neu aufbauen
+  var m = document.getElementById("modal-datenbank-pflege");
+  if(m) m.remove();
+  zeigeDatenbankPflege();
+}
+
+function dbPflegeLoeschenMitFade(typ, id, elId) {
+  var el = elId ? document.getElementById(elId) : null;
+  if(el) {
+    el.style.transition = "opacity 0.3s";
+    el.style.opacity = "0";
+    setTimeout(function(){ el.style.display="none"; dbPflegeLoeschen(typ, id); }, 300);
+  } else {
+    dbPflegeLoeschen(typ, id);
+  }
+  zeigeBanner("🗑 Gelöscht");
 }
 
 function dbPflegeLoeschen(typ, id, extra) {
@@ -6979,7 +7330,7 @@ function ladeUndImportiereDatei(input){
         var data=JSON.parse(e.target.result);
         var hinzugefuegt=[];
 
-        // Vollständige Datensicherung importieren
+        // Vollständige Datensicherung importieren (💾 Daten Button)
         if(data.typ === "ifs-datensicherung") {
           var count = 0;
           // extraTeile
@@ -7128,6 +7479,7 @@ function fs_starteLauschen(){
   
   var fs_letzterFinalIndex = -1; // Track to prevent doubles
   fs_recognition.onresult=function(event){
+    if(fs_wartet) return; // Claude spricht gerade — alles ignorieren
     var interim="";
     for(var i=event.resultIndex;i<event.results.length;i++){
       if(event.results[i].isFinal){
@@ -7136,11 +7488,10 @@ function fs_starteLauschen(){
           fs_gesammelt+=(fs_gesammelt?" ":"")+event.results[i][0].transcript.trim();
         }
       } else {
-        // Nur das LETZTE interim-Ergebnis zeigen — nicht alle aufaddieren
-        interim = event.results[i][0].transcript;
+        interim+=event.results[i][0].transcript;
       }
     }
-    // Vorschau — nur finales + aktuelles interim
+    // Vorschau
     var vorschau=fs_gesammelt+(interim?" "+interim:"");
     if(transkript)transkript.textContent=vorschau;
     if(vorschau.trim().length>60){
@@ -7197,23 +7548,22 @@ function fs_verarbeiteEingabe(text){
   fs_wartet=true;fs_setMicRing(false);fs_setStatus("Claude antwortet ...");
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   messages.push({role:"user",content:text});renderMessages();
-  fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:apiHeaders(),body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:SYSTEM_PROMPT+"\n\nFREISPRECHEN-MODUS: Maximal 3 Sätze, kein Markdown.",messages:messages.slice(-12)})})
+  fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:apiHeaders(),body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,system:SYSTEM_PROMPT+"\n\nFREISPRECHEN-MODUS: Maximal 3 Sätze, kein Markdown.",messages:messages.slice(-60)})})
   .then(function(r){return r.json();}).then(function(data){
     var reply=data.content&&data.content[0]?data.content[0].text:"Ich habe dich nicht verstanden.";
     messages.push({role:"assistant",content:reply});speichern();renderMessages();
     var ae=document.getElementById("fs-antwort");if(ae)ae.textContent=reply;
     var te=document.getElementById("fs-transcript");if(te)te.textContent="";
     fs_setStatus("Claude spricht ...");
-    // Mikrofon stoppen damit TTS nicht aufgenommen wird
-    if(fs_recognition){try{fs_recognition.stop();}catch(e){} fs_recognition=null;}
-    fs_hoert=false;
     var u=new SpeechSynthesisUtterance(reply.replace(/\*\*/g,"").replace(/\*/g,"").trim());
     u.lang="de-DE";var se=document.getElementById("fs-speed");u.rate=se?parseFloat(se.value):1.15;u.pitch=1.1;
     var stimmen=window.speechSynthesis.getVoices();var gw=window._fsStimme||null;
     var d=gw?stimmen.find(function(s){return s.name===gw;}):stimmen.find(function(s){return s.name.toLowerCase().includes("aria");})||stimmen.find(function(s){return s.lang==="de-DE"&&s.name.includes("Google");})||stimmen.find(function(s){return s.lang==="de-DE";})||stimmen.find(function(s){return s.lang.startsWith("de");});
     if(d)u.voice=d;
-    u.onend=function(){fs_wartet=false;if(fs_aktiv&&!fs_pause){fs_setStatus("Bereit — sprich jetzt");setTimeout(fs_starteLauschen,500);}};
-    u.onerror=function(){fs_wartet=false;if(fs_aktiv&&!fs_pause)setTimeout(fs_starteLauschen,500);};
+    // Mikrofon abschalten bevor TTS beginnt — verhindert Echo
+    if(fs_recognition){try{fs_recognition.abort();}catch(e){} fs_recognition=null; fs_hoert=false;}
+    u.onend=function(){fs_wartet=false;if(fs_aktiv&&!fs_pause){fs_setStatus("Bereit — sprich jetzt");setTimeout(fs_starteLauschen,1500);}};
+    u.onerror=function(){fs_wartet=false;if(fs_aktiv&&!fs_pause)setTimeout(fs_starteLauschen,1500);};
     window.speechSynthesis.speak(u);
   }).catch(function(e){fs_wartet=false;fs_setStatus("⚠ Fehler");setTimeout(function(){if(fs_aktiv)fs_starteLauschen();},1000);});
 }
