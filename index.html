@@ -222,7 +222,7 @@ body {
     <button id="update-btn" onclick="starteUpdate()" style="background:linear-gradient(135deg,#4a8ab0,#2a5a80);border:none;border-radius:9px;padding:5px 10px;color:#e0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⟳ Update</button>
     <button onclick="zeigeApiKeySetup()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔑</button>
     <button onclick="zeigeDiagnose()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔍</button>
-    <button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 10px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Export</button>
+    <button onclick="exportiereDaten()" style="background:linear-gradient(135deg,rgba(74,138,176,0.6),rgba(40,100,140,0.5));border:none;border-radius:9px;padding:5px 10px;color:#d0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">💾 Daten</button><button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 10px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Export</button>
     <button onclick="erstelleVollsicherung()" style="background:linear-gradient(135deg,rgba(39,174,96,0.4),rgba(20,120,60,0.3));border:1px solid rgba(39,174,96,0.4);border-radius:9px;padding:5px 10px;color:#80e898;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.06em;white-space:nowrap">💾 Sicherung</button>
   </div>
 </div>
@@ -1247,7 +1247,7 @@ Atme dreimal tief. Öffne langsam die Augen. Diesen Ort nimmst du mit.</div>
         <div style="font-size:8px;color:#5a5068;font-style:italic">KI-Analyse aller Daten</div>
       </div>
       <div style="font-size:10px;color:#7a6880;line-height:1.6;margin-bottom:12px">
-        Claude analysiert alle 35 Teile, 32 Verbindungen, 14 Ketten, 10 Tagebucheinträge und 25 SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.
+        <span id="plan-beschreibung-text">Claude analysiert alle Teile, Verbindungen, Ketten, Tagebucheinträge und SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.</span>
       </div>
       <button id="plan-btn" onclick="erstellePlan()" style="width:100%;background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:12px;padding:13px;color:#3d2600;font-size:12px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.05em;margin-bottom:14px">
         ✦ Therapieplan erstellen
@@ -1396,7 +1396,7 @@ var TEILE = [
    st:"10.03.2026: Erstes IFS-Gespräch auf dem Fahrrad — überarbeitet, erschöpft. Botschaft: Du passt gut auf mich auf. Du darfst dich ausruhen. Ich besuche dich bald wieder. Gegenspieler: Der Spontane.",ph:1,pos:{x:94,y:50}},
   {id:7,name:"Der Hoffnungsanteil",kurz:"Hoffnungsanteil",typ:"manager",tl:"MANAGER",icon:"🌱",
    f:{bg:"#1A3050",tx:"#c0d8f0",rg:"#1f618d"},kp:"Brust",
-   gs:["Wenn ich mich verändere, verändert sie sich auch.","Ich mache etwas falsch — der Fehler liegt bei mir.","Wenn ich ausziehe und es bereue, bin ich alleine — für immer."],
+   gs:["Wenn ich mich verändere, verändert sie sich auch.","Ich mache etwas falsch — der Fehler liegt bei mir.","Wenn ich ausziehe und es bereue, bin ich alleine — für immer.","Wenn ich nicht mehr hoffe würde ich ausziehen — und dann ist es endgültig."],
    job:"Sammelt Beweise dass Gabi sich verändern könnte. Hält Endgültigkeit fern.",
    aus:"Gedanke an Trennung, Endgültigkeit.",
    angst:"Endgültiger Verlust, lebenslange Reue.",
@@ -2097,9 +2097,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-var messages = [];
+var messages = [,
+  {id:"c34",v:20,n:39,"f":"#7a7090","info":"Verletzung führt zu Rückzug als Schutz","text":"Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
+  {id:"c35",v:21,n:40,"f":"#7a7090","info":"Wut führt zu Reflexion und Klarheit","text":"Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
+  {id:"c36a",v:45,n:46,"f":"#7a7090","info":"Konflikt um Schimpfen","text":"Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
+  {id:"c36b",v:45,n:44,"f":"#7a7090","info":"Der Schimpfende will durch Frust-Rausschimpfen Ruhe schaffen","text":"Schimpfen für Ruhe"},
+  {id:"c37",v:30,n:46,"f":"#7a7090","info":"Der Macher arbeitet trotz des Kranken weiter","text":"Auch in der Krankheit bleibt der Macher aktiv"},
+  {id:"c38",v:47,n:39,"f":"#7a7090","info":"Kranksein führt zum Rückzug","text":"Wegen Erkältung den ganzen Tag im Bett gelegen"},
+  {id:"c39",v:47,n:30,"f":"#7a7090","info":"Der kranke Teil aktiviert paradoxerweise den aktiven Macher","text":"Obwohl krank macht Norbert Termine und plant Unternehmungen"},
+  {id:"c40",v:47,n:49,"f":"#7a7090","info":"Kranksein führt zu mehr Klarheit","text":"Trotz Krankheit entstehen klare Entscheidungen"},
+  {id:"c41",v:20,n:49,"f":"#7a7090","info":"Verletzung bringt Klarheit über Muster","text":"Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"},
+  {id:"c42",v:47,n:51,"f":"#7a7090","info":"Kranker Teil aktiviert Kreativität","text":"Trotz Krankheit die IFS-App programmiert"},
+  {id:"c43",v:51,n:17,"f":"#7a7090","info":"Kreativität führt zu Freude","text":"Meisten Spaß hatte ich beim App-Basteln"},
+  {id:"c44",v:30,n:17,"f":"#7a7090","info":"Aktivität führt zu Freude","text":"Initiative ergreifen und sich um sich selbst kümmern bringt Freude"},
+  {id:"c45a",v:47,n:52,"f":"#7a7090","info":"Krankheit aktiviert Selbstfürsorge","text":"Der Kranke löst den sich um sich selbst Kümmernden aus"},
+  {id:"c45b",v:20,n:47,"f":"#7a7090","info":"Der Verletzte aktiviert den Enttäuschten","text":"Wenn Norbert sich nicht wertgeschätzt fühlt entsteht spezifische Enttäuschung"}];
 var journal = VORGELADENE_EINTRAEGE.slice(); // Immer direkt mit Eintraegen starten
-var progress = {"20": 3, "30": 2, "33": 3, "45": 4, "47": 3, "48": 3, "49": 2}; // fest eingebaut
+var progress = {"1": 2, "2": 2, "3": 3, "6": 2, "11": 2, "13": 2, "14": 2, "18": 2, "20": 3, "21": 2, "22": 2, "27": 2, "30": 2, "33": 3, "34": 2, "36": 2, "47": 3, "48": 3}; // fest eingebaut
 var aktiverFilter = "alle";
 var tagebuchModus = null; // null | 'morgen' | 'abend'
 var extraTeile = [{"id": 38, "name": "Der Kreative", "kurz": "Der Kreative", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Voller Freude beim Basteln", "gs": ["Ich kann erschaffen und gestalten"], "job": "Entwickelt kreative Projekte wie die IFS-App, bringt Freude durch Schaffen", "aus": "Kreative Projekte, Entwicklungsarbeit", "angst": "Noch unbekannt", "braucht": "Zeit und Raum zum Experimentieren", "st": "aktiv", "ph": 1, "pos": {"x": 46, "y": 49}}, {"id": 39, "name": "Der sich Zurückziehende", "kurz": "Der sich Zurü…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Zurückziehen, Schwere", "gs": ["Rückzug schützt mich vor mehr Schmerz"], "job": "Schutz vor weiteren Verletzungen durch Rückzug", "aus": "Ärger und Verletzungen", "angst": "Noch unbekannt", "braucht": "Schutz vor weiteren Nadelstichen", "st": "aktiv", "ph": 1, "pos": {"x": 23, "y": 72}}, {"id": 40, "name": "Der Reflektierende", "kurz": "Der Reflektie…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Präsente Aufmerksamkeit", "gs": ["Reflexion bringt Klarheit"], "job": "Reflektiert am Morgen präsent und aktiv", "aus": "Ruhige Morgenstunden", "angst": "Noch unbekannt", "braucht": "Zeit zum Nachdenken", "st": "aktiv", "ph": 1, "pos": {"x": 60, "y": 25}}, {"id": 41, "name": "Der Gutgelaunte", "kurz": "Der Gutgelaun…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Lebendige Präsenz", "gs": ["Das Leben darf leicht sein"], "job": "Bringt gute Laune als Grundton", "aus": "Erholsamer Schlaf", "angst": "Noch unbekannt", "braucht": "Ausreichend Ruhe", "st": "aktiv", "ph": 1, "pos": {"x": 37, "y": 48}}, {"id": 42, "name": "Der Zufriedene", "kurz": "Der Zufriedene", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Innere Ruhe und Stabilität", "gs": ["Ich bin genug"], "job": "Trägt Zufriedenheit in sich ohne sie von außen zu brauchen", "aus": "Selbstverbindung", "angst": "Noch unbekannt", "braucht": "Selbstakzeptanz", "st": "aktiv", "ph": 1, "pos": {"x": 74, "y": 71}}, {"id": 43, "name": "Der Nicht-Bewertende", "kurz": "Der Nicht-Bew…", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Offene Haltung", "gs": ["Jeder Mensch verdient es gehört zu werden"], "job": "Hört ohne Urteil zu, bleibt offen", "aus": "Coaching-Situationen", "angst": "Noch unbekannt", "braucht": "Vertrauen in den Prozess", "st": "aktiv", "ph": 1, "pos": {"x": 51, "y": 24}}, {"id": 44, "name": "Der Ruhige", "kurz": "Der Ruhige", "typ": "gesund", "tl": "GESUND", "icon": "🔍", "f": {"bg": "#1A4A30", "tx": "#c0f0d4", "rg": "#27ae60"}, "kp": "Gelassene Präsenz", "gs": ["Ich kann in der Ruhe bleiben"], "job": "Hält Ruhe und Gelassenheit auch bei vollem Terminplan", "aus": "Stressige Situationen", "angst": "Noch unbekannt", "braucht": "Verbindung zum Selbst", "st": "aktiv", "ph": 1, "pos": {"x": 28, "y": 47}}, {"id": 47, "name": "Der Kranke", "kurz": "Der Kranke", "typ": "exile", "tl": "EXIL", "icon": "🔍", "f": {"bg": "#6B2737", "tx": "#fdd8de", "rg": "#E63946"}, "kp": "Halsschmerzen, Schwäche, liegt im Bett", "gs": ["Wenn ich krank bin, muss ich mich zurückziehen"], "job": "Signalisiert körperliche Schwäche und Bedürfnis nach Ruhe und Selbstfürsorge", "aus": "Erkältung, körperliche Erschöpfung", "angst": "Noch unbekannt", "braucht": "Ruhe, Tee, Tabletten, früh ins Bett, Selbstfürsorge", "st": "Schwächegefühl, Halsschmerzen, braucht Selbstfürsorge und Ruhe", "ph": 1, "pos": {"x": 79, "y": 46}}, {"id": 48, "name": "Der Schimpf-Teil", "kurz": "Der Schimpf-T…", "typ": "feuerwehr", "tl": "FEUERWEHR", "icon": "🔍", "f": {"bg": "#5A3200", "tx": "#ffe0b0", "rg": "#e67e22"}, "kp": "Besonders aktiv beim Autofahren und an Kassen", "gs": ["Wenn ich schimpfe, bekomme ich mehr Ruhe"], "job": "Frust rausschimpfen für mehr Ruhe, besonders bei Zeitdruck und Verzagtheit", "aus": "Zeitdruck, Warten, Verzagtheit", "angst": "Noch unbekannt", "braucht": "Ruhe und Entspannung ohne Zeitdruck", "st": "Arbeitet schon sehr lange, früher intensiver, ist viel ruhiger geworden", "ph": 1, "pos": {"x": 56, "y": 69}}]; // fest eingebaut
@@ -2203,13 +2217,15 @@ function laden() {
     }
   } catch(err) { _ladenFehler.push("journal: " + err.message); }
 
-  // Progress laden
+  // Progress laden — merge mit hardcoded (nie überschreiben, nur ergänzen/erhöhen)
   try {
     var rawProgress = localStorage.getItem("ifs-progress");
     if(rawProgress && rawProgress.length > 2) {
       var parsedP = JSON.parse(rawProgress);
       if(parsedP && typeof parsedP === "object") {
-        progress = parsedP;
+        Object.keys(parsedP).forEach(function(k) {
+          if(parsedP[k] > (progress[k]||0)) progress[k] = parsedP[k];
+        });
       }
     }
   } catch(err) { _ladenFehler.push("progress: " + err.message); }
@@ -2381,7 +2397,7 @@ function setTab(id, btn) {
   if(id==="verbindungen") { renderVerbindungen(); }
   if(id==="meditation")   { /* static content */ }
   if(id==="glaube")      { renderGlaubenssaetze(); }
-  if(id==="plan")        { ladenPlan(); }
+  if(id==="plan")        { ladenPlan(); aktualisiereplanBeschreibung(); }
 }
 
 // Zentrale Funktion: alles auf einmal aktualisieren
@@ -2809,49 +2825,82 @@ function importiereEintrag() {
 }
 
 function erstelleVollsicherung() {
-  zeigeBanner("⏳ Erstelle Vollsicherung ...");
+  zeigeBanner("⏳ Erstelle Sicherung ...");
 
-  // Alle localStorage-Daten sammeln
-  var lsKeys = [
-    "ifs-messages","ifs-journal","ifs-progress","ifs-extrateile",
-    "ifs-geloescht","ifs-ketten","ifs-selbst-quali","ifs-geloescht-selbst",
-    "ifs-phase-verlauf","ifs-plan","ifs-prioritaeten","ifs-prio-erledigt",
-    "ifs-verbindungen-extra","ifs-teil-updates","ifs-verbindungen-ignoriert",
-    "ifs-ignoriert","ifs-datenbank-pflege","ifs-woche"
-    // API-Key bewusst NICHT gesichert — Sicherheitsgründe
-  ];
-
-  var lsDaten = {};
-  lsKeys.forEach(function(key) {
-    var val = localStorage.getItem(key);
-    if(val) lsDaten[key] = val;
-  });
-
-  var datum = new Date();
-  var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
-  var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
-  var restoreId = "ifs-restored-"+datum.getTime();
-
-  // Wiederherstellungs-Script — läuft BEVOR die App startet
-  var restoreScript =
-    '<script id="ifs-restore">' +
-    '(function(){' +
-    'if(localStorage.getItem("'+restoreId+'")) return;' +
-    'var d='+JSON.stringify(lsDaten)+';' +
-    'Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k]);});' +
-    'localStorage.setItem("'+restoreId+'","1");' +
-    '})();' +
-    '<\/script>';
-
-  // Aktuelle Seite als HTML holen — direkt aus dem DOM
-  var docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-
-  // Restore-Script direkt nach <head> einfügen
-  var sicherungHtml = docHtml.replace(/(<head[^>]*>)/i, '$1' + restoreScript);
-
-  // Herunterladen
   try {
-    var blob = new Blob([sicherungHtml], {type:"text/html;charset=utf-8"});
+    // Aktuellen Stand aus localStorage lesen
+    var lsProgress   = JSON.parse(localStorage.getItem("ifs-progress")||"{}" );
+    var lsExtraTeile = JSON.parse(localStorage.getItem("ifs-extrateile")||"[]");
+    var lsExtraVerb  = JSON.parse(localStorage.getItem("ifs-verbindungen-extra")||"[]");
+    var lsKetten     = JSON.parse(localStorage.getItem("ifs-ketten")||"[]");
+    var lsTeilUpd    = JSON.parse(localStorage.getItem("ifs-teil-updates")||"{}" );
+    var lsGeloescht  = JSON.parse(localStorage.getItem("ifs-geloescht")||"[]");
+
+    // Alle extraTeile zusammenführen (hardcoded + localStorage)
+    var alleExtra = extraTeile.slice();
+    var bestehendeNamen = alleExtra.map(function(t){ return t.name.toLowerCase(); });
+    lsExtraTeile.forEach(function(t){
+      if(bestehendeNamen.indexOf(t.name.toLowerCase()) === -1) {
+        alleExtra.push(t);
+        bestehendeNamen.push(t.name.toLowerCase());
+      }
+    });
+
+    // Progress zusammenführen
+    var allProgress = JSON.parse(JSON.stringify(progress));
+    Object.keys(lsProgress).forEach(function(k){ allProgress[k] = lsProgress[k]; });
+
+    // Verbindungen zusammenführen
+    var alleVerb = VERBINDUNGEN.slice();
+    var verbKeys = alleVerb.map(function(v){ return v.v+"_"+v.n; });
+    lsExtraVerb.forEach(function(v){
+      if(verbKeys.indexOf(v.v+"_"+v.n) === -1) { alleVerb.push(v); verbKeys.push(v.v+"_"+v.n); }
+    });
+
+    // HTML der aktuellen App holen — outerHTML mit korrektem Encoding
+    var docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    // Sicherstellen dass meta charset vorhanden
+    if(docHtml.indexOf('<meta charset') === -1) {
+      docHtml = docHtml.replace('<head>', '<head><meta charset="utf-8">');
+    }
+
+    // Tagebuch zusammenführen
+    var lsJournal = JSON.parse(localStorage.getItem("ifs-journal")||"[]");
+    var alleJournal = (typeof VORGELADENE_EINTRAEGE !== 'undefined') ? VORGELADENE_EINTRAEGE.slice() : [];
+    var vorhandeneIds = alleJournal.map(function(e){ return e.id; });
+    lsJournal.forEach(function(e){
+      if(vorhandeneIds.indexOf(e.id) === -1) { alleJournal.push(e); vorhandeneIds.push(e.id); }
+    });
+    // Neueste zuerst
+    alleJournal.sort(function(a,b){ return (b.id||0)-(a.id||0); });
+
+    // Ketten zusammenführen
+    var alleKetten = (typeof KETTEN !== 'undefined') ? KETTEN.slice() : [];
+    lsKetten.forEach(function(k){
+      if(!alleKetten.some(function(x){ return x.t === k.t; })) alleKetten.push(k);
+    });
+
+    // Daten direkt in den Code einschreiben
+    docHtml = docHtml.replace(
+      /var extraTeile = \[.*?\]; \/\/ fest eingebaut/s,
+      'var extraTeile = ' + JSON.stringify(alleExtra) + '; // fest eingebaut'
+    );
+    docHtml = docHtml.replace(
+      /var progress = \{.*?\}; \/\/ fest eingebaut/s,
+      'var progress = ' + JSON.stringify(allProgress) + '; // fest eingebaut'
+    );
+    docHtml = docHtml.replace(
+      /var VORGELADENE_EINTRAEGE = \[.*?\];/s,
+      'var VORGELADENE_EINTRAEGE = ' + JSON.stringify(alleJournal) + ';'
+    );
+
+    // Dateiname
+    var datum = new Date();
+    var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
+    var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
+
+    var encoder = new TextEncoder();
+    var blob = new Blob([encoder.encode(docHtml)], {type:"text/html;charset=utf-8"});
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
@@ -2859,10 +2908,59 @@ function erstelleVollsicherung() {
     document.body.appendChild(a);
     a.click();
     setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-    zeigeBanner("✓ Sicherung erstellt — "+datumStr+" "+zeitStr.slice(0,2)+":"+zeitStr.slice(2));
+    zeigeBanner("✓ Sicherung erstellt — alle Daten fest eingebaut");
   } catch(e) {
     zeigeBanner("⚠ Fehler: "+e.message);
   }
+}
+
+
+function exportiereDaten() {
+  // Alle Daten sammeln
+  var daten = {
+    typ: "ifs-datensicherung",
+    version: 1,
+    datum: new Date().toLocaleString("de-DE"),
+    // Teile
+    extraTeile: extraTeile,
+    teilUpdates: TEILE.reduce(function(obj, t) {
+      obj[t.id] = {gs: t.gs, job: t.job, braucht: t.braucht, st: t.st};
+      return obj;
+    }, {}),
+    geloeschteTeileIds: geloeschteTeileIds,
+    // Verbindungen
+    verbindungenExtra: VERBINDUNGEN.filter(function(v) {
+      return !['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c23','c24','c25','c26','c28','c29','c30','c31','c32','c33'].some(function(id){ return id === v.id; });
+    }),
+    // Ketten
+    ketten: KETTEN,
+    // Tagebuch
+    journal: journal,
+    // Fortschritt
+    progress: progress,
+    // SELBST-Qualitäten
+    selbstQualitaeten: selbstQualitaeten,
+    // Glaubenssätze (alle)
+    glaubenssaetze: TEILE.reduce(function(arr, t) {
+      if(t.gs && t.gs.length) arr.push({teilId: t.id, teilName: t.name, gs: t.gs});
+      return arr;
+    }, [])
+  };
+
+  var json = JSON.stringify(daten, null, 2);
+  var datum = new Date();
+  var datumStr = datum.getDate()+"."+(datum.getMonth()+1)+"."+datum.getFullYear();
+  var zeitStr = String(datum.getHours()).padStart(2,"0")+String(datum.getMinutes()).padStart(2,"0");
+
+  var blob = new Blob([json], {type: "application/json;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "IFS-Daten-"+datumStr.replace(/\./g,"-")+"-"+zeitStr+".json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  zeigeBanner("✓ Datensicherung erstellt — "+daten.extraTeile.length+" Teile, "+journal.length+" Einträge");
 }
 
 function exportiereAlles() {
@@ -4066,6 +4164,64 @@ function setPhase(partId, phase) {
   renderKarte();
 }
 
+
+function zeigeForstschrittErklärung() {
+  var phasen = ["Unbekannt","Erkannt","Kontakt","Vertrauen","Entlastet"];
+  var phasenF = ["#4a4060","#e74c3c","#e67e22","#d4af7a","#27ae60"];
+  
+  var gruppen = {exile:[], manager:[], feuerwehr:[], gesund:[]};
+  TEILE.forEach(function(t) {
+    var ph = progress[t.id] !== undefined ? progress[t.id] : t.ph;
+    if(gruppen[t.typ]) gruppen[t.typ].push({name:t.name, ph:ph});
+  });
+  
+  var gesamt = TEILE.length;
+  var heilTypenM = ['exile','manager','feuerwehr'];
+  var heilTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)!==-1; });
+  var gesundTeileM = TEILE.filter(function(t){ return heilTypenM.indexOf(t.typ)===-1; });
+  var heilScoreM = heilTeileM.length ? heilTeileM.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.05,0.20,0.55,1.0][ph]||0);
+  },0) / heilTeileM.length : 0;
+  var gesundScoreM = gesundTeileM.length ? gesundTeileM.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.15,0.50,0.80,1.0][ph]||0);
+  },0) / gesundTeileM.length : 0;
+  var punkte = heilScoreM * 0.75 + gesundScoreM * 0.25;
+  var prozent = Math.round(punkte * 100);
+  
+  var counts = [0,0,0,0,0];
+  TEILE.forEach(function(t){ counts[progress[t.id]!==undefined ? progress[t.id] : t.ph]++; });
+  
+  var html = '<div style="font-size:9px;color:#7a6870;margin-bottom:10px;line-height:1.6">'+
+    '<b style="color:#d4af7a">Exil · Manager · Feuerwehr (75% Gewicht):</b><br>Erkannt=5% · Kontakt=20% · Vertrauen=55% · Entlastet=100%<br>'+
+    '<b style="color:#27ae60">Gesund (25% Gewicht):</b><br>Erkannt=15% · Kontakt=50% · Vertrauen=80% · Entlastet=100%<br>'+
+    '<span style="opacity:0.7">Heilung = 75% Entlastung der Beschützer + 25% Kontakt mit gesunden Teilen</span>'+
+    '<br><b style="color:#d4af7a">Ergebnis: '+Math.round(heilScoreM*100)+'% Beschützer · '+Math.round(gesundScoreM*100)+'% Gesund → Gesamt: '+prozent+'%</b>'+
+    '</div>';
+  
+  ['exile','manager','feuerwehr','gesund'].forEach(function(typ) {
+    var label = {exile:'💔 Exil',manager:'🛡 Manager',feuerwehr:'🔥 Feuerwehr',gesund:'🌱 Gesund'}[typ];
+    html += '<div style="margin-bottom:10px"><div style="font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#7a6870;margin-bottom:5px">'+label+'</div>';
+    gruppen[typ].forEach(function(t) {
+      html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">';
+      html += '<span style="font-size:10px;color:#c0b8a8">'+t.name+'</span>';
+      html += '<span style="font-size:10px;font-weight:700;color:'+phasenF[t.ph]+'">'+phasen[t.ph]+'</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;flex-direction:column';
+  overlay.innerHTML = '<div style="background:#1a1428;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(212,175,122,0.2);flex-shrink:0">'+
+    '<span style="font-size:13px;font-weight:700;color:#d4af7a;font-family:Georgia,serif">📊 Heilungsfortschritt '+prozent+'%</span>'+
+    '<button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#7a7090;font-size:22px;cursor:pointer">✕</button>'+
+    '</div>'+
+    '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px">'+html+'</div>';
+  document.body.appendChild(overlay);
+}
+
 function renderFortschritt() {
   renderFortschrittsChart();
   renderDringlichkeit();
@@ -4126,15 +4282,28 @@ function renderFortschrittsChart() {
   var phasenNamen = ["Unbekannt","Erkannt","Kontakt","Vertrauen","Entlastet"];
 
   // Fortschritts-Score (0-100)
-  var score = Math.round(TEILE.reduce(function(sum,t){
-    var ph = progress[t.id] !== undefined ? progress[t.id] : t.ph;
-    return sum + ph;
-  }, 0) / (gesamt * 4) * 100);
+  // Gewichtete Formel:
+  // 75% Gewicht auf Exil/Manager/Feuerwehr (Heilungsarbeit)
+  // 25% Gewicht auf Gesund (Unterstützung)
+  // Exil/Manager/Feuerwehr: Erkannt=5%, Kontakt=20%, Vertrauen=55%, Entlastet=100%
+  // Gesund: Erkannt=15%, Kontakt=50%, Vertrauen=80%, Entlastet=100%
+  var heilTypen = ['exile','manager','feuerwehr'];
+  var heilTeile = TEILE.filter(function(t){ return heilTypen.indexOf(t.typ)!==-1; });
+  var gesundTeile = TEILE.filter(function(t){ return heilTypen.indexOf(t.typ)===-1; });
+  var heilScore = heilTeile.length ? heilTeile.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.05,0.20,0.55,1.0][ph]||0);
+  },0) / heilTeile.length : 0;
+  var gesundScore = gesundTeile.length ? gesundTeile.reduce(function(s,t){
+    var ph = progress[t.id]!==undefined ? progress[t.id] : t.ph;
+    return s + ([0,0.15,0.50,0.80,1.0][ph]||0);
+  },0) / gesundTeile.length : 0;
+  var score = Math.round((heilScore * 0.75 + gesundScore * 0.25) * 100);
 
   var html = '';
 
   // Score-Ring
-  html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;background:rgba(255,255,255,0.03);border-radius:12px;padding:12px">';
+  html += '<div onclick="zeigeForstschrittErklärung()" style="cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:14px;background:rgba(255,255,255,0.03);border-radius:12px;padding:12px" title="Klicken für Details">';
   html += '<div style="position:relative;width:52px;height:52px;flex-shrink:0">';
   var deg = score / 100 * 360;
   html += '<svg width="52" height="52" style="transform:rotate(-90deg)">';
@@ -4333,7 +4502,19 @@ var VERBINDUNGEN = [
   {"id": "c42", "v": 47, "n": 51, "f": "#7a7090", "info": "Kranker Teil aktiviert Kreativität", "text": "Trotz Krankheit die IFS-App programmiert - 19 Anteile, vollständig, auf Deutsch"},
   {"id": "c43", "v": 51, "n": 17, "f": "#7a7090", "info": "Kreativität führt zu Freude", "text": "Meisten Spaß hatte ich beim App-Basteln"},
   {"id": "c44", "v": 30, "n": 17, "f": "#7a7090", "info": "Aktivität führt zu Freude", "text": "Initiative ergreifen und sich um sich selbst kümmern bringt Freude"},
-  {"id": "c45", "v": 47, "n": 52, "f": "#7a7090", "info": "Krankheit aktiviert Selbstfürsorge", "text": "Der Kranke löst den sich um sich selbst Kümmernden aus"}];
+  {"id": "c45", "v": 47, "n": 52, "f": "#7a7090", "info": "Krankheit aktiviert Selbstfürsorge", "text": "Der Kranke löst den sich um sich selbst Kümmernden aus"},
+  {id:"c34",v:20,n:39,f:"#7a7090",info:"Verletzung führt zu Rückzug als Schutz",text:"Der Verletzte aktiviert den sich Zurückziehenden als Schutz"},
+  {id:"c35",v:21,n:40,f:"#7a7090",info:"Wut führt zu Reflexion und Klarheit",text:"Die Wut ermöglicht dem Reflektierenden Erkenntnis über Muster"},
+  {id:"c36",v:45,n:46,f:"#7a7090",info:"Konflikt um Schimpfen",text:"Der Beschämte Ruhige schämt sich wenn Der Schimpfende aktiv wird"},
+  {id:"c37",v:45,n:44,f:"#7a7090",info:"Der Schimpfende will durch Frust rausschimpfen Ruhe schaffen",text:"Schimpfen für Ruhe"},
+  {id:"c38",v:30,n:46,f:"#7a7090",info:"Der Macher arbeitet trotz des Kranken weiter",text:"Auch in der Krankheit bleibt der Macher aktiv"},
+  {id:"c39",v:47,n:39,f:"#7a7090",info:"Kranksein führt zum Rückzug",text:"Wegen Erkältung den ganzen Tag im Bett gelegen"},
+  {id:"c40",v:47,n:30,f:"#7a7090",info:"Der kranke Teil aktiviert den aktiven Macher",text:"Obwohl krank macht Norbert Termine und plant Unternehmungen"},
+  {id:"c41",v:20,n:49,f:"#7a7090",info:"Verletzung bringt Klarheit über Muster",text:"Der Verletzte hilft beim ersten Mal wirklich sehen was sich wiederholt"},
+  {id:"c42",v:47,n:51,f:"#7a7090",info:"Kranker Teil aktiviert Kreativität",text:"Trotz Krankheit die IFS-App programmiert"},
+  {id:"c43",v:51,n:17,f:"#7a7090",info:"Kreativität führt zu Freude",text:"Meisten Spaß hatte ich beim App-Basteln"},
+  {id:"c44",v:30,n:17,f:"#7a7090",info:"Aktivität führt zu Freude",text:"Initiative ergreifen bringt Freude"},
+  {id:"c45",v:47,n:52,f:"#7a7090",info:"Krankheit aktiviert Selbstfürsorge",text:"Der Kranke löst den sich um sich selbst Kümmernden aus"}];
 
 var kreisFilter = "alle";
 var nurVerbindungenModus = false;
@@ -4400,7 +4581,22 @@ var KETTEN = [
 
 function setKreisFilter(f, btn) {
   kreisFilter = f;
-  document.querySelectorAll("#kreis-filter-bar .filter-btn").forEach(function(b){ b.classList.remove("aktiv"); });
+  document.querySelectorAll("#kreis-filter-bar .filter-btn").forEach(function(b){ b.classList.remove("aktiv"); },
+  {t:"Kette 15: Der Kreativ-Flow",
+   f:"#27ae60", ids:[38,17,18],
+   i:"Vom kreativen Anteil über Freude zur gesunden Selbstverwirklichung - der Weg der schöpferischen Kraft"},
+  {t:"Kette 16: Der Erkenntnisweg",
+   f:"#27ae60", ids:[42,14,43,17],
+   i:"Reflexion führt über Neugier zu neuen Erkenntnissen und schließlich zu Klarheit und Freude"},
+  {t:"Kette 17: Der Verletzungs-Schutz-Kreislauf",
+   f:"#c02470", ids:[20,48],
+   i:"Wenn Norbert verletzt wird, zieht er sich zurück um weitere Verletzungen zu vermeiden"},
+  {t:"Kette 19: Die Schimpf-Scham-Spirale",
+   f:"#e67e22", ids:[45,46],
+   i:"Zeitdruck/Frust → Schimpfender aktiv → Beschämter Ruhiger schämt sich → innerer Konflikt"},
+  {t:"Kette 20: Die Frust-Ruhe-Spirale",
+   f:"#e67e22", ids:[47,46,44],
+   i:"Der Schimpfende will Ruhe durch Schimpfen schaffen. Lösung: 2-3x tief durchatmen statt schimpfen"});
   btn.classList.add("aktiv");
   renderKreis();
 }
@@ -5595,6 +5791,17 @@ function notfallReset() {
 }
 
 // ===================== THERAPIEPLAN =====================
+function aktualisiereplanBeschreibung() {
+  var el = document.getElementById("plan-beschreibung-text");
+  if(!el) return;
+  var anzTeile = TEILE.length;
+  var anzVerb = VERBINDUNGEN.length;
+  var anzKetten = KETTEN.length;
+  var anzTagebuch = journal.length;
+  var anzSelbst = selbstQualitaeten ? selbstQualitaeten.length : 0;
+  el.textContent = "Claude analysiert alle " + anzTeile + " Teile, " + anzVerb + " Verbindungen, " + anzKetten + " Ketten, " + anzTagebuch + " Tagebucheinträge und " + anzSelbst + " SELBST-Qualitäten — und erstellt einen vollständigen Therapieplan mit Top-5-Schwerpunkten inkl. IFS-Interventionen, Meditationen, Buch- und Hörbuchempfehlungen sowie Podcast-Tipps.";
+}
+
 function ladenPlan() {
   try {
     var gespeichert = localStorage.getItem("ifs-plan");
@@ -6771,6 +6978,45 @@ function ladeUndImportiereDatei(input){
       try{
         var data=JSON.parse(e.target.result);
         var hinzugefuegt=[];
+
+        // Vollständige Datensicherung importieren
+        if(data.typ === "ifs-datensicherung") {
+          var count = 0;
+          // extraTeile
+          if(data.extraTeile) {
+            data.extraTeile.forEach(function(t){
+              if(!TEILE.some(function(x){ return x.name.toLowerCase()===t.name.toLowerCase(); })){
+                extraTeile.push(t); TEILE.push(t); count++;
+              }
+            });
+          }
+          // Journal
+          if(data.journal) {
+            var ids = journal.map(function(e){ return e.id; });
+            data.journal.forEach(function(e){
+              if(ids.indexOf(e.id)===-1){ journal.push(e); ids.push(e.id); }
+            });
+          }
+          // Progress
+          if(data.progress) Object.keys(data.progress).forEach(function(k){ progress[k]=data.progress[k]; });
+          // Ketten
+          if(data.ketten) data.ketten.forEach(function(k){
+            if(!KETTEN.some(function(x){ return x.t===k.t; })) KETTEN.push(k);
+          });
+          // SELBST-Qualitäten
+          if(data.selbstQualitaeten) {
+            data.selbstQualitaeten.forEach(function(q){
+              if(!selbstQualitaeten.some(function(x){ return x.name===q.name; })) selbstQualitaeten.push(q);
+            });
+          }
+          speichern();
+          speichernSelbstQuali();
+          renderAlles();
+          zeigeBanner("✓ Datensicherung importiert — "+count+" neue Teile, "+data.journal.length+" Einträge");
+          if(status) status.textContent = "✓ Importiert";
+          return;
+        }
+
         // Neue Ketten
         if(data.neue_ketten&&data.neue_ketten.length){
           data.neue_ketten.forEach(function(k){
@@ -7358,6 +7604,7 @@ if(messages.length===0){
 renderMessages();
 renderAlles();
 ladenPlan();
+aktualisiereplanBeschreibung();
 ladenWochenrueckblick();
 renderPrioListe(); // Badge-Zahl aus localStorage setzen
 if(journal.length > 0) {
