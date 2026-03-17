@@ -222,7 +222,7 @@ body {
     <button id="update-btn" onclick="starteUpdate()" style="background:linear-gradient(135deg,#4a8ab0,#2a5a80);border:none;border-radius:9px;padding:5px 10px;color:#e0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⟳ Update</button>
     <button onclick="zeigeApiKeySetup()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔑</button>
     <button onclick="zeigeDiagnose()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:9px;padding:5px 9px;color:#9a9090;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;white-space:nowrap">🔍</button>
-    <button onclick="exportiereDaten()" style="background:linear-gradient(135deg,rgba(74,138,176,0.6),rgba(40,100,140,0.5));border:none;border-radius:9px;padding:5px 10px;color:#d0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">💾 Daten</button><button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 10px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Export</button>
+    <button onclick="exportiereDaten()" style="background:linear-gradient(135deg,rgba(74,138,176,0.6),rgba(40,100,140,0.5));border:none;border-radius:9px;padding:5px 10px;color:#d0f0ff;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">💾 Daten</button><button onclick="exportiereAlles()" style="background:linear-gradient(135deg,#d4af7a,#a07840);border:none;border-radius:9px;padding:5px 7px;color:#3d2600;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.08em;white-space:nowrap">⬇ Ex</button>
     <button onclick="erstelleVollsicherung()" style="background:linear-gradient(135deg,rgba(39,174,96,0.4),rgba(20,120,60,0.3));border:1px solid rgba(39,174,96,0.4);border-radius:9px;padding:5px 10px;color:#80e898;font-size:9px;font-weight:800;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.06em;white-space:nowrap">💾 Sicherung</button>
   </div>
 </div>
@@ -7131,15 +7131,16 @@ function fs_starteLauschen(){
     var interim="";
     for(var i=event.resultIndex;i<event.results.length;i++){
       if(event.results[i].isFinal){
-        if(i > fs_letzterFinalIndex) { // Only add if not already processed
+        if(i > fs_letzterFinalIndex) {
           fs_letzterFinalIndex = i;
           fs_gesammelt+=(fs_gesammelt?" ":"")+event.results[i][0].transcript.trim();
         }
       } else {
-        interim+=event.results[i][0].transcript;
+        // Nur das LETZTE interim-Ergebnis zeigen — nicht alle aufaddieren
+        interim = event.results[i][0].transcript;
       }
     }
-    // Vorschau
+    // Vorschau — nur finales + aktuelles interim
     var vorschau=fs_gesammelt+(interim?" "+interim:"");
     if(transkript)transkript.textContent=vorschau;
     if(vorschau.trim().length>60){
