@@ -5852,7 +5852,11 @@ function starteUpdate() {
     var start = text.indexOf("{");
     var end = text.lastIndexOf("}");
     if(start !== -1 && end !== -1) text = text.slice(start, end+1);
-    if(!text || text.length < 5) { zeigeUpdateFehler("Keine Antwort erhalten — bitte nochmal versuchen."); return; }
+    if(!text || text.length < 5) {
+      // Keine JSON-Antwort — Claude hat wahrscheinlich nichts gefunden
+      zeigeUpdateVorschau({neue_teile:[],updates_teile:[],phasen_updates:[],neue_verbindungen:[],neue_ketten:[],neue_selbst_qualitaeten:[],zusammenfassung:"Keine neuen Erkenntnisse gefunden."});
+      return;
+    }
     text = text.replace(/"((?:[^"\\]|\\.)*)"/g, function(m,i){ return '"'+i.replace(/\n/g,' ').replace(/\r/g,' ').replace(/\t/g,' ')+'"'; });
     var result;
     try { result = JSON.parse(text); }
