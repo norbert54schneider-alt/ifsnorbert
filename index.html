@@ -7204,6 +7204,9 @@ function fs_verarbeiteEingabe(text){
     var ae=document.getElementById("fs-antwort");if(ae)ae.textContent=reply;
     var te=document.getElementById("fs-transcript");if(te)te.textContent="";
     fs_setStatus("Claude spricht ...");
+    // Mikrofon stoppen damit TTS nicht aufgenommen wird
+    if(fs_recognition){try{fs_recognition.stop();}catch(e){} fs_recognition=null;}
+    fs_hoert=false;
     var u=new SpeechSynthesisUtterance(reply.replace(/\*\*/g,"").replace(/\*/g,"").trim());
     u.lang="de-DE";var se=document.getElementById("fs-speed");u.rate=se?parseFloat(se.value):1.15;u.pitch=1.1;
     var stimmen=window.speechSynthesis.getVoices();var gw=window._fsStimme||null;
